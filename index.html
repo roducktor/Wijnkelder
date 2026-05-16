@@ -658,6 +658,7 @@ function openModal(id) {
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   currentPhotoBase64 = null;
+  currentPhotoMediaType = 'image/jpeg';
   document.getElementById('photo-preview-wrap').style.display = 'none';
   document.getElementById('scan-preview').className = 'ai-preview';
   document.getElementById('f-photo-camera').value = '';
@@ -675,9 +676,12 @@ let currentPhotoBase64 = null;
 function triggerCamera() { document.getElementById('f-photo-camera').click(); }
 function triggerGallery() { document.getElementById('f-photo-gallery').click(); }
 
+let currentPhotoMediaType = 'image/jpeg';
+
 function handlePhoto(input) {
   const file = input.files[0];
   if (!file) return;
+  currentPhotoMediaType = (file.type && !['image/heic','image/heif'].includes(file.type)) ? file.type : 'image/jpeg';
   const reader = new FileReader();
   reader.onload = e => {
     const dataUrl = e.target.result;
@@ -705,7 +709,7 @@ async function scanLabel() {
         messages: [{
           role: 'user',
           content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: currentPhotoBase64 } },
+            { type: 'image', source: { type: 'base64', media_type: currentPhotoMediaType, data: currentPhotoBase64 } },
             { type: 'text', text: 'Wat staat er op dit wijnetiket? Geef de info als JSON.' }
           ]
         }]
