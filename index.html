@@ -179,6 +179,8 @@ select.filter { height: 38px; padding: 0 10px; border: 1px solid var(--border-st
 .star-btn { background: none; border: none; cursor: pointer; font-size: 26px; color: #ddd; padding: 2px; line-height: 1; }
 .star-btn.lit { color: var(--wine); }
 .btn-ai-fetch { width: 100%; height: 38px; border: 1px dashed var(--border-strong); background: none; color: var(--text-muted); border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 6px; }
+.btn-scan { height: 42px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; }
+.btn-scan:active { background: var(--wine-light); }
 .btn-ai-fetch:active { background: var(--wine-light); }
 .ai-preview { background: var(--wine-light); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 8px; display: none; }
 .ai-preview.show { display: block; }
@@ -296,9 +298,23 @@ select.filter { height: 38px; padding: 0 10px; border: 1px solid var(--border-st
     </div>
     <div class="modal-body">
       <div class="form-group">
+        <label class="form-label">📸 Scan wijnetiket</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
+          <button class="btn-scan" onclick="triggerCamera()">📷 Camera</button>
+          <button class="btn-scan" onclick="triggerGallery()">🖼️ Fotogalerij</button>
+        </div>
+        <input type="file" id="f-photo-camera" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
+        <input type="file" id="f-photo-gallery" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        <div id="photo-preview-wrap" style="display:none;margin-bottom:8px">
+          <img id="photo-preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+          <button class="btn-ai-fetch" style="margin-top:6px" onclick="scanLabel()">✨ AI: herken wijn op foto</button>
+        </div>
+        <div class="ai-preview" id="scan-preview"></div>
+      </div>
+      <div class="form-group">
         <label class="form-label">Naam</label>
         <input class="form-input" id="f-name" placeholder="bijv. Château Margaux 2018" autocomplete="off">
-        <button class="btn-ai-fetch" onclick="fetchAI()">✨ AI: haal wijninfo op</button>
+        <button class="btn-ai-fetch" onclick="fetchAI()">✨ AI: haal wijninfo op via naam</button>
         <div class="ai-preview" id="ai-preview"></div>
       </div>
       <div class="form-row">
@@ -639,14 +655,85 @@ function openModal(id) {
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  currentPhotoBase64 = null;
+  document.getElementById('photo-preview-wrap').style.display = 'none';
+  document.getElementById('scan-preview').className = 'ai-preview';
+  document.getElementById('f-photo-camera').value = '';
+  document.getElementById('f-photo-gallery').value = '';
+}
 
 function setStar(n) { currentRating = n; updateStars(); }
 function updateStars() {
   document.querySelectorAll('.star-btn').forEach((b,i) => b.classList.toggle('lit', i < currentRating));
 }
 
-async function fetchAI() {
+// ── FOTO / CAMERA ──
+let currentPhotoBase64 = null;
+
+function triggerCamera() { document.getElementById('f-photo-camera').click(); }
+function triggerGallery() { document.getElementById('f-photo-gallery').click(); }
+
+function handlePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    currentPhotoBase64 = dataUrl.split(',')[1];
+    document.getElementById('photo-preview').src = dataUrl;
+    document.getElementById('photo-preview-wrap').style.display = 'block';
+    document.getElementById('scan-preview').className = 'ai-preview';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function scanLabel() {
+  if (!currentPhotoBase64) return;
+  const el = document.getElementById('scan-preview');
+  el.className = 'ai-preview show';
+  el.textContent = 'Etiket herkennen...';
+  try {
+    const res = await fetch(ANTHROPIC_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        system: 'Je bent een wijnexpert. Analyseer het wijnetiket op de foto en geef de informatie terug als JSON met deze velden: name, producer, region, year (getal), type (kies uit: Rood, Wit, Rosé, Mousserende, Dessertwijn), druivenras, smaakprofiel, serveertemperatuur. Antwoord ALLEEN met geldige JSON, geen uitleg.',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: currentPhotoBase64 } },
+            { type: 'text', text: 'Wat staat er op dit wijnetiket? Geef de info als JSON.' }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text||'').join('') || '';
+    let wine;
+    try {
+      wine = JSON.parse(text.replace(/```json|```/g,'').trim());
+    } catch(e) {
+      el.textContent = 'Kon etiket niet lezen. Probeer een scherpere foto.';
+      return;
+    }
+    if (wine.name) document.getElementById('f-name').value = wine.name;
+    if (wine.producer) document.getElementById('f-producer').value = wine.producer;
+    if (wine.region) document.getElementById('f-region').value = wine.region;
+    if (wine.year) document.getElementById('f-year').value = wine.year;
+    if (wine.type) document.getElementById('f-type').value = wine.type;
+    const info = [wine.druivenras, wine.smaakprofiel, wine.serveertemperatuur].filter(Boolean).join(' · ');
+    el.textContent = '✓ Gevonden: ' + [wine.name, wine.producer, wine.region, wine.year].filter(Boolean).join(', ') + (info ? '. ' + info : '');
+    showToast('Etiket herkend ✓');
+  } catch(e) {
+    el.textContent = 'Fout bij herkennen. Probeer opnieuw.';
+  }
+}
+
+
   const name = document.getElementById('f-name').value.trim();
   if (!name) { alert('Vul eerst een wijn naam in.'); return; }
   const el = document.getElementById('ai-preview');
