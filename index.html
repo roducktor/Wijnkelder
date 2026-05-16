@@ -734,6 +734,7 @@ async function scanLabel() {
 }
 
 
+async function fetchAI() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { alert('Vul eerst een wijn naam in.'); return; }
   const el = document.getElementById('ai-preview');
