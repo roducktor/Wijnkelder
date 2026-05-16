@@ -202,7 +202,7 @@ select.filter { height: 38px; padding: 0 10px; border: 1px solid var(--border-st
 <body>
 
 <!-- SETUP SCREEN -->
-<div id="setup-screen">
+<div id="setup-screen" style="display:none">
   <div class="setup-logo">
     <svg viewBox="0 0 24 24"><path d="M7 2h10l2 7H5L7 2zm5 7v13M9 22h6M5 9c0 2 1 4 3 5s4 1 4 1 2 0 4-1 3-3 3-5"/></svg>
   </div>
@@ -711,13 +711,9 @@ function showToast(msg) {
 }
 
 // ── BOOT ──
-const savedUrl = localStorage.getItem('sb_url');
-const savedKey = localStorage.getItem('sb_key');
-if (savedUrl && savedKey) {
-  document.getElementById('sb-url').value = savedUrl;
-  document.getElementById('sb-key').value = savedKey;
-  initApp(savedUrl, savedKey);
-}
+const SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
+initApp(SB_URL, SB_KEY);
 </script>
 </body>
 </html>
