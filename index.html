@@ -470,12 +470,29 @@ function imgToJpeg(file,cb){
   reader.readAsDataURL(file);
 }
 
+// Compress photo to small thumbnail for card display (saves storage)
+// AND returns a resized version for API (saves tokens)
+function compressImage(dataUrl, maxWidth, quality, callback) {
+  var img = new Image();
+  img.onload = function() {
+    var canvas = document.createElement('canvas');
+    var ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+    if (ratio > 1) ratio = 1;
+    canvas.width = Math.round(img.width * ratio);
+    canvas.height = Math.round(img.height * ratio);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    callback(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.onerror = function() { callback(dataUrl); };
+  img.src = dataUrl;
+}
+
 async function init(){
   sb=supabase.createClient(SB_URL,SB_KEY);
   document.getElementById('app').style.display='flex';
-  setSS('spin','v0.46');
+  setSS('spin','v0.48');
   await loadWines();
-  setSS('ok','v0.46');
+  setSS('ok','v0.48');
   initScrollHeader();
 }
 
@@ -495,7 +512,7 @@ async function loadWines(){
 async function saveToDB(w){
   setSS('spin','...');
   var photo=w.photo||null;
-  if(photo&&photo.length>150000) photo=photo.substring(0,150000);
+  // Photos are pre-compressed thumbnails — no truncation needed
   var row={
     name:w.name,type:w.type,year:w.year||null,producer:w.producer,
     region:w.region,bottles:w.bottles,price:w.price||null,
@@ -504,7 +521,7 @@ async function saveToDB(w){
   };
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','v0.46');await loadWines();return true;
+  setSS('ok','v0.48');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -808,13 +825,19 @@ function handlePhoto(input){
   var file=input.files[0];if(!file) return;
   var reader=new FileReader();
   reader.onload=function(e){
-    var d=e.target.result;
-    photoB64=d.split(',')[1];
-    scannedPhotoForSave=d;
-    document.getElementById('pimg').src=d;
+    var fullDataUrl=e.target.result;
+    document.getElementById('pimg').src=fullDataUrl;
     document.getElementById('ppw').style.display='block';
     document.getElementById('scan-prev').className='ai-prev';
-    scanLabel();
+    // Compress for API
+    compressImage(fullDataUrl, 800, 0.8, function(compressed) {
+      photoB64=compressed.split(',')[1];
+      // Thumbnail for card
+      compressImage(fullDataUrl, 120, 0.7, function(thumb) {
+        scannedPhotoForSave=thumb;
+      });
+      scanLabel();
+    });
   };
   reader.readAsDataURL(file);
 }
@@ -826,7 +849,7 @@ async function scanLabel(){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.5-flash',max_tokens:600,
+      body:JSON.stringify({model:'gemini-2.5-flash-lite',max_tokens:600,
         system:'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"","producer":"","region":"","year":null,"type":"Rood of Wit of Rose of Mousserende of Dessertwijn of Whisky of Rum of Cognac of Gin of Overig"}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
@@ -834,7 +857,8 @@ async function scanLabel(){
         ]}]})});
     var data=await res.json();
     if(data.error){el.textContent='Fout: '+data.error.message;return;}
-    var txt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var txt=rawTxt.replace(/to monitor your current usage[^\n]*/gi,'').replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){el.textContent=txt;return;}
     if(!w.name&&w.producer) w.name=w.producer;
     if(w.name) document.getElementById('f-name').value=w.name;
@@ -906,13 +930,21 @@ function handleScanPhoto(input){
   var file=input.files[0];if(!file) return;
   var reader=new FileReader();
   reader.onload=function(e){
-    scPhotoB64=e.target.result.split(',')[1];
-    document.getElementById('sc-preview-img').src=e.target.result;
+    var fullDataUrl=e.target.result;
+    document.getElementById('sc-preview-img').src=fullDataUrl;
     document.getElementById('sc-preview-wrap').style.display='block';
     document.getElementById('sc-result').style.display='none';
     document.getElementById('add-choice').style.display='none';
     document.getElementById('scan-flow').style.display='block';
-    doWinkelScan();
+    // Compress to 800px for API — fewer tokens, still readable
+    compressImage(fullDataUrl, 800, 0.8, function(compressed) {
+      scPhotoB64=compressed.split(',')[1];
+      // Also store thumbnail for card (120px)
+      compressImage(fullDataUrl, 120, 0.7, function(thumb) {
+        scannedPhotoForSave=thumb;
+      });
+      doWinkelScan();
+    });
   };
   reader.readAsDataURL(file);
 }
@@ -924,7 +956,7 @@ async function doWinkelScan(){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.5-flash',max_tokens:2000,
+      body:JSON.stringify({model:'gemini-2.5-flash-lite',max_tokens:600,
         system:'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_min":0,"geschatte_prijs_max":0}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scPhotoB64}},
@@ -934,7 +966,8 @@ async function doWinkelScan(){
     document.getElementById('analyzing-indicator').style.display='none';
     document.getElementById('scan-analyze-btn').style.display='block';
     if(data.error){toast('Fout: '+data.error.message);return;}
-    var txt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var txt=rawTxt.replace(/to monitor your current usage[^\n]*/gi,'').replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){toast('Kon etiket niet lezen');return;}
     if(!w.name&&w.producer) w.name=w.producer;
     scannedWine=w;
@@ -999,11 +1032,16 @@ async function claudeText(prompt,maxTok){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.5-flash',max_tokens:maxTok||500,
+      body:JSON.stringify({model:'gemini-2.5-flash-lite',max_tokens:maxTok||500,
         system:'Je bent een drank expert. Geef praktische info in het Nederlands. Geen bullet points, gewoon lopende tekst.',
         messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
-    return data.content?data.content.map(function(c){return c.text||'';}).join(''):null;
+    if(!data.content) return null;
+    var text=data.content.map(function(c){return c.text||'';}).join('');
+    // Strip Gemini warning messages
+    text=text.replace(/to monitor your current usage[^\n]*/gi,'').trim();
+    text=text.replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
+    return text||null;
   }catch(e){return null;}
 }
 
