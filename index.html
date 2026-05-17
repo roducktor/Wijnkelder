@@ -4,274 +4,428 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Sectio">
 <title>Sectio</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--wine:#C20114;--wine-dark:#8f0010;--wine-light:#f9e6e8;--wine-mid:#e07080;--gold:#F0A202;--bg:#ECEBF3;--card:#ffffff;--text:#22223B;--muted:#6b6a80;--border:rgba(34,34,59,0.1);--border2:rgba(34,34,59,0.2);--r:12px;--rs:8px;}
-@media(prefers-color-scheme:dark){:root{--bg:#16161f;--card:#22223B;--text:#ECEBF3;--muted:#9a9ab0;--border:rgba(236,235,243,0.1);--border2:rgba(236,235,243,0.2);--wine-light:#2a0a10;}}
+:root{
+  --black:#0A0A0A;
+  --black2:#141414;
+  --black3:#1C1C1C;
+  --black4:#242424;
+  --gold:#C4922A;
+  --gold-light:#E8B84B;
+  --white:#FFFFFF;
+  --white2:#E8E4DC;
+  --muted:#555555;
+  --muted2:#333333;
+  --r:20px;--rs:12px;
+  /* Card colors */
+  --c-rood:#C20114;
+  --c-wit:#2D4A6B;
+  --c-rose:#7B2D5A;
+  --c-mousserende:#1A5C3A;
+  --c-dessertwijn:#6B3A1F;
+  --c-whisky:#C4922A;
+  --c-rum:#3D1F6B;
+  --c-cognac:#8B3A1F;
+  --c-gin:#1F5A3A;
+  --c-overig:#3A3A3A;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+html,body{height:100%;background:var(--black);color:var(--white);font-family:'Space Grotesk',sans-serif;}
 body{max-width:480px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
-header{background:var(--card);border-bottom:1px solid var(--border);padding:.75rem 1rem 0;position:sticky;top:0;z-index:50;}
-.header-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:.75rem;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:30px;height:30px;background:var(--wine);border-radius:9px;display:flex;align-items:center;justify-content:center;}
-.logo-icon svg{width:16px;height:16px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
-.logo-name{font-family:'Lora',serif;font-size:17px;font-weight:600;}
-.add-fab{background:var(--wine);color:white;border:none;border-radius:var(--rs);padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;}
-.tabs{display:flex;}
-.tab{flex:1;padding:9px 0;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;}
-.tab.active{color:var(--wine);border-bottom-color:var(--wine);}
-main{flex:1;overflow-y:auto;padding:1rem;padding-bottom:2rem;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;}
-.stat-num{font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--wine);}
-.stat-label{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
-.search-row{display:flex;gap:8px;margin-bottom:1rem;}
-.sw{flex:1;position:relative;}
-.sw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;fill:none;stroke:var(--muted);stroke-width:2;}
-.sw input{width:100%;height:38px;padding:0 12px 0 32px;border:1px solid var(--border2);border-radius:var(--rs);font-size:13px;background:var(--card);color:var(--text);font-family:inherit;}
-select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-radius:var(--rs);font-size:12px;background:var(--card);color:var(--text);font-family:inherit;}
-.wine-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;cursor:pointer;margin-bottom:8px;}
-.wc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-.wc-name{font-size:14px;font-weight:500;line-height:1.3;}
-.wc-year{color:var(--muted);font-weight:400;}
-.wc-meta{font-size:12px;color:var(--muted);margin-top:3px;}
-.wc-right{text-align:right;flex-shrink:0;}
-.wc-score{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--wine);}
-.wc-stars{font-size:10px;color:var(--wine-mid);}
-.wc-bottles{font-size:11px;color:var(--muted);}
-.wc-tags{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap;}
-.tag{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
-.tag-rood{background:#fde8e8;color:#C20114;}.tag-wit{background:#fafaf0;color:#5a5a10;}
-.tag-rose{background:#fff0f5;color:#8b3a5a;}.tag-mousserende{background:#f0f5ff;color:#2a4a8b;}
-.tag-dessertwijn{background:#fff8e0;color:#7a5500;}.tag-n{background:var(--wine-light);color:var(--muted);}
-.tag-whisky{background:#fff3e0;color:#7a4500;}.tag-rum{background:#f3e5f5;color:#6a1b9a;}
-.tag-cognac{background:#fce4ec;color:#880e4f;}.tag-gin{background:#e8f5e9;color:#2e7d32;}
-.tag-overig{background:#f5f5f5;color:#616161;}
-.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
-.empty svg{width:40px;height:40px;margin:0 auto 12px;display:block;opacity:.35;}
+
+/* ── HEADER ── */
+header{background:var(--black);padding:20px 20px 0;position:sticky;top:0;z-index:50;}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.wordmark{font-size:20px;font-weight:900;letter-spacing:5px;color:var(--white);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+.sync-dot.err{background:#C20114;}.sync-dot.spin{animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.version{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.add-pill{background:var(--gold);color:var(--black);border:none;border-radius:30px;padding:9px 20px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.add-pill:active{background:var(--gold-light);}
+
+/* Hero stats */
+.hero{padding:0 0 20px;}
+.hero-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.hero-number{font-size:54px;font-weight:900;line-height:1;letter-spacing:-2px;}
+.hero-number span{font-size:22px;color:var(--muted);font-weight:500;letter-spacing:0;}
+.mini-stats{display:flex;gap:8px;margin-top:14px;}
+.ms{background:var(--black3);border-radius:var(--rs);padding:12px 14px;flex:1;}
+.ms-val{font-size:20px;font-weight:700;color:var(--gold);}
+.ms-label{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--black3);}
+.tab{flex:1;padding:10px 0;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-bottom:-1px;}
+.tab.active{color:var(--white);border-bottom-color:var(--gold);}
+
+/* ── MAIN ── */
+main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
+
+/* Search */
+.search-row{margin:14px 20px 10px;background:var(--black3);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.search-row input{background:none;border:none;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;flex:1;}
+.search-row input::placeholder{color:var(--muted);}
+.search-row svg{flex-shrink:0;}
+
+/* Filter pills */
+.filter-pills{display:flex;gap:7px;padding:0 20px 16px;overflow-x:auto;}
+.filter-pills::-webkit-scrollbar{display:none;}
+.fpill{background:none;color:var(--muted);border:1px solid var(--muted2);border-radius:30px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;font-family:'Space Grotesk',sans-serif;}
+.fpill.active{background:var(--white);color:var(--black);border-color:var(--white);}
+
+/* ── CARD STACK ── */
+.card-stack{padding:0 20px;}
+.card-outer{position:relative;margin-bottom:28px;}
+.card-outer::after{
+  content:attr(data-next-label);
+  position:absolute;
+  bottom:-28px;left:0;right:0;
+  height:36px;
+  background:var(--next-color,var(--black3));
+  border-radius:0 0 var(--r) var(--r);
+  z-index:0;
+  display:flex;
+  align-items:flex-end;
+  padding:0 20px 6px;
+  font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  pointer-events:none;
+}
+.card-outer:last-child::after{display:none;}
+.card-outer:last-child{margin-bottom:0;}
+
+.drink-card{
+  border-radius:var(--r);
+  padding:20px;
+  cursor:pointer;
+  position:relative;
+  z-index:2;
+  box-shadow:0 8px 0 rgba(0,0,0,.35),0 16px 0 rgba(0,0,0,.18),0 8px 32px rgba(0,0,0,.5);
+  transition:transform .2s,box-shadow .2s;
+}
+.drink-card:active{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.6);}
+
+.dc-rood{background:var(--c-rood);}
+.dc-wit{background:var(--c-wit);}
+.dc-rose{background:var(--c-rose);}
+.dc-mousserende{background:var(--c-mousserende);}
+.dc-dessertwijn{background:var(--c-dessertwijn);}
+.dc-whisky{background:var(--c-whisky);}
+.dc-rum{background:var(--c-rum);}
+.dc-cognac{background:var(--c-cognac);}
+.dc-gin{background:var(--c-gin);}
+.dc-overig{background:var(--c-overig);}
+
+.dc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.dc-type{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.dc-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.25);border-radius:30px;padding:4px 12px;color:rgba(255,255,255,.8);}
+.dc-whisky .dc-type{color:rgba(0,0,0,.55);}
+.dc-whisky .dc-badge{color:rgba(0,0,0,.7);}
+.dc-whisky .dc-name{color:var(--black);}
+.dc-whisky .dc-producer{color:rgba(0,0,0,.45);}
+.dc-whisky .dc-region{color:rgba(0,0,0,.4);}
+.dc-whisky .dc-score{color:var(--black);}
+.dc-whisky .dc-stars{color:rgba(0,0,0,.5);}
+
+.dc-name{font-size:26px;font-weight:900;line-height:1.05;letter-spacing:-.5px;margin-bottom:3px;}
+.dc-producer{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:18px;}
+.dc-footer{display:flex;justify-content:space-between;align-items:flex-end;}
+.dc-region{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.dc-score{font-size:42px;font-weight:900;line-height:1;letter-spacing:-2px;}
+.dc-stars{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:2px;text-align:right;margin-top:2px;}
+.dc-no-score{font-size:11px;color:rgba(255,255,255,.25);padding-bottom:8px;}
+.stack-end{height:30px;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:4rem 2rem;color:var(--muted);}
+.empty-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px;}
+.empty-sub{font-size:13px;letter-spacing:.5px;line-height:1.6;}
+
+/* ── DETAIL ── */
 #detail-view{display:none;}
-.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:1.25rem;font-family:inherit;}
-.back-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
-.detail-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;}
-.detail-name{font-family:'Lora',serif;font-size:20px;font-weight:600;line-height:1.3;}
-.detail-sub{font-size:13px;color:var(--muted);margin-top:4px;}
-.detail-score-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
-.detail-score-big{font-family:'Lora',serif;font-size:40px;font-weight:600;color:var(--wine);line-height:1;}
-.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.ditem{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;}
-.di-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
-.di-v{font-size:14px;font-weight:500;margin-top:3px;}
-.dsec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;}
-.ds-t{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.back-btn{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:16px 20px;font-family:'Space Grotesk',sans-serif;width:100%;}
+.detail-hero{padding:24px 20px;position:relative;}
+.detail-category{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:10px;}
+.detail-name-big{font-size:32px;font-weight:900;line-height:1.05;letter-spacing:-.5px;margin-bottom:4px;}
+.detail-vintage{font-size:20px;font-weight:400;color:rgba(255,255,255,.55);}
+.detail-producer{font-size:11px;color:rgba(255,255,255,.4);margin-top:10px;letter-spacing:.5px;}
+.detail-score-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);}
+.detail-score-huge{font-size:64px;font-weight:900;line-height:1;letter-spacing:-3px;}
+.detail-stars-big{font-size:18px;color:var(--gold);letter-spacing:3px;margin-top:4px;}
+.detail-right{text-align:right;}
+.detail-meta-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:2px;}
+.detail-meta-val{font-size:18px;font-weight:700;}
+
+/* Detail data grid */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--black3);border-top:1px solid var(--black3);}
+.ditem{background:var(--black2);padding:14px 20px;}
+.di-l{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.di-v{font-size:16px;font-weight:700;}
+
+/* Detail sections */
+.dsec{padding:16px 20px;border-top:1px solid var(--black3);background:var(--black2);}
+.ds-t{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
 .ds-txt{font-size:13px;color:var(--muted);line-height:1.7;}
-.action-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
-.btn-a{height:40px;border:1px solid var(--border2);background:var(--card);color:var(--text);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;}
-.btn-a.p{background:var(--wine);color:white;border-color:var(--wine);}
-.btn-ai-inline{width:100%;height:38px;border:1px dashed var(--border2);background:none;color:var(--muted);border-radius:var(--rs);font-size:12px;cursor:pointer;font-family:inherit;}
-.ai-box{font-size:13px;color:var(--muted);line-height:1.7;}
-.review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;}
-.rv-name{font-size:14px;font-weight:500;}.rv-meta{font-size:11px;color:var(--muted);}
-.rv-stars{color:var(--wine);font-size:14px;margin:6px 0;}.rv-text{font-size:13px;color:var(--muted);line-height:1.6;}
-.scanner-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:1rem;text-align:center;}
-.scanner-hero h2{font-family:'Lora',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+
+/* Notes per entry */
+.note-entry{padding:10px 0;border-bottom:1px solid var(--black3);}
+.note-entry:last-child{border-bottom:none;}
+.note-date{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.note-text{font-size:13px;color:var(--white2);line-height:1.6;}
+
+/* Action buttons */
+.action-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--black3);}
+.btn-a{height:50px;background:var(--black2);color:var(--white);border:none;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background .15s;}
+.btn-a:active{background:var(--black3);}
+.btn-a.primary{background:var(--gold);color:var(--black);}
+.btn-a.primary:active{background:var(--gold-light);}
+.btn-del-notes{width:calc(100% - 40px);margin:0 20px 16px;height:40px;background:none;border:1px solid rgba(194,1,20,.4);color:rgba(194,1,20,.7);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-ai-inline{width:calc(100% - 40px);margin:0 20px;height:40px;background:none;border:1px solid var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+
+/* ── LOGBOEK ── */
+.log-card{background:var(--black2);margin:0 20px 10px;border-radius:var(--rs);padding:16px;cursor:pointer;}
+.lc-name{font-size:16px;font-weight:700;margin-bottom:4px;}
+.lc-meta{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.lc-stars{color:var(--gold);font-size:13px;letter-spacing:2px;margin-bottom:6px;}
+.lc-text{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* ── SCANNER ── */
+.scanner-hero{padding:24px 20px 20px;border-bottom:1px solid var(--black3);}
+.scanner-hero h2{font-size:26px;font-weight:900;margin-bottom:8px;}
 .scanner-hero p{font-size:13px;color:var(--muted);line-height:1.5;}
-.scan-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
-.scan-big-btn{height:50px;border:1px solid var(--border2);background:var(--card);color:var(--text);border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
-.scan-preview-wrap{display:none;margin-bottom:1rem;}
-.scan-preview-wrap img{width:100%;max-height:220px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);margin-bottom:8px;}
-.scan-result{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:1rem;display:none;}
-.scan-result h3{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:4px;}
-.scan-result-meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
-.scan-result-info{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
-.scan-add-btn{width:100%;height:44px;background:var(--wine);color:white;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;overflow-y:auto;}
+.scan-btns{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--black3);}
+.scan-big-btn{height:54px;background:var(--black2);color:var(--white);border:none;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.scan-big-btn:active{background:var(--black3);}
+.scan-preview-wrap{display:none;padding:16px 20px;border-bottom:1px solid var(--black3);}
+.scan-preview-wrap img{width:100%;max-height:240px;object-fit:cover;border-radius:var(--rs);margin-bottom:10px;}
+.btn-scan-ai{width:100%;height:50px;background:var(--gold);color:var(--black);border:none;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.scan-result{display:none;}
+.scan-result-card{margin:0;border-bottom:1px solid var(--black3);}
+.src-name{font-size:24px;font-weight:900;padding:20px 20px 4px;}
+.src-meta{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 20px 16px;border-bottom:1px solid var(--black3);}
+.sc-block{padding:12px 20px;border-bottom:1px solid var(--black3);}
+.sc-block-row{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid var(--black3);}
+.sc-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.sc-block-row .sc-label{margin-bottom:0;}
+.sc-val{font-size:13px;color:var(--white2);line-height:1.6;}
+.sc-block-row .sc-val{font-size:13px;color:var(--white);text-align:right;max-width:55%;}
+.scan-actions{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--black3);}
+.scan-action-btn{height:50px;background:var(--black2);color:var(--white);border:none;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.scan-action-btn.primary{background:var(--gold);color:var(--black);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;overflow-y:auto;}
 .modal-overlay.open{display:block;}
-.modal{background:var(--card);max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
-.modal-header{padding:1rem 1rem .75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--card);z-index:10;}
-.modal-title{font-family:'Lora',serif;font-size:17px;font-weight:600;}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:24px;line-height:1;padding:0 4px;}
-.modal-body{padding:1rem;flex:1;}
-.fg{margin-bottom:14px;}
-.fl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block;}
-.fi{width:100%;height:42px;padding:0 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;}
-.fi{color:var(--text) !important;} .fi::placeholder{color:var(--muted);opacity:0.5;}
-.fsel{width:100%;height:42px;padding:0 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;}
-.fta{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical;min-height:80px;line-height:1.5;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.star-row{display:flex;gap:6px;margin-top:5px;}
-.star-btn{background:none;border:none;cursor:pointer;font-size:26px;color:#ccc;padding:2px;line-height:1;}
-.star-btn.lit{color:var(--wine);}
-.btn-scan{height:42px;border:1px solid var(--border2);background:var(--bg);color:var(--text);border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;width:100%;}
-.btn-ai{width:100%;height:38px;border:1px dashed var(--border2);background:none;color:var(--muted);border-radius:var(--rs);font-size:12px;cursor:pointer;font-family:inherit;margin-top:6px;}
-.ai-prev{background:var(--wine-light);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px;display:none;}
+.modal{background:var(--black2);max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
+.modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--black3);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--black2);z-index:10;}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.3px;}
+.modal-close{background:var(--black3);border:none;color:var(--white);cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;}
+.modal-body{padding:20px;flex:1;}
+.fg{margin-bottom:20px;}
+.fl{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block;}
+.fi{width:100%;height:46px;padding:0 16px;border:none;border-bottom:1px solid var(--black3);background:var(--black3);border-radius:var(--rs);font-size:15px;color:var(--white);font-family:'Space Grotesk',sans-serif;outline:none;}
+.fi::placeholder{color:var(--muted);}
+.fsel{width:100%;height:46px;padding:0 16px;border:none;background:var(--black3);border-radius:var(--rs);font-size:14px;color:var(--white);font-family:'Space Grotesk',sans-serif;outline:none;}
+.fsel option,.fsel optgroup{background:var(--black2);}
+.fta{width:100%;padding:14px 16px;border:none;background:var(--black3);border-radius:var(--rs);font-size:14px;color:var(--white);font-family:'Space Grotesk',sans-serif;resize:none;min-height:90px;line-height:1.5;outline:none;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.star-row{display:flex;gap:8px;margin-top:4px;}
+.star-btn{background:none;border:none;cursor:pointer;font-size:28px;color:var(--black3);padding:2px;line-height:1;}
+.star-btn.lit{color:var(--gold);}
+.btn-scan-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.btn-scan{height:46px;border:1px solid var(--black3);background:var(--black3);color:var(--white);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-ai-fetch{width:100%;height:42px;background:none;border:1px solid var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);margin-top:8px;}
+.ai-prev{background:rgba(196,146,42,.08);border:1px solid rgba(196,146,42,.2);border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px;display:none;}
 .ai-prev.show{display:block;}
-.ppw{display:none;margin-bottom:8px;}
-.ppw img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--rs);border:1px solid var(--border);}
-.modal-footer{padding:1rem;border-top:1px solid var(--border);display:flex;gap:8px;position:sticky;bottom:0;background:var(--card);}
-.btn-save{flex:1;height:44px;background:var(--wine);color:white;border:none;border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;}
-.btn-cancel{height:44px;padding:0 16px;border:1px solid var(--border2);background:none;color:var(--text);border-radius:var(--rs);font-size:14px;cursor:pointer;font-family:inherit;}
-.btn-delete{height:44px;padding:0 14px;border:1px solid #e24b4a;background:none;color:#e24b4a;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:inherit;}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;}
-.sync-dot.err{background:#ef4444;}.sync-dot.spin{background:#f59e0b;animation:pulse 1s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.sync-lbl{font-size:11px;color:var(--muted);display:flex;align-items:center;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1410;color:white;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;}
+.ppw{display:none;margin-bottom:10px;}
+.ppw img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--rs);}
+.modal-footer{padding:16px 20px;border-top:1px solid var(--black3);display:flex;gap:8px;position:sticky;bottom:0;background:var(--black2);}
+.btn-save{flex:1;height:50px;background:var(--gold);color:var(--black);border:none;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-cancel{height:50px;padding:0 16px;background:var(--black3);color:var(--muted);border:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-delete{height:50px;padding:0 16px;background:none;border:1px solid rgba(194,1,20,.4);color:rgba(194,1,20,.8);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+
+/* Drink modal */
+.drink-amount-btn{height:42px;border:1px solid var(--black3);background:var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.drink-amount-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold);}
+.drink-star{background:none;border:none;cursor:pointer;font-size:28px;color:var(--black3);padding:2px;line-height:1;}
+.drink-star.lit{color:var(--gold);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--black4);color:var(--white);padding:10px 20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;border-radius:30px;border:1px solid var(--black3);}
 .toast.show{transform:translateX(-50%) translateY(0);}
-.loading-txt{color:var(--muted);font-size:13px;font-style:italic;}
-.sc-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;}
-.sc-block-row{display:flex;align-items:center;justify-content:space-between;}
-.sc-block-label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
-.sc-block-row .sc-block-label{margin-bottom:0;}
-.sc-block-val{font-size:13px;color:var(--text);line-height:1.6;}
-.sc-block-row .sc-block-val{font-size:13px;color:var(--text);text-align:right;max-width:60%;}
-.sc-advies{background:var(--wine-light);border-color:var(--wine-mid);}
-.sc-advies .sc-block-label{color:var(--wine);}
-.btn-del-notes{width:100%;height:38px;border:1px solid #e24b4a;background:none;color:#e24b4a;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px;}
-.drink-star{background:none;border:none;cursor:pointer;font-size:28px;color:#ccc;padding:2px;line-height:1;}
-.drink-star.lit{color:var(--wine);}
-.version{font-size:10px;color:var(--muted);opacity:0.6;letter-spacing:.3px;}
+.loading-txt{color:var(--muted);font-size:12px;font-style:italic;}
+
+/* AI box */
+.ai-box{font-size:13px;color:var(--muted);line-height:1.7;}
 </style>
 </head>
 <body>
+
+<!-- APP -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
     <div class="header-top">
-      <div class="logo">
-        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-3"/><path d="M8 3a2 2 0 014 0v1H8V3z"/><path d="M8 10h8M8 14h5"/></svg></div>
-        <span class="logo-name">Sectio</span>
+      <div class="wordmark">SECTIO</div>
+      <div class="header-right">
+        <span class="version" id="slbl">v0.31</span>
+        <span class="sync-dot spin" id="sdot"></span>
+        <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.28</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
-        <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
+    </div>
+    <div class="hero">
+      <div class="hero-label">Totale collectie</div>
+      <div class="hero-number" id="hero-num">0 <span>flessen</span></div>
+      <div class="mini-stats" id="mini-stats">
+        <div class="ms"><div class="ms-val" id="ms-score">—</div><div class="ms-label">Score</div></div>
+        <div class="ms"><div class="ms-val" id="ms-val">€0</div><div class="ms-label">Waarde</div></div>
+        <div class="ms"><div class="ms-val" id="ms-logs">0</div><div class="ms-label">Logs</div></div>
       </div>
     </div>
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('kelder',this)">🍷 Kelder</button>
-      <button class="tab" onclick="switchTab('reviews',this)">⭐ Reviews</button>
-      <button class="tab" onclick="switchTab('scanner',this)">📷 Scanner</button>
+      <button class="tab active" onclick="switchTab('kelder',this)">Collectie</button>
+      <button class="tab" onclick="switchTab('reviews',this)">Logboek</button>
+      <button class="tab" onclick="switchTab('scanner',this)">Scanner</button>
     </div>
   </header>
+
   <main>
+    <!-- COLLECTIE TAB -->
     <div id="tab-kelder">
       <div id="main-view">
-        <div class="stats" id="stats"></div>
         <div class="search-row">
-          <div class="sw">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="search" id="search-input" placeholder="Zoek wijn, producent, regio..." oninput="renderList()">
-          </div>
-          <select class="filter" id="type-filter" onchange="renderList()">
-            <option value="">Alle</option>
-            <optgroup label="Wijn">
-              <option>Rood</option><option>Wit</option><option>Rosé</option>
-              <option>Mousserende</option><option>Dessertwijn</option>
-            </optgroup>
-            <optgroup label="Spirits">
-              <option>Whisky</option><option>Rum</option><option>Cognac</option>
-              <option>Gin</option><option>Overig</option>
-            </optgroup>
-          </select>
-          <select class="filter" id="sort-filter" onchange="renderList()">
-            <option value="date">Nieuwst</option>
-            <option value="name">Naam</option>
-            <option value="rating">Score</option>
-            <option value="year">Jaar</option>
-            <option value="price">Prijs</option>
-          </select>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="search-input" placeholder="Zoek drank, producent, regio" oninput="renderList()">
         </div>
-        <div id="wine-list"></div>
+        <div class="filter-pills">
+          <button class="fpill active" onclick="setFilter(this,'')">Alles</button>
+          <button class="fpill" onclick="setFilter(this,'Rood')">Rood</button>
+          <button class="fpill" onclick="setFilter(this,'Wit')">Wit</button>
+          <button class="fpill" onclick="setFilter(this,'Whisky')">Whisky</button>
+          <button class="fpill" onclick="setFilter(this,'Rum')">Rum</button>
+          <button class="fpill" onclick="setFilter(this,'Cognac')">Cognac</button>
+          <button class="fpill" onclick="setFilter(this,'Gin')">Gin</button>
+        </div>
+        <div class="card-stack" id="wine-list"></div>
+        <div class="stack-end"></div>
       </div>
       <div id="detail-view">
-        <button class="back-btn" onclick="closeDetail()">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Terug naar kelder
-        </button>
+        <button class="back-btn" onclick="closeDetail()">← Terug</button>
         <div id="detail-content"></div>
       </div>
     </div>
-    <div id="tab-reviews" style="display:none"><div id="reviews-list"></div></div>
+
+    <!-- LOGBOEK TAB -->
+    <div id="tab-reviews" style="display:none">
+      <div style="padding:20px 20px 10px">
+        <div style="font-size:24px;font-weight:900;margin-bottom:4px">Logboek</div>
+        <div style="font-size:12px;color:var(--muted)">Beoordeelde dranken</div>
+      </div>
+      <div id="reviews-list"></div>
+    </div>
+
+    <!-- SCANNER TAB -->
     <div id="tab-scanner" style="display:none">
       <div class="scanner-hero">
-        <h2>📷 Winkelscanner</h2>
-        <p>Foto een wijnetiket in de winkel en krijg direct info — druiven, regio, smaak en of het een goede koop is.</p>
+        <h2>Scanner</h2>
+        <p>Foto een etiket en krijg direct info — druiven, regio, smaak en koopadvies.</p>
       </div>
       <div class="scan-btns">
-        <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">📷 Camera</button>
-        <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼 Galerij</button>
+        <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">Maak foto</button>
+        <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">Kies foto</button>
       </div>
       <input type="file" id="sc-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
       <input type="file" id="sc-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleScanPhoto(this)">
       <div class="scan-preview-wrap" id="sc-preview-wrap">
         <img id="sc-preview-img" alt="preview">
-        <button class="btn-ai" style="width:100%;height:44px" onclick="doWinkelScan()">✨ AI: analyseer deze wijn</button>
+        <button class="btn-scan-ai" onclick="doWinkelScan()">Analyseer etiket</button>
       </div>
       <div class="scan-result" id="sc-result">
-        <h3 id="sc-name"></h3>
-        <div class="scan-result-meta" id="sc-meta" style="margin-bottom:12px"></div>
-        <div id="sc-info"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-  <button class="scan-add-btn" style="background:none;border:1px solid var(--wine);color:var(--wine)" onclick="logTasting()">Noteer proeverij</button>
-  <button class="scan-add-btn" onclick="addScannedToKelder()">+ Voeg toe aan collectie</button>
-</div>
+        <div class="scan-result-card">
+          <div class="src-name" id="sc-name"></div>
+          <div class="src-meta" id="sc-meta"></div>
+          <div id="sc-info"></div>
+        </div>
+        <div class="scan-actions">
+          <button class="scan-action-btn" onclick="logTasting()">Noteer proeverij</button>
+          <button class="scan-action-btn primary" onclick="addScannedToKelder()">+ Voeg toe</button>
+        </div>
       </div>
     </div>
   </main>
 </div>
 
+<!-- ADD/EDIT MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title" id="modal-title">Wijn toevoegen</span>
-      <button class="modal-close" onclick="closeModal()">x</button>
+      <span class="modal-title" id="modal-title">Toevoegen</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="fg">
-        <label class="fl">Scan wijnetiket</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <button class="btn-scan" onclick="document.getElementById('inp-cam').click()">Camera</button>
-          <button class="btn-scan" onclick="document.getElementById('inp-gal').click()">Galerij</button>
+        <label class="fl">Scan etiket</label>
+        <div class="btn-scan-row">
+          <button class="btn-scan" onclick="document.getElementById('inp-cam').click()">📷 Camera</button>
+          <button class="btn-scan" onclick="document.getElementById('inp-gal').click()">🖼 Galerij</button>
         </div>
         <input type="file" id="inp-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handlePhoto(this)">
         <input type="file" id="inp-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhoto(this)">
-        <div class="ppw" id="ppw">
-          <img id="pimg" alt="preview">
-          <button class="btn-ai" style="margin-top:6px" onclick="scanLabel()">Herken wijn op foto</button>
+        <div class="ppw" id="ppw"><img id="pimg" alt="preview">
+          <button class="btn-ai-fetch" onclick="scanLabel()">Herken etiket</button>
         </div>
         <div class="ai-prev" id="scan-prev"></div>
       </div>
       <div class="fg">
         <label class="fl">Naam</label>
-        <input class="fi" id="f-name" placeholder="bijv. Ramirez de la Piscina 2019" autocomplete="off">
+        <input class="fi" id="f-name" placeholder="bijv. Deanston 12yr" autocomplete="off">
+        <button class="btn-ai-fetch" onclick="fetchAI()">Haal info op via naam</button>
+        <div class="ai-prev" id="ai-prev"></div>
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Type</label>
           <select class="fsel" id="f-type">
-  <optgroup label="Wijn"><option>Rood</option><option>Wit</option><option>Rosé</option><option>Mousserende</option><option>Dessertwijn</option></optgroup>
-  <optgroup label="Spirits"><option>Whisky</option><option>Rum</option><option>Cognac</option><option>Gin</option><option>Overig</option></optgroup>
-</select></div>
-        <div class="fg"><label class="fl">Jaar</label><input class="fi" id="f-year" type="number" placeholder="2020" min="1900" max="2030"></div>
+            <optgroup label="Wijn"><option>Rood</option><option>Wit</option><option>Rosé</option><option>Mousserende</option><option>Dessertwijn</option></optgroup>
+            <optgroup label="Spirits"><option>Whisky</option><option>Rum</option><option>Cognac</option><option>Gin</option><option>Overig</option></optgroup>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Jaar</label>
+          <input class="fi" id="f-year" type="number" placeholder="2020" min="1800" max="2030">
+        </div>
       </div>
       <div class="frow">
-        <div class="fg"><label class="fl">Producent</label><input class="fi" id="f-producer" placeholder="bijv. Antinori"></div>
-        <div class="fg"><label class="fl">Regio / Land</label><input class="fi" id="f-region" placeholder="bijv. Rioja, ES"></div>
+        <div class="fg"><label class="fl">Producent</label>
+          <input class="fi" id="f-producer" placeholder="bijv. Deanston">
+        </div>
+        <div class="fg"><label class="fl">Regio / Land</label>
+          <input class="fi" id="f-region" placeholder="bijv. Highland, Schotland">
+        </div>
       </div>
       <div class="frow">
-        <div class="fg"><label class="fl">Aantal</label><input class="fi" id="f-bottles" type="number" value="1" min="0"></div>
-        <div class="fg"><label class="fl">Prijs/fles</label><input class="fi" id="f-price" type="number" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="fg"><label class="fl">Aantal</label>
+          <input class="fi" id="f-bottles" type="number" value="1" min="0">
+        </div>
+        <div class="fg"><label class="fl">Prijs/fles (€)</label>
+          <input class="fi" id="f-price" type="number" placeholder="0.00" step="0.01" min="0">
+        </div>
       </div>
       <div class="frow">
-        <div class="fg"><label class="fl">Drink vanaf</label><input class="fi" id="f-dfrom" type="number" placeholder="2024"></div>
-        <div class="fg"><label class="fl">Drink voor</label><input class="fi" id="f-dto" type="number" placeholder="2032"></div>
+        <div class="fg"><label class="fl">Drink vanaf</label>
+          <input class="fi" id="f-dfrom" type="number" placeholder="2024">
+        </div>
+        <div class="fg"><label class="fl">Drink voor</label>
+          <input class="fi" id="f-dto" type="number" placeholder="2032">
+        </div>
       </div>
-
       <div class="fg">
-        <label class="fl">Proefnotitie</label>
-        <textarea class="fta" id="f-notes" placeholder="Hoe smaakte de wijn? Aroma, smaak, afdronk..."></textarea>
+        <label class="fl">Notitie</label>
+        <textarea class="fta" id="f-notes" placeholder="Aroma, smaak, afdronk, gelegenheid..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
@@ -282,21 +436,20 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
+<!-- DRINK MODAL -->
 <div class="modal-overlay" id="drink-modal">
-  <div class="modal" style="min-height:auto;max-height:80dvh;margin-top:auto;border-radius:var(--r) var(--r) 0 0">
+  <div class="modal" style="min-height:auto;max-height:85dvh;margin-top:auto;border-radius:var(--r) var(--r) 0 0;">
     <div class="modal-header">
-      <span class="modal-title">Fles loggen</span>
-      <button class="modal-close" onclick="document.getElementById('drink-modal').classList.remove('open')">x</button>
+      <span class="modal-title">Loggen</span>
+      <button class="modal-close" onclick="document.getElementById('drink-modal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="drink-wine-id">
       <div class="fg">
-        <label class="fl">Hoeveel gedronken?</label>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px">
+        <label class="fl">Hoeveel gedronken</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px">
           <button class="drink-amount-btn active" onclick="setDrinkAmount(this,'glas')">Glas</button>
-          <button class="drink-amount-btn" onclick="setDrinkAmount(this,'halve fles')">Halve fles</button>
+          <button class="drink-amount-btn" onclick="setDrinkAmount(this,'halve fles')">½ Fles</button>
           <button class="drink-amount-btn" onclick="setDrinkAmount(this,'fles')">Fles</button>
           <button class="drink-amount-btn" onclick="setDrinkAmount(this,'shot')">Shot</button>
         </div>
@@ -304,15 +457,15 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       <div class="fg">
         <label class="fl">Beoordeling</label>
         <div class="star-row">
-          <button class="drink-star" onclick="setDrinkStar(1)">&#9733;</button>
-          <button class="drink-star" onclick="setDrinkStar(2)">&#9733;</button>
-          <button class="drink-star" onclick="setDrinkStar(3)">&#9733;</button>
-          <button class="drink-star" onclick="setDrinkStar(4)">&#9733;</button>
-          <button class="drink-star" onclick="setDrinkStar(5)">&#9733;</button>
+          <button class="drink-star" onclick="setDrinkStar(1)">★</button>
+          <button class="drink-star" onclick="setDrinkStar(2)">★</button>
+          <button class="drink-star" onclick="setDrinkStar(3)">★</button>
+          <button class="drink-star" onclick="setDrinkStar(4)">★</button>
+          <button class="drink-star" onclick="setDrinkStar(5)">★</button>
         </div>
       </div>
       <div class="fg">
-        <label class="fl">Proefnotitie</label>
+        <label class="fl">Notitie</label>
         <textarea class="fta" id="drink-note" placeholder="Aroma, smaak, afdronk, gelegenheid..." style="min-height:100px"></textarea>
       </div>
     </div>
@@ -322,73 +475,56 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
     </div>
   </div>
 </div>
-<canvas id="cvs" style="display:none"></canvas>
+
+<div class="toast" id="toast"></div>
 
 <script>
 var AAPI = 'https://yepcptjqjxjcblpozsia.supabase.co/functions/v1/claude-proxy';
-// Using anon JWT key for Edge Function auth
 var SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
+
 var sb, wines = [], editId = null, starRating = 0, detailId = null;
 var photoB64 = null, scPhotoB64 = null, scannedWine = null;
+var activeTypeFilter = '';
+var currentDrinkRating = 0, currentDrinkAmount = 'glas';
 
-// Convert any image (incl HEIC) to JPEG via canvas
-function imgToJpeg(file, cb) {
-  // iOS auto-converts HEIC to JPEG when accept= specifies jpeg/png/webp
-  // So we can just read the file directly with FileReader
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var d = e.target.result;
-    if (!d || d.indexOf(',') === -1) { cb(null, null, 'Foto kon niet worden gelezen.'); return; }
-    cb(d.split(',')[1], d);
-  };
-  reader.onerror = function() { cb(null, null, 'Foto laden mislukt. Probeer een andere foto.'); };
-  reader.readAsDataURL(file);
-}
+// Card colors per type
+var CARD_COLORS = {
+  'rood':'#C20114','wit':'#2D4A6B','rose':'#7B2D5A','rosé':'#7B2D5A',
+  'mousserende':'#1A5C3A','dessertwijn':'#6B3A1F',
+  'whisky':'#C4922A','rum':'#3D1F6B','cognac':'#8B3A1F','gin':'#1F5A3A','overig':'#3A3A3A'
+};
 
-// Compress image to max 800px wide/tall and return small base64 for API
-function compressImage(b64, cb) {
-  var img = new Image();
-  img.onload = function() {
-    var c = document.getElementById('cvs');
-    var max = 800, w = img.width, h = img.height;
-    if (w > max) { h = Math.round(h * max / w); w = max; }
-    if (h > max) { w = Math.round(w * max / h); h = max; }
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    cb(c.toDataURL('image/jpeg', 0.7).split(',')[1]);
-  };
-  img.onerror = function() { cb(b64); }; // fallback to original
-  img.src = 'data:image/jpeg;base64,' + b64;
-}
-
-async function clearNotes(id) {
-  if (!confirm('Alle proefnotities verwijderen?')) return;
-  var w = wines.find(function(x) { return x.id === id; });
-  if (!w) return;
-  w.notes = '';
-  await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
-    region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
-    drinkTo: w.drink_to, rating: w.rating, notes: '', aiInfo: w.ai_info });
-  showDetail(id);
+function getCardColor(type) {
+  return CARD_COLORS[(type||'').toLowerCase()] || '#3A3A3A';
 }
 
 function getUnit(type, count) {
-  var spirits = ['Whisky','Rum','Cognac','Gin','Overig'];
-  if (spirits.indexOf(type) >= 0) return count === 1 ? 'fles' : 'flessen';
   return count === 1 ? 'fles' : 'flessen';
+}
+
+function imgToJpeg(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var d = e.target.result;
+    if (!d || d.indexOf(',') === -1) { cb(null, null, 'Foto laden mislukt.'); return; }
+    cb(d.split(',')[1], d);
+  };
+  reader.onerror = function() { cb(null, null, 'Foto laden mislukt.'); };
+  reader.readAsDataURL(file);
 }
 
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'laden...');
+  setSS('spin', 'v0.31');
   await loadWines();
-  setSS('ok', 'verbonden');
+  setSS('ok', 'v0.31');
 }
 
 function setSS(cls, txt) {
-  document.getElementById('sdot').className = cls === 'ok' ? 'sync-dot' : ('sync-dot ' + cls);
+  var dot = document.getElementById('sdot');
+  dot.className = cls === 'ok' ? 'sync-dot' : ('sync-dot ' + cls);
   document.getElementById('slbl').textContent = txt;
 }
 
@@ -407,7 +543,7 @@ async function saveToDB(w) {
     rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'verbonden'); await loadWines(); return true;
+  setSS('ok', 'v0.31'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -418,10 +554,17 @@ async function delFromDB(id) {
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
-  ['kelder', 'reviews', 'scanner'].forEach(function(t) {
+  ['kelder','reviews','scanner'].forEach(function(t) {
     document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
   });
   if (tab === 'reviews') renderReviews();
+}
+
+function setFilter(btn, type) {
+  activeTypeFilter = type;
+  document.querySelectorAll('.fpill').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderList();
 }
 
 function renderAll() { renderStats(); renderList(); }
@@ -431,41 +574,47 @@ function renderStats() {
   var rated = wines.filter(function(w) { return w.rating; });
   var avg = rated.length ? (rated.reduce(function(s, w) { return s + w.rating; }, 0) / rated.length).toFixed(1) : '--';
   var val = wines.reduce(function(s, w) { return s + (w.price || 0) * (w.bottles || 0); }, 0);
-  document.getElementById('stats').innerHTML =
-    '<div class="stat"><div class="stat-num">' + total + '</div><div class="stat-label">Flessen</div></div>' +
-    '<div class="stat"><div class="stat-num">' + avg + '</div><div class="stat-label">Gem. score</div></div>' +
-    '<div class="stat"><div class="stat-num">&#8364;' + Math.round(val) + '</div><div class="stat-label">Waarde</div></div>';
+  var logs = wines.filter(function(w) { return w.notes; }).length;
+  document.getElementById('hero-num').innerHTML = total + ' <span>flessen</span>';
+  document.getElementById('ms-score').textContent = avg;
+  document.getElementById('ms-val').textContent = '€' + Math.round(val);
+  document.getElementById('ms-logs').textContent = logs;
 }
 
 function renderList() {
   var q = (document.getElementById('search-input').value || '').toLowerCase();
-  var tf = document.getElementById('type-filter').value;
-  var sort = document.getElementById('sort-filter') ? document.getElementById('sort-filter').value : 'date';
   var list = wines.filter(function(w) {
-    return [w.name, w.producer, w.region, w.year].join(' ').toLowerCase().indexOf(q) >= 0 && (!tf || w.type === tf);
-  }).sort(function(a, b) {
-    if (sort === 'name') return (a.name||'').localeCompare(b.name||'');
-    if (sort === 'rating') return (b.rating||0) - (a.rating||0);
-    if (sort === 'year') return (b.year||0) - (a.year||0);
-    if (sort === 'price') return (b.price||0) - (a.price||0);
-    return 0; // date: keep original order (already sorted by created_at desc)
+    return [w.name, w.producer, w.region, w.year].join(' ').toLowerCase().indexOf(q) >= 0
+      && (!activeTypeFilter || w.type === activeTypeFilter);
   });
   var el = document.getElementById('wine-list');
   if (!list.length) {
-    el.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M7 2h10l2 7H5L7 2zm5 7v13M9 22h6"/></svg><p>' + (wines.length ? 'Geen resultaten.' : 'Kelder is leeg. Voeg je eerste wijn toe!') + '</p></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-title">' + (wines.length ? 'Geen resultaten' : 'Collectie is leeg') + '</div><div class="empty-sub">' + (wines.length ? 'Probeer een andere zoekterm.' : 'Voeg uw eerste fles toe.') + '</div></div>';
     return;
   }
-  el.innerHTML = list.map(function(w) {
-    var tk = (w.type || 'rood').toLowerCase().replace(/\s/g, '');
-    var stars = w.rating ? '&#9733;'.repeat(w.rating) : '';
-    return '<div class="wine-card" onclick="showDetail(\'' + w.id + '\')">' +
-      '<div class="wc-top"><div style="min-width:0"><div class="wc-name">' + (w.name || '') + (w.year ? ' <span class="wc-year">' + w.year + '</span>' : '') + '</div>' +
-      '<div class="wc-meta">' + ([w.producer, w.region].filter(Boolean).join(' &middot; ') || '--') + '</div></div>' +
-      '<div class="wc-right">' + (w.rating ? '<div class="wc-score">' + w.rating + '/5</div><div class="wc-stars">' + stars + '</div>' : '<div class="wc-bottles">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</div>') + '</div></div>' +
-      '<div class="wc-tags"><span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span>' +
-      '<span class="tag tag-n">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</span>' +
-      (w.drink_from ? '<span class="tag tag-n">' + w.drink_from + '--' + (w.drink_to || '?') + '</span>' : '') +
-      '</div></div>';
+  el.innerHTML = list.map(function(w, i) {
+    var nextW = list[i + 1];
+    var nextColor = nextW ? getCardColor(nextW.type) : '';
+    var nextLabel = nextW ? (nextW.type || '') + (nextW.name ? ' · ' + nextW.name : '') : '';
+    var tk = (w.type || 'overig').toLowerCase().replace(/\s/g,'').replace(/é/g,'e');
+    var stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '';
+    var isAmber = tk === 'whisky';
+    var dark = isAmber ? ' style="color:#000"' : '';
+    return '<div class="card-outer"' +
+      (nextColor ? ' style="--next-color:' + nextColor + '"' : '') +
+      (nextLabel ? ' data-next-label="' + nextLabel + '"' : '') + '>' +
+      '<div class="drink-card dc-' + tk + '" onclick="showDetail(\'' + w.id + '\')">' +
+      '<div class="dc-header">' +
+      '<span class="dc-type"' + dark + '>' + (w.type || '') + (w.region ? ' · ' + w.region : '') + '</span>' +
+      '<span class="dc-badge"' + dark + '>' + (w.bottles || 0) + ' fl.</span>' +
+      '</div>' +
+      '<div class="dc-name"' + dark + '>' + (w.name || '') + (w.year ? ' <span style="font-weight:400;opacity:.6">' + w.year + '</span>' : '') + '</div>' +
+      '<div class="dc-producer"' + dark + '>' + (w.producer || '') + '</div>' +
+      '<div class="dc-footer">' +
+      '<div><div class="dc-region"' + dark + '>' + (w.drink_from ? w.drink_from + '–' + (w.drink_to || '?') : (w.region || '')) + '</div></div>' +
+      '<div>' +
+      (w.rating ? '<div class="dc-score"' + dark + '>' + w.rating + '</div><div class="dc-stars"' + dark + '>' + stars + '</div>' : '<div class="dc-no-score">Niet beoordeeld</div>') +
+      '</div></div></div></div>';
   }).join('');
 }
 
@@ -473,33 +622,53 @@ function showDetail(id) {
   detailId = id;
   var w = wines.find(function(x) { return x.id === id; });
   if (!w) return;
+  var tk = (w.type || 'overig').toLowerCase().replace(/\s/g,'').replace(/é/g,'e');
+  var color = getCardColor(w.type);
+  var isAmber = tk === 'whisky';
+  var textColor = isAmber ? '#000' : '#fff';
   var s5 = w.rating || 0;
-  var sh = '&#9733;'.repeat(s5) + '&#9734;'.repeat(5 - s5);
-  var tk = (w.type || 'rood').toLowerCase().replace(/\s/g, '');
+  var sh = '★'.repeat(s5) + '☆'.repeat(5 - s5);
+  var notesHtml = '';
+  if (w.notes) {
+    var entries = w.notes.split('\n---\n').reverse();
+    notesHtml = entries.map(function(e) {
+      var lines = e.split('\n');
+      var first = lines[0] || '';
+      var rest = lines.slice(1).join('\n');
+      return '<div class="note-entry"><div class="note-date">' + first + '</div>' +
+        (rest ? '<div class="note-text">' + rest + '</div>' : '') + '</div>';
+    }).join('');
+  }
   document.getElementById('detail-content').innerHTML =
-    '<div class="detail-hero">' +
-    '<div class="detail-name">' + (w.name || '') + (w.year ? ' <span style="font-weight:400;color:var(--muted)">' + w.year + '</span>' : '') + '</div>' +
-    '<div class="detail-sub">' + ([w.producer, w.region].filter(Boolean).join(' &middot; ')) + '</div>' +
-    '<div class="detail-score-row"><div><div class="detail-score-big">' + (w.rating || '--') + '</div><div style="color:var(--wine-mid);font-size:18px">' + sh + '</div></div>' +
-    '<span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span></div></div>' +
-    '<div class="dgrid">' +
-    '<div class="ditem"><div class="di-l">In kelder</div><div class="di-v">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</div></div>' +
-    '<div class="ditem"><div class="di-l">Waarde</div><div class="di-v">' + (w.price ? '&#8364;' + ((w.price || 0) * (w.bottles || 0)).toFixed(2) : '--') + '</div></div>' +
-    (w.drink_from ? '<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">' + w.drink_from + '--' + (w.drink_to || '?') + '</div></div>' : '') +
-    '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '&#8364;' + Number(w.price).toFixed(2) : '--') + '</div></div>' +
+    '<div class="detail-hero dc-' + tk + '" style="background:' + color + ';color:' + textColor + '">' +
+    '<div class="detail-category" style="color:' + (isAmber ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.55)') + '">' + (w.type || '') + (w.region ? ' · ' + w.region : '') + '</div>' +
+    '<div class="detail-name-big">' + (w.name || '') + '</div>' +
+    '<div class="detail-vintage">' + (w.year || '') + '</div>' +
+    '<div class="detail-producer" style="color:' + (isAmber ? 'rgba(0,0,0,.4)' : 'rgba(255,255,255,.4)') + '">' + (w.producer || '') + '</div>' +
+    '<div class="detail-score-row">' +
+    '<div><div class="detail-score-huge">' + (w.rating || '—') + '</div>' +
+    '<div class="detail-stars-big" style="color:' + (isAmber ? 'rgba(0,0,0,.5)' : 'var(--gold)') + '">' + sh + '</div></div>' +
+    '<div class="detail-right">' +
+    '<div class="detail-meta-label" style="color:' + (isAmber ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.35)') + '">In collectie</div>' +
+    '<div class="detail-meta-val">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</div>' +
+    '<div class="detail-meta-label" style="margin-top:8px;color:' + (isAmber ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.35)') + '">Waarde</div>' +
+    '<div class="detail-meta-val">' + (w.price ? '€' + ((w.price) * (w.bottles || 0)).toFixed(2) : '—') + '</div>' +
+    '</div></div></div>' +
+    '<div class="detail-grid">' +
+    '<div class="ditem"><div class="di-l">Type</div><div class="di-v">' + (w.type || '—') + '</div></div>' +
+    '<div class="ditem"><div class="di-l">Jaar</div><div class="di-v">' + (w.year || '—') + '</div></div>' +
+    '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '€' + Number(w.price).toFixed(2) : '—') + '</div></div>' +
+    (w.drink_from ? '<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">' + w.drink_from + '–' + (w.drink_to || '?') + '</div></div>' : '<div class="ditem"></div>') +
     '</div>' +
-    (w.notes ? '<div class="dsec"><div class="ds-t">Proefnotities</div>' +
-    w.notes.split('\n---\n').reverse().map(function(entry) {
-      return '<div class="ds-txt" style="padding:8px 0;border-bottom:1px solid var(--border)">' + entry.replace(/\n/g,'<br>') + '</div>';
-    }).join('') + '</div>' : '') +
-    '<div class="dsec"><div class="ds-t">Wijninfo</div><div id="ai-det">' +
-    (w.ai_info ? '<div class="ai-box">' + w.ai_info + '</div>' : '<button class="btn-ai-inline" onclick="loadAIDetail(\'' + id + '\')">Haal wijninfo op</button>') +
-    '</div></div>' +
     '<div class="action-row">' +
-    '<button class="btn-a p" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
-    '<button class="btn-a" onclick="drinkFles(\'' + id + '\')">🍷 Drinken</button>' +
+    '<button class="btn-a primary" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
+    '<button class="btn-a" onclick="drinkFles(\'' + id + '\')">Loggen</button>' +
     '<button class="btn-a" onclick="addFles(\'' + id + '\')">+ Fles</button>' +
     '</div>' +
+    (w.notes ? '<div class="dsec"><div class="ds-t">Notities</div>' + notesHtml + '</div>' : '') +
+    '<div class="dsec"><div class="ds-t">Drank info</div><div id="ai-det">' +
+    (w.ai_info ? '<div class="ai-box">' + w.ai_info + '</div>' : '<button class="btn-ai-inline" onclick="loadAIDetail(\'' + id + '\')">Haal info op</button>') +
+    '</div></div>' +
     (w.notes ? '<button class="btn-del-notes" onclick="clearNotes(\'' + id + '\')">Verwijder alle notities</button>' : '');
   document.getElementById('main-view').style.display = 'none';
   document.getElementById('detail-view').style.display = 'block';
@@ -513,32 +682,24 @@ function closeDetail() {
 
 async function drinkFles(id) {
   var w = wines.find(function(x) { return x.id === id; });
-  if (!w || w.bottles <= 0) { toast('Geen flessen meer'); return; }
-  openDrinkModal(id);
-}
-
-function openDrinkModal(id) {
-  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
   document.getElementById('drink-modal').classList.add('open');
   document.getElementById('drink-wine-id').value = id;
   document.getElementById('drink-note').value = '';
-  currentDrinkRating = 0;
-  currentDrinkAmount = 'glas';
-  document.querySelectorAll('.drink-amount-btn').forEach(function(b,i) { b.classList.toggle('active', i===0); });
-  updateDrinkStars();
+  currentDrinkRating = 0; currentDrinkAmount = 'glas';
+  document.querySelectorAll('.drink-amount-btn').forEach(function(b, i) { b.classList.toggle('active', i === 0); });
+  document.querySelectorAll('.drink-star').forEach(function(b) { b.classList.remove('lit'); });
 }
-
-var currentDrinkRating = 0;
-var currentDrinkAmount = 'glas';
 
 function setDrinkAmount(btn, amount) {
   currentDrinkAmount = amount;
   document.querySelectorAll('.drink-amount-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
 }
-function setDrinkStar(n) { currentDrinkRating = n; updateDrinkStars(); }
-function updateDrinkStars() {
-  document.querySelectorAll('.drink-star').forEach(function(b, i) { b.classList.toggle('lit', i < currentDrinkRating); });
+
+function setDrinkStar(n) {
+  currentDrinkRating = n;
+  document.querySelectorAll('.drink-star').forEach(function(b, i) { b.classList.toggle('lit', i < n); });
 }
 
 async function saveDrinkLog() {
@@ -546,22 +707,18 @@ async function saveDrinkLog() {
   var note = document.getElementById('drink-note').value.trim();
   var w = wines.find(function(x) { return x.id === id; });
   if (!w) return;
-  w.bottles = (w.bottles || 0) - 1;
   var date = new Date().toLocaleDateString('nl-NL');
   var logEntry = '[' + date + '] ' + currentDrinkAmount;
-  if (currentDrinkRating) logEntry += ' ' + Array(currentDrinkRating+1).join('★') + Array(6-currentDrinkRating).join('☆');
+  if (currentDrinkRating) logEntry += ' ' + Array(currentDrinkRating + 1).join('★') + Array(6 - currentDrinkRating).join('☆');
   if (note) logEntry += '\n' + note;
   w.notes = (w.notes ? w.notes + '\n---\n' : '') + logEntry;
   if (currentDrinkRating) w.rating = currentDrinkRating;
-  // Only subtract from inventory for full bottle
-  if (currentDrinkAmount === 'fles') {
-    w.bottles = Math.max(0, (w.bottles || 0) - 1);
-  }
+  if (currentDrinkAmount === 'fles') w.bottles = Math.max(0, (w.bottles || 0) - 1);
   document.getElementById('drink-modal').classList.remove('open');
   await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
     region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
     drinkTo: w.drink_to, rating: w.rating, notes: w.notes, aiInfo: w.ai_info });
-  showDetail(id);
+  if (detailId === id) showDetail(id);
 }
 
 async function addFles(id) {
@@ -574,11 +731,21 @@ async function addFles(id) {
   showDetail(id);
 }
 
+async function clearNotes(id) {
+  if (!confirm('Alle notities verwijderen?')) return;
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
+  await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
+    region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
+    drinkTo: w.drink_to, rating: w.rating, notes: '', aiInfo: w.ai_info });
+  showDetail(id);
+}
+
 async function loadAIDetail(id) {
   var w = wines.find(function(x) { return x.id === id; });
   var box = document.getElementById('ai-det');
   box.innerHTML = '<span class="loading-txt">Info ophalen...</span>';
-  var info = await claudeText('Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: druivenrassen, terroir, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch.');
+  var info = await claudeText('Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: druivenrassen of granen, herkomst, smaakprofiel, spijscombinaties of cocktails, serveertemperatuur. Bondig, max 100 woorden.');
   box.innerHTML = info ? '<div class="ai-box">' + info + '</div>' : '<span class="loading-txt">Niet beschikbaar.</span>';
   if (info) { await sb.from('wines').update({ ai_info: info }).eq('id', id); }
 }
@@ -587,22 +754,22 @@ function renderReviews() {
   var rated = wines.filter(function(w) { return w.rating && w.notes; }).sort(function(a, b) { return b.rating - a.rating; });
   var el = document.getElementById('reviews-list');
   if (!rated.length) {
-    el.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><p>Nog geen reviews.</p></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-title">Geen logs</div><div class="empty-sub">Log een drank om hier te verschijnen.</div></div>';
     return;
   }
   el.innerHTML = rated.map(function(w) {
-    return '<div class="review-card" onclick="goToDetail(\'' + w.id + '\')">' +
-      '<div style="display:flex;justify-content:space-between"><div class="rv-name">' + (w.name || '') + (w.year ? ' ' + w.year : '') + '</div>' +
-      '<div class="rv-meta">' + new Date(w.created_at).toLocaleDateString('nl-NL') + '</div></div>' +
-      '<div class="rv-meta">' + (w.producer || '') + '</div>' +
-      '<div class="rv-stars">' + '&#9733;'.repeat(w.rating) + '&#9734;'.repeat(5 - w.rating) + ' ' + w.rating + '/5</div>' +
-      '<div class="rv-text">' + w.notes + '</div></div>';
+    return '<div class="log-card" onclick="goToDetail(\'' + w.id + '\')">' +
+      '<div class="lc-name">' + (w.name || '') + (w.year ? ' ' + w.year : '') + '</div>' +
+      '<div class="lc-meta">' + (w.type || '') + (w.producer ? ' · ' + w.producer : '') + '</div>' +
+      '<div class="lc-stars">' + '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) + ' ' + w.rating + '/5</div>' +
+      '<div class="lc-text">' + (w.notes || '').split('\n---\n')[0].replace(/\n/g, ' ').substring(0, 120) + '</div>' +
+      '</div>';
   }).join('');
 }
 
 function goToDetail(id) {
   document.querySelectorAll('.tab').forEach(function(t, i) { t.classList.toggle('active', i === 0); });
-  ['kelder', 'reviews', 'scanner'].forEach(function(t, i) {
+  ['kelder','reviews','scanner'].forEach(function(t, i) {
     document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
   showDetail(id);
@@ -610,9 +777,10 @@ function goToDetail(id) {
 
 function openModal(id) {
   editId = id || null; starRating = 0;
-  document.getElementById('modal-title').textContent = id ? 'Wijn bewerken' : 'Wijn toevoegen';
+  document.getElementById('modal-title').textContent = id ? 'Bewerken' : 'Toevoegen';
   document.getElementById('btn-del').style.display = id ? 'block' : 'none';
   document.getElementById('scan-prev').className = 'ai-prev';
+  document.getElementById('ai-prev').className = 'ai-prev';
   photoB64 = null;
   document.getElementById('ppw').style.display = 'none';
   document.getElementById('inp-cam').value = '';
@@ -631,38 +799,25 @@ function openModal(id) {
     document.getElementById('f-notes').value = w.notes || '';
     starRating = w.rating || 0;
   } else {
-    ['f-name', 'f-year', 'f-producer', 'f-region', 'f-price', 'f-dfrom', 'f-dto', 'f-notes'].forEach(function(i) { document.getElementById(i).value = ''; });
+    ['f-name','f-year','f-producer','f-region','f-price','f-dfrom','f-dto','f-notes'].forEach(function(i) { document.getElementById(i).value = ''; });
     document.getElementById('f-type').value = 'Rood';
     document.getElementById('f-bottles').value = 1;
+    starRating = 0;
   }
-  updateStars();
   document.getElementById('modal').classList.add('open');
 }
 
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function setStar(n) { starRating = n; updateStars(); }
-function updateStars() { document.querySelectorAll('.star-btn').forEach(function(b, i) { b.classList.toggle('lit', i < starRating); }); }
 
 function handlePhoto(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var el = document.getElementById('scan-prev');
-  el.className = 'ai-prev';
+  var file = input.files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
     var dataUrl = e.target.result;
-    if (!dataUrl || dataUrl.indexOf(',') === -1) {
-      el.textContent = 'Fout: dataUrl leeg of ongeldig';
-      return;
-    }
     photoB64 = dataUrl.split(',')[1];
     document.getElementById('pimg').src = dataUrl;
     document.getElementById('ppw').style.display = 'block';
-    el.className = 'ai-prev';
-  };
-  reader.onerror = function(e) {
-    el.className = 'ai-prev show';
-    el.textContent = 'FileReader fout: ' + (e.target.error ? e.target.error.message : 'onbekend');
+    document.getElementById('scan-prev').className = 'ai-prev';
   };
   reader.readAsDataURL(file);
 }
@@ -671,26 +826,20 @@ async function scanLabel() {
   if (!photoB64) return;
   var el = document.getElementById('scan-prev');
   el.className = 'ai-prev show'; el.textContent = 'Etiket herkennen...';
-  var smallB64 = photoB64;
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 600,
-        system: 'Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn). Antwoord ALLEEN met geldige JSON zonder markdown.',
+        system: 'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"...","producer":"...","region":"...","year":null,"type":"Rood of Wit of Rose of Mousserende of Dessertwijn of Whisky of Rum of Cognac of Gin of Overig"}',
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
-          { type: 'text', text: 'Wat staat er op dit wijnetiket? Geef JSON.' }
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photoB64 } },
+          { type: 'text', text: 'Wat staat er op dit etiket? Geef JSON.' }
         ]}]})});
     var data = await res.json();
     if (data.error) { el.textContent = 'Fout: ' + data.error.message; return; }
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
-    var w;
-    try {
-      var clean = txt.replace(/```json/g, '').replace(/```/g, '').trim();
-      var jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (jsonMatch) clean = jsonMatch[0];
-      w = JSON.parse(clean);
-    } catch(e) { el.textContent = txt || 'Kon etiket niet lezen.'; return; }
+    var w; try { var m = txt.match(/\{[\s\S]*\}/); w = JSON.parse(m ? m[0] : txt); } catch(e) { el.textContent = txt; return; }
+    if (!w.name && w.producer) w.name = w.producer;
     if (w.name) document.getElementById('f-name').value = w.name;
     if (w.producer) document.getElementById('f-producer').value = w.producer;
     if (w.region) document.getElementById('f-region').value = w.region;
@@ -701,23 +850,21 @@ async function scanLabel() {
   } catch(e) { el.textContent = 'Fout: ' + e.message; }
 }
 
+async function fetchAI() {
+  var name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Vul eerst een naam in.'); return; }
+  var el = document.getElementById('ai-prev');
+  el.className = 'ai-prev show'; el.textContent = 'Info ophalen...';
+  var info = await claudeText('Vertel beknopt over: "' + name + '". Geef: druivenras of graan, regio, smaakprofiel (2 zinnen), serveertemperatuur. In het Nederlands, max 80 woorden.');
+  el.textContent = info || 'Geen info beschikbaar.';
+}
+
 async function saveWine() {
   var name = document.getElementById('f-name').value.trim();
   if (!name) { alert('Naam is verplicht.'); return; }
-  var btn = document.querySelector('.btn-save');
+  var btn = document.querySelector('#modal .btn-save');
   btn.textContent = 'Opslaan...'; btn.disabled = true;
-
-  // Generate AI info automatically for new wines or when editing without existing info
   var existingAI = editId ? ((wines.find(function(w) { return w.id === editId; }) || {}).ai_info || null) : null;
-  var aiInfo = existingAI;
-  if (!aiInfo) {
-    var producer = document.getElementById('f-producer').value;
-    var region = document.getElementById('f-region').value;
-    var year = document.getElementById('f-year').value;
-    var type = document.getElementById('f-type').value;
-    aiInfo = await claudeText('Vertel in het Nederlands over wijn: "' + name + '"' + (year ? ' ' + year : '') + (producer ? ' van ' + producer : '') + (region ? ', ' + region : '') + ', type: ' + type + '. Behandel: druivenrassen, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch, max 120 woorden.');
-  }
-
   var ok = await saveToDB({ id: editId || null, name: name,
     type: document.getElementById('f-type').value,
     year: parseInt(document.getElementById('f-year').value) || null,
@@ -727,28 +874,19 @@ async function saveWine() {
     price: parseFloat(document.getElementById('f-price').value) || null,
     drinkFrom: parseInt(document.getElementById('f-dfrom').value) || null,
     drinkTo: parseInt(document.getElementById('f-dto').value) || null,
-    rating: editId ? ((wines.find(function(w){return w.id===editId;})||{}).rating||null) : null,
+    rating: starRating || null,
     notes: document.getElementById('f-notes').value,
-    aiInfo: aiInfo });
-
+    aiInfo: existingAI });
   btn.textContent = 'Opslaan'; btn.disabled = false;
   if (ok) {
-    closeModal();
-    toast('Opgeslagen');
+    closeModal(); toast('Opgeslagen');
     if (detailId) showDetail(detailId);
-    // Fetch AI info in background for new wines without existing info
     if (!existingAI) {
-      var savedWine = wines[0]; // most recently saved
+      var savedWine = wines[0];
       if (savedWine && !savedWine.ai_info) {
-        var producer = savedWine.producer || '';
-        var region = savedWine.region || '';
-        var year = savedWine.year || '';
-        var type = savedWine.type || '';
-        claudeText('Vertel in het Nederlands over wijn: "' + name + '"' + (year?' '+year:'') + (producer?' van '+producer:'') + (region?', '+region:'') + ', type: '+type+'. Behandel: druivenrassen, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch, max 120 woorden.').then(function(info) {
+        claudeText('Vertel in het Nederlands over: "' + name + '" type: ' + document.getElementById('f-type').value + '. Behandel: herkomst, smaakprofiel, serveertemperatuur. Max 100 woorden.').then(function(info) {
           if (info && savedWine.id) {
-            sb.from('wines').update({ ai_info: info }).eq('id', savedWine.id).then(function() {
-              loadWines();
-            });
+            sb.from('wines').update({ ai_info: info }).eq('id', savedWine.id).then(function() { loadWines(); });
           }
         });
       }
@@ -757,121 +895,79 @@ async function saveWine() {
 }
 
 async function deleteWine() {
-  if (!confirm('Wijn verwijderen?')) return;
+  if (!confirm('Verwijderen?')) return;
   await delFromDB(editId);
   closeModal(); closeDetail(); toast('Verwijderd');
 }
 
-// WINKEL SCANNER
 function handleScanPhoto(input) {
-  var file = input.files[0];
-  if (!file) return;
-
+  var file = input.files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    var dataUrl = e.target.result;
-    if (!dataUrl || dataUrl.indexOf(',') === -1) {
-      toast('Fout: dataUrl leeg');
-      return;
-    }
-    scPhotoB64 = dataUrl.split(',')[1];
-    document.getElementById('sc-preview-img').src = dataUrl;
+    scPhotoB64 = e.target.result.split(',')[1];
+    document.getElementById('sc-preview-img').src = e.target.result;
     document.getElementById('sc-preview-wrap').style.display = 'block';
     document.getElementById('sc-result').style.display = 'none';
-  };
-  reader.onerror = function(e) {
-    toast('Fout: ' + (e.target.error ? e.target.error.message : 'onbekend'));
   };
   reader.readAsDataURL(file);
 }
 
 async function doWinkelScan() {
   if (!scPhotoB64) return;
-  var btn = document.querySelector('#sc-preview-wrap .btn-ai');
+  var btn = document.querySelector('#sc-preview-wrap .btn-scan-ai');
   btn.textContent = 'Analyseren...';
   try {
-    var useB64 = scPhotoB64;
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 2000,
-        system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn, Whisky, Rum, Cognac, Gin, Overig), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
+        system: 'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":""}',
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: useB64 } },
-          { type: 'text', text: 'Analyseer dit wijnetiket volledig.' }
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: scPhotoB64 } },
+          { type: 'text', text: 'Analyseer dit etiket volledig.' }
         ]}]})});
     var data = await res.json();
-    if (data.error) { toast('Fout: ' + data.error.message); btn.textContent = 'AI: analyseer deze wijn'; return; }
+    if (data.error) { toast('Fout: ' + data.error.message); btn.textContent = 'Analyseer etiket'; return; }
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
-    var w;
-    try {
-      var clean = txt.replace(/```json/g, '').replace(/```/g, '').trim();
-      // Find JSON object in response even if there's surrounding text
-      var jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (jsonMatch) clean = jsonMatch[0];
-      w = JSON.parse(clean);
-    } catch(e) {
-      // AI gave text instead of JSON - show raw text, allow manual add
-      scannedWine = { name: '', producer: '', region: '', year: null, type: 'Rood' };
-      document.getElementById('sc-name').textContent = 'Wijn gevonden';
-      document.getElementById('sc-meta').textContent = 'Info kon niet automatisch worden ingelezen';
-      document.getElementById('sc-info').textContent = txt || 'Geen info beschikbaar. Voeg de wijn handmatig toe.';
-      document.getElementById('sc-result').style.display = 'block';
-      btn.textContent = 'AI: analyseer deze wijn'; return;
-    }
-    scannedWine = w;
-    // Use producer as name if name is empty
+    var w; try { var m = txt.match(/\{[\s\S]*\}/); w = JSON.parse(m ? m[0] : txt); } catch(e) { toast('Kon etiket niet lezen'); btn.textContent = 'Analyseer etiket'; return; }
     if (!w.name && w.producer) w.name = w.producer;
-    // Use name+producer combo if still empty
-    if (!w.name) w.name = [w.region, w.type].filter(Boolean).join(' ');
-    var displayName = w.name + (w.year ? ' ' + w.year : '');
-    document.getElementById('sc-name').textContent = displayName || 'Wijn gevonden';
-    document.getElementById('sc-meta').textContent = [w.producer, w.region].filter(Boolean).join(' · ');
-    var infoBlocks = '';
-    if (w.druivenras) infoBlocks += '<div class="sc-block"><div class="sc-block-label">Druivenras</div><div class="sc-block-val">' + w.druivenras + '</div></div>';
-    if (w.smaakprofiel) infoBlocks += '<div class="sc-block"><div class="sc-block-label">Smaakprofiel</div><div class="sc-block-val">' + w.smaakprofiel + '</div></div>';
-    if (w.serveertemperatuur) infoBlocks += '<div class="sc-block sc-block-row"><div class="sc-block-label">Serveertemperatuur</div><div class="sc-block-val">' + w.serveertemperatuur + '</div></div>';
-    if (w.spijscombinaties) infoBlocks += '<div class="sc-block sc-block-row"><div class="sc-block-label">Past bij</div><div class="sc-block-val">' + w.spijscombinaties + '</div></div>';
-    if (w.advies) infoBlocks += '<div class="sc-block sc-advies"><div class="sc-block-label">Advies</div><div class="sc-block-val">' + w.advies + '</div></div>';
-    document.getElementById('sc-info').innerHTML = infoBlocks || '<div class="sc-block">Wijn herkend. Druk op "+ Voeg toe" om toe te voegen.</div>';
+    scannedWine = w;
+    document.getElementById('sc-name').textContent = (w.name || 'Onbekend') + (w.year ? ' ' + w.year : '');
+    document.getElementById('sc-meta').textContent = [w.producer, w.region, w.type].filter(Boolean).join(' · ');
+    var info = '';
+    if (w.druivenras) info += '<div class="sc-block"><div class="sc-label">Druivenras / Graan</div><div class="sc-val">' + w.druivenras + '</div></div>';
+    if (w.smaakprofiel) info += '<div class="sc-block"><div class="sc-label">Smaakprofiel</div><div class="sc-val">' + w.smaakprofiel + '</div></div>';
+    if (w.serveertemperatuur) info += '<div class="sc-block-row"><div class="sc-label">Serveer</div><div class="sc-val">' + w.serveertemperatuur + '</div></div>';
+    if (w.spijscombinaties) info += '<div class="sc-block-row"><div class="sc-label">Past bij</div><div class="sc-val">' + w.spijscombinaties + '</div></div>';
+    if (w.advies) info += '<div class="sc-block" style="background:rgba(196,146,42,.06)"><div class="sc-label">Advies</div><div class="sc-val">' + w.advies + '</div></div>';
+    document.getElementById('sc-info').innerHTML = info || '<div class="sc-block"><div class="sc-val" style="opacity:.4">Geen info beschikbaar.</div></div>';
     document.getElementById('sc-result').style.display = 'block';
-    btn.textContent = 'AI: analyseer deze wijn';
-  } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
+    btn.textContent = 'Analyseer etiket';
+  } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'Analyseer etiket'; }
 }
 
 function logTasting() {
   if (!scannedWine) return;
-  // Open a quick tasting note modal without adding to collection
-  var name = scannedWine.name || 'Onbekende drank';
-  var note = prompt('Proefnotitie voor ' + name + ' (optioneel):');
-  var rating = prompt('Score 1-5 (optioneel):');
+  var name = scannedWine.name || 'Onbekend';
+  var note = prompt('Proefnotitie voor ' + name + ':');
   var date = new Date().toLocaleDateString('nl-NL');
-  var log = '[' + date + '] Geproefd: ' + name;
-  if (rating && parseInt(rating) > 0) log += ' ' + Array(parseInt(rating)+1).join('★') + Array(6-parseInt(rating)).join('☆');
-  if (note) log += '\n' + note;
-  // Save to a "proeverijen" entry or show confirmation
-  toast('Proeverij genoteerd');
-  // Store in localStorage for now
   var tastings = JSON.parse(localStorage.getItem('sectio_tastings') || '[]');
-  tastings.unshift({ date: date, name: name, note: note, rating: parseInt(rating)||0, type: scannedWine.type, region: scannedWine.region });
+  tastings.unshift({ date: date, name: name, note: note, type: scannedWine.type, region: scannedWine.region });
   localStorage.setItem('sectio_tastings', JSON.stringify(tastings.slice(0, 100)));
+  toast('Proeverij genoteerd');
 }
 
 function addScannedToKelder() {
   if (!scannedWine) return;
-  // Switch to kelder tab first
   document.querySelectorAll('.tab').forEach(function(t, i) { t.classList.toggle('active', i === 0); });
-  ['kelder', 'reviews', 'scanner'].forEach(function(t, i) {
+  ['kelder','reviews','scanner'].forEach(function(t, i) {
     document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
-  // Open modal and immediately fill fields (openModal resets fields, so we fill after)
   openModal();
-  // Fill fields directly after openModal — no setTimeout needed
   document.getElementById('f-name').value = scannedWine.name || '';
   document.getElementById('f-producer').value = scannedWine.producer || '';
   document.getElementById('f-region').value = scannedWine.region || '';
   document.getElementById('f-year').value = scannedWine.year || '';
   if (scannedWine.type) document.getElementById('f-type').value = scannedWine.type;
-  if (!scannedWine.name) document.getElementById('f-name').focus();
 }
 
 async function claudeText(prompt) {
@@ -879,7 +975,7 @@ async function claudeText(prompt) {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 500,
-        system: 'Je bent een vriendelijke sommelier. Geef praktische wijninfo in het Nederlands. Geen bullet points, gewoon lopende tekst.',
+        system: 'Je bent een drank expert. Geef praktische info in het Nederlands. Geen bullet points, gewoon lopende tekst.',
         messages: [{ role: 'user', content: prompt }] }) });
     var data = await res.json();
     return data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : null;
