@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.12</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.13</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -553,8 +553,12 @@ async function scanLabel() {
     if (data.error) { el.textContent = 'Fout: ' + data.error.message; return; }
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
-    try { w = JSON.parse(txt.replace(/```json|```/g, '').trim()); }
-    catch(e) { el.textContent = txt || 'Kon etiket niet lezen.'; return; }
+    try {
+      var clean = txt.replace(/```json|```/g, '').trim();
+      var jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (jsonMatch) clean = jsonMatch[0];
+      w = JSON.parse(clean);
+    } catch(e) { el.textContent = txt || 'Kon etiket niet lezen.'; return; }
     if (w.name) document.getElementById('f-name').value = w.name;
     if (w.producer) document.getElementById('f-producer').value = w.producer;
     if (w.region) document.getElementById('f-region').value = w.region;
@@ -647,8 +651,20 @@ async function doWinkelScan() {
     if (data.error) { toast('Fout: ' + data.error.message); btn.textContent = 'AI: analyseer deze wijn'; return; }
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
-    try { w = JSON.parse(txt.replace(/```json|```/g, '').trim()); }
-    catch(e) { toast('Kon etiket niet lezen'); btn.textContent = 'AI: analyseer deze wijn'; return; }
+    try {
+      var clean = txt.replace(/```json|```/g, '').trim();
+      // Find JSON object in response even if there's surrounding text
+      var jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (jsonMatch) clean = jsonMatch[0];
+      w = JSON.parse(clean);
+    } catch(e) {
+      // AI gave text instead of JSON - show it directly
+      document.getElementById('sc-name').textContent = 'Wijninfo';
+      document.getElementById('sc-meta').textContent = '';
+      document.getElementById('sc-info').textContent = txt;
+      document.getElementById('sc-result').style.display = 'block';
+      btn.textContent = 'AI: analyseer deze wijn'; return;
+    }
     scannedWine = w;
     document.getElementById('sc-name').textContent = (w.name || 'Onbekend') + (w.year ? ' ' + w.year : '');
     document.getElementById('sc-meta').textContent = [w.producer, w.region, w.druivenras].filter(Boolean).join(' - ');
