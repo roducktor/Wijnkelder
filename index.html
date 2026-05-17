@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="MijnKelder">
-<title>MijnKelder</title>
+<meta name="apple-mobile-web-app-title" content="Sectio">
+<title>Sectio</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--wine:#7B2D3E;--wine-dark:#5a1f2c;--wine-light:#f9f0f2;--wine-mid:#c4849a;--bg:#faf8f5;--card:#ffffff;--text:#1a1410;--muted:#6b5c52;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);--r:12px;--rs:8px;}
-@media(prefers-color-scheme:dark){:root{--bg:#12100e;--card:#1e1a17;--text:#f0ebe5;--muted:#9a8a7e;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);--wine-light:#2a1520;}}
+:root{--wine:#C20114;--wine-dark:#8f0010;--wine-light:#f9e6e8;--wine-mid:#e07080;--gold:#F0A202;--bg:#ECEBF3;--card:#ffffff;--text:#22223B;--muted:#6b6a80;--border:rgba(34,34,59,0.1);--border2:rgba(34,34,59,0.2);--r:12px;--rs:8px;}
+@media(prefers-color-scheme:dark){:root{--bg:#16161f;--card:#22223B;--text:#ECEBF3;--muted:#9a9ab0;--border:rgba(236,235,243,0.1);--border2:rgba(236,235,243,0.2);--wine-light:#2a0a10;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 body{max-width:480px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
@@ -46,9 +46,12 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .wc-bottles{font-size:11px;color:var(--muted);}
 .wc-tags{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap;}
 .tag{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
-.tag-rood{background:#fdf0f2;color:#7B2D3E;}.tag-wit{background:#fafaf0;color:#5a5a10;}
+.tag-rood{background:#fde8e8;color:#C20114;}.tag-wit{background:#fafaf0;color:#5a5a10;}
 .tag-rose{background:#fff0f5;color:#8b3a5a;}.tag-mousserende{background:#f0f5ff;color:#2a4a8b;}
 .tag-dessertwijn{background:#fff8e0;color:#7a5500;}.tag-n{background:var(--wine-light);color:var(--muted);}
+.tag-whisky{background:#fff3e0;color:#7a4500;}.tag-rum{background:#f3e5f5;color:#6a1b9a;}
+.tag-cognac{background:#fce4ec;color:#880e4f;}.tag-gin{background:#e8f5e9;color:#2e7d32;}
+.tag-overig{background:#f5f5f5;color:#616161;}
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .empty svg{width:40px;height:40px;margin:0 auto 12px;display:block;opacity:.35;}
 #detail-view{display:none;}
@@ -120,6 +123,14 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1410;color:white;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .loading-txt{color:var(--muted);font-size:13px;font-style:italic;}
+.sc-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;}
+.sc-block-row{display:flex;align-items:center;justify-content:space-between;}
+.sc-block-label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.sc-block-row .sc-block-label{margin-bottom:0;}
+.sc-block-val{font-size:13px;color:var(--text);line-height:1.6;}
+.sc-block-row .sc-block-val{font-size:13px;color:var(--text);text-align:right;max-width:60%;}
+.sc-advies{background:var(--wine-light);border-color:var(--wine-mid);}
+.sc-advies .sc-block-label{color:var(--wine);}
 .btn-del-notes{width:100%;height:38px;border:1px solid #e24b4a;background:none;color:#e24b4a;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px;}
 .drink-star{background:none;border:none;cursor:pointer;font-size:28px;color:#ccc;padding:2px;line-height:1;}
 .drink-star.lit{color:var(--wine);}
@@ -131,11 +142,11 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
   <header>
     <div class="header-top">
       <div class="logo">
-        <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M7 2h10l2 7H5L7 2zm5 7v13M9 22h6"/></svg></div>
-        <span class="logo-name">MijnKelder</span>
+        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-3"/><path d="M8 3a2 2 0 014 0v1H8V3z"/><path d="M8 10h8M8 14h5"/></svg></div>
+        <span class="logo-name">Sectio</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.26</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.28</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -155,8 +166,22 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
             <input type="search" id="search-input" placeholder="Zoek wijn, producent, regio..." oninput="renderList()">
           </div>
           <select class="filter" id="type-filter" onchange="renderList()">
-            <option value="">Alle</option><option>Rood</option><option>Wit</option>
-            <option>Rosé</option><option>Mousserende</option><option>Dessertwijn</option>
+            <option value="">Alle</option>
+            <optgroup label="Wijn">
+              <option>Rood</option><option>Wit</option><option>Rosé</option>
+              <option>Mousserende</option><option>Dessertwijn</option>
+            </optgroup>
+            <optgroup label="Spirits">
+              <option>Whisky</option><option>Rum</option><option>Cognac</option>
+              <option>Gin</option><option>Overig</option>
+            </optgroup>
+          </select>
+          <select class="filter" id="sort-filter" onchange="renderList()">
+            <option value="date">Nieuwst</option>
+            <option value="name">Naam</option>
+            <option value="rating">Score</option>
+            <option value="year">Jaar</option>
+            <option value="price">Prijs</option>
           </select>
         </div>
         <div id="wine-list"></div>
@@ -187,9 +212,12 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       </div>
       <div class="scan-result" id="sc-result">
         <h3 id="sc-name"></h3>
-        <div class="scan-result-meta" id="sc-meta"></div>
-        <div class="scan-result-info" id="sc-info"></div>
-        <button class="scan-add-btn" onclick="addScannedToKelder()">+ Voeg toe aan mijn kelder</button>
+        <div class="scan-result-meta" id="sc-meta" style="margin-bottom:12px"></div>
+        <div id="sc-info"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+  <button class="scan-add-btn" style="background:none;border:1px solid var(--wine);color:var(--wine)" onclick="logTasting()">Noteer proeverij</button>
+  <button class="scan-add-btn" onclick="addScannedToKelder()">+ Voeg toe aan collectie</button>
+</div>
       </div>
     </div>
   </main>
@@ -222,7 +250,10 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Type</label>
-          <select class="fsel" id="f-type"><option>Rood</option><option>Wit</option><option>Rose</option><option>Mousserende</option><option>Dessertwijn</option></select></div>
+          <select class="fsel" id="f-type">
+  <optgroup label="Wijn"><option>Rood</option><option>Wit</option><option>Rosé</option><option>Mousserende</option><option>Dessertwijn</option></optgroup>
+  <optgroup label="Spirits"><option>Whisky</option><option>Rum</option><option>Cognac</option><option>Gin</option><option>Overig</option></optgroup>
+</select></div>
         <div class="fg"><label class="fl">Jaar</label><input class="fi" id="f-year" type="number" placeholder="2020" min="1900" max="2030"></div>
       </div>
       <div class="frow">
@@ -230,7 +261,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <div class="fg"><label class="fl">Regio / Land</label><input class="fi" id="f-region" placeholder="bijv. Rioja, ES"></div>
       </div>
       <div class="frow">
-        <div class="fg"><label class="fl">Flessen</label><input class="fi" id="f-bottles" type="number" value="1" min="0"></div>
+        <div class="fg"><label class="fl">Aantal</label><input class="fi" id="f-bottles" type="number" value="1" min="0"></div>
         <div class="fg"><label class="fl">Prijs/fles</label><input class="fi" id="f-price" type="number" placeholder="0.00" step="0.01" min="0"></div>
       </div>
       <div class="frow">
@@ -262,6 +293,15 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
     <div class="modal-body">
       <input type="hidden" id="drink-wine-id">
       <div class="fg">
+        <label class="fl">Hoeveel gedronken?</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px">
+          <button class="drink-amount-btn active" onclick="setDrinkAmount(this,'glas')">Glas</button>
+          <button class="drink-amount-btn" onclick="setDrinkAmount(this,'halve fles')">Halve fles</button>
+          <button class="drink-amount-btn" onclick="setDrinkAmount(this,'fles')">Fles</button>
+          <button class="drink-amount-btn" onclick="setDrinkAmount(this,'shot')">Shot</button>
+        </div>
+      </div>
+      <div class="fg">
         <label class="fl">Beoordeling</label>
         <div class="star-row">
           <button class="drink-star" onclick="setDrinkStar(1)">&#9733;</button>
@@ -273,7 +313,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       </div>
       <div class="fg">
         <label class="fl">Proefnotitie</label>
-        <textarea class="fta" id="drink-note" placeholder="Hoe smaakte de wijn? Gelegenheid, aroma, smaak, afdronk..." style="min-height:100px"></textarea>
+        <textarea class="fta" id="drink-note" placeholder="Aroma, smaak, afdronk, gelegenheid..." style="min-height:100px"></textarea>
       </div>
     </div>
     <div class="modal-footer">
@@ -331,6 +371,12 @@ async function clearNotes(id) {
     region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
     drinkTo: w.drink_to, rating: w.rating, notes: '', aiInfo: w.ai_info });
   showDetail(id);
+}
+
+function getUnit(type, count) {
+  var spirits = ['Whisky','Rum','Cognac','Gin','Overig'];
+  if (spirits.indexOf(type) >= 0) return count === 1 ? 'fles' : 'flessen';
+  return count === 1 ? 'fles' : 'flessen';
 }
 
 async function init() {
@@ -394,8 +440,15 @@ function renderStats() {
 function renderList() {
   var q = (document.getElementById('search-input').value || '').toLowerCase();
   var tf = document.getElementById('type-filter').value;
+  var sort = document.getElementById('sort-filter') ? document.getElementById('sort-filter').value : 'date';
   var list = wines.filter(function(w) {
     return [w.name, w.producer, w.region, w.year].join(' ').toLowerCase().indexOf(q) >= 0 && (!tf || w.type === tf);
+  }).sort(function(a, b) {
+    if (sort === 'name') return (a.name||'').localeCompare(b.name||'');
+    if (sort === 'rating') return (b.rating||0) - (a.rating||0);
+    if (sort === 'year') return (b.year||0) - (a.year||0);
+    if (sort === 'price') return (b.price||0) - (a.price||0);
+    return 0; // date: keep original order (already sorted by created_at desc)
   });
   var el = document.getElementById('wine-list');
   if (!list.length) {
@@ -408,9 +461,9 @@ function renderList() {
     return '<div class="wine-card" onclick="showDetail(\'' + w.id + '\')">' +
       '<div class="wc-top"><div style="min-width:0"><div class="wc-name">' + (w.name || '') + (w.year ? ' <span class="wc-year">' + w.year + '</span>' : '') + '</div>' +
       '<div class="wc-meta">' + ([w.producer, w.region].filter(Boolean).join(' &middot; ') || '--') + '</div></div>' +
-      '<div class="wc-right">' + (w.rating ? '<div class="wc-score">' + w.rating + '/5</div><div class="wc-stars">' + stars + '</div>' : '<div class="wc-bottles">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</div>') + '</div></div>' +
+      '<div class="wc-right">' + (w.rating ? '<div class="wc-score">' + w.rating + '/5</div><div class="wc-stars">' + stars + '</div>' : '<div class="wc-bottles">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</div>') + '</div></div>' +
       '<div class="wc-tags"><span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span>' +
-      '<span class="tag tag-n">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</span>' +
+      '<span class="tag tag-n">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</span>' +
       (w.drink_from ? '<span class="tag tag-n">' + w.drink_from + '--' + (w.drink_to || '?') + '</span>' : '') +
       '</div></div>';
   }).join('');
@@ -430,7 +483,7 @@ function showDetail(id) {
     '<div class="detail-score-row"><div><div class="detail-score-big">' + (w.rating || '--') + '</div><div style="color:var(--wine-mid);font-size:18px">' + sh + '</div></div>' +
     '<span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span></div></div>' +
     '<div class="dgrid">' +
-    '<div class="ditem"><div class="di-l">In kelder</div><div class="di-v">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</div></div>' +
+    '<div class="ditem"><div class="di-l">In kelder</div><div class="di-v">' + (w.bottles || 0) + ' ' + getUnit(w.type, w.bottles) + '</div></div>' +
     '<div class="ditem"><div class="di-l">Waarde</div><div class="di-v">' + (w.price ? '&#8364;' + ((w.price || 0) * (w.bottles || 0)).toFixed(2) : '--') + '</div></div>' +
     (w.drink_from ? '<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">' + w.drink_from + '--' + (w.drink_to || '?') + '</div></div>' : '') +
     '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '&#8364;' + Number(w.price).toFixed(2) : '--') + '</div></div>' +
@@ -469,12 +522,20 @@ function openDrinkModal(id) {
   document.getElementById('drink-modal').classList.add('open');
   document.getElementById('drink-wine-id').value = id;
   document.getElementById('drink-note').value = '';
-  document.getElementById('drink-rating').value = 0;
   currentDrinkRating = 0;
+  currentDrinkAmount = 'glas';
+  document.querySelectorAll('.drink-amount-btn').forEach(function(b,i) { b.classList.toggle('active', i===0); });
   updateDrinkStars();
 }
 
 var currentDrinkRating = 0;
+var currentDrinkAmount = 'glas';
+
+function setDrinkAmount(btn, amount) {
+  currentDrinkAmount = amount;
+  document.querySelectorAll('.drink-amount-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
 function setDrinkStar(n) { currentDrinkRating = n; updateDrinkStars(); }
 function updateDrinkStars() {
   document.querySelectorAll('.drink-star').forEach(function(b, i) { b.classList.toggle('lit', i < currentDrinkRating); });
@@ -487,12 +548,14 @@ async function saveDrinkLog() {
   if (!w) return;
   w.bottles = (w.bottles || 0) - 1;
   var date = new Date().toLocaleDateString('nl-NL');
-  var logEntry = '[' + date + ']';
+  var logEntry = '[' + date + '] ' + currentDrinkAmount;
   if (currentDrinkRating) logEntry += ' ' + Array(currentDrinkRating+1).join('★') + Array(6-currentDrinkRating).join('☆');
-  if (note) logEntry += ' ' + note;
-  if (currentDrinkRating || note) {
-    w.notes = (w.notes ? w.notes + '\n---\n' : '') + logEntry;
-    if (currentDrinkRating) w.rating = currentDrinkRating;
+  if (note) logEntry += '\n' + note;
+  w.notes = (w.notes ? w.notes + '\n---\n' : '') + logEntry;
+  if (currentDrinkRating) w.rating = currentDrinkRating;
+  // Only subtract from inventory for full bottle
+  if (currentDrinkAmount === 'fles') {
+    w.bottles = Math.max(0, (w.bottles || 0) - 1);
   }
   document.getElementById('drink-modal').classList.remove('open');
   await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
@@ -669,7 +732,28 @@ async function saveWine() {
     aiInfo: aiInfo });
 
   btn.textContent = 'Opslaan'; btn.disabled = false;
-  if (ok) { closeModal(); toast('Opgeslagen'); if (detailId) showDetail(detailId); }
+  if (ok) {
+    closeModal();
+    toast('Opgeslagen');
+    if (detailId) showDetail(detailId);
+    // Fetch AI info in background for new wines without existing info
+    if (!existingAI) {
+      var savedWine = wines[0]; // most recently saved
+      if (savedWine && !savedWine.ai_info) {
+        var producer = savedWine.producer || '';
+        var region = savedWine.region || '';
+        var year = savedWine.year || '';
+        var type = savedWine.type || '';
+        claudeText('Vertel in het Nederlands over wijn: "' + name + '"' + (year?' '+year:'') + (producer?' van '+producer:'') + (region?', '+region:'') + ', type: '+type+'. Behandel: druivenrassen, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch, max 120 woorden.').then(function(info) {
+          if (info && savedWine.id) {
+            sb.from('wines').update({ ai_info: info }).eq('id', savedWine.id).then(function() {
+              loadWines();
+            });
+          }
+        });
+      }
+    }
+  }
 }
 
 async function deleteWine() {
@@ -710,7 +794,7 @@ async function doWinkelScan() {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 2000,
-        system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
+        system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn, Whisky, Rum, Cognac, Gin, Overig), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: useB64 } },
           { type: 'text', text: 'Analyseer dit wijnetiket volledig.' }
@@ -741,17 +825,35 @@ async function doWinkelScan() {
     if (!w.name) w.name = [w.region, w.type].filter(Boolean).join(' ');
     var displayName = w.name + (w.year ? ' ' + w.year : '');
     document.getElementById('sc-name').textContent = displayName || 'Wijn gevonden';
-    document.getElementById('sc-meta').textContent = [w.producer, w.region, w.druivenras].filter(Boolean).join(' - ');
-    var infoHtml = '';
-    if (w.smaakprofiel) infoHtml += '<b>Smaak:</b> ' + w.smaakprofiel + '<br><br>';
-    if (w.advies) infoHtml += '<b>Advies:</b> ' + w.advies + '<br><br>';
-    if (w.serveertemperatuur) infoHtml += '<b>Serveer:</b> ' + w.serveertemperatuur + '<br>';
-    if (w.spijscombinaties) infoHtml += '<b>Past bij:</b> ' + w.spijscombinaties;
-    if (!infoHtml) infoHtml = 'Wijn herkend. Druk op "+ Voeg toe" om details in te vullen.';
-    document.getElementById('sc-info').innerHTML = infoHtml;
+    document.getElementById('sc-meta').textContent = [w.producer, w.region].filter(Boolean).join(' · ');
+    var infoBlocks = '';
+    if (w.druivenras) infoBlocks += '<div class="sc-block"><div class="sc-block-label">Druivenras</div><div class="sc-block-val">' + w.druivenras + '</div></div>';
+    if (w.smaakprofiel) infoBlocks += '<div class="sc-block"><div class="sc-block-label">Smaakprofiel</div><div class="sc-block-val">' + w.smaakprofiel + '</div></div>';
+    if (w.serveertemperatuur) infoBlocks += '<div class="sc-block sc-block-row"><div class="sc-block-label">Serveertemperatuur</div><div class="sc-block-val">' + w.serveertemperatuur + '</div></div>';
+    if (w.spijscombinaties) infoBlocks += '<div class="sc-block sc-block-row"><div class="sc-block-label">Past bij</div><div class="sc-block-val">' + w.spijscombinaties + '</div></div>';
+    if (w.advies) infoBlocks += '<div class="sc-block sc-advies"><div class="sc-block-label">Advies</div><div class="sc-block-val">' + w.advies + '</div></div>';
+    document.getElementById('sc-info').innerHTML = infoBlocks || '<div class="sc-block">Wijn herkend. Druk op "+ Voeg toe" om toe te voegen.</div>';
     document.getElementById('sc-result').style.display = 'block';
     btn.textContent = 'AI: analyseer deze wijn';
   } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
+}
+
+function logTasting() {
+  if (!scannedWine) return;
+  // Open a quick tasting note modal without adding to collection
+  var name = scannedWine.name || 'Onbekende drank';
+  var note = prompt('Proefnotitie voor ' + name + ' (optioneel):');
+  var rating = prompt('Score 1-5 (optioneel):');
+  var date = new Date().toLocaleDateString('nl-NL');
+  var log = '[' + date + '] Geproefd: ' + name;
+  if (rating && parseInt(rating) > 0) log += ' ' + Array(parseInt(rating)+1).join('★') + Array(6-parseInt(rating)).join('☆');
+  if (note) log += '\n' + note;
+  // Save to a "proeverijen" entry or show confirmation
+  toast('Proeverij genoteerd');
+  // Store in localStorage for now
+  var tastings = JSON.parse(localStorage.getItem('sectio_tastings') || '[]');
+  tastings.unshift({ date: date, name: name, note: note, rating: parseInt(rating)||0, type: scannedWine.type, region: scannedWine.region });
+  localStorage.setItem('sectio_tastings', JSON.stringify(tastings.slice(0, 100)));
 }
 
 function addScannedToKelder() {
