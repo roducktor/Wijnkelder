@@ -10,15 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --wine:#7B2D3E;--wine-dark:#5a1f2c;--wine-light:#f9f0f2;--wine-mid:#c4849a;
-  --bg:#faf8f5;--card:#ffffff;--text:#1a1410;--muted:#6b5c52;
-  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);--r:12px;--rs:8px;
-}
-@media(prefers-color-scheme:dark){
-  :root{--bg:#12100e;--card:#1e1a17;--text:#f0ebe5;--muted:#9a8a7e;
-  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);--wine-light:#2a1520;}
-}
+:root{--wine:#7B2D3E;--wine-dark:#5a1f2c;--wine-light:#f9f0f2;--wine-mid:#c4849a;--bg:#faf8f5;--card:#ffffff;--text:#1a1410;--muted:#6b5c52;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);--r:12px;--rs:8px;}
+@media(prefers-color-scheme:dark){:root{--bg:#12100e;--card:#1e1a17;--text:#f0ebe5;--muted:#9a8a7e;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);--wine-light:#2a1520;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 body{max-width:480px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
@@ -30,7 +23,7 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:.75r
 .logo-name{font-family:'Lora',serif;font-size:17px;font-weight:600;}
 .add-fab{background:var(--wine);color:white;border:none;border-radius:var(--rs);padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;}
 .tabs{display:flex;}
-.tab{flex:1;padding:9px 0;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;}
+.tab{flex:1;padding:9px 0;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;}
 .tab.active{color:var(--wine);border-bottom-color:var(--wine);}
 main{flex:1;overflow-y:auto;padding:1rem;padding-bottom:2rem;}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
@@ -81,24 +74,6 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;}
 .rv-name{font-size:14px;font-weight:500;}.rv-meta{font-size:11px;color:var(--muted);}
 .rv-stars{color:var(--wine);font-size:14px;margin:6px 0;}.rv-text{font-size:13px;color:var(--muted);line-height:1.6;}
-
-/* KENNIS TAB */
-.kennis-hero{background:var(--wine);border-radius:var(--r);padding:16px;margin-bottom:1rem;color:white;}
-.kennis-hero h2{font-family:'Lora',serif;font-size:18px;font-weight:600;margin-bottom:6px;}
-.kennis-hero p{font-size:13px;opacity:.85;line-height:1.5;}
-.kennis-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
-.kennis-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;font-family:inherit;}
-.kennis-btn-icon{font-size:22px;margin-bottom:8px;}
-.kennis-btn-title{font-size:13px;font-weight:500;color:var(--text);}
-.kennis-btn-sub{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
-.kennis-result{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:1rem;}
-.kennis-result h3{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:10px;}
-.kennis-result p{font-size:13px;color:var(--muted);line-height:1.7;}
-.kennis-input-row{display:flex;gap:8px;margin-bottom:1rem;}
-.kennis-input-row input{flex:1;height:42px;padding:0 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--card);color:var(--text);font-family:inherit;}
-.kennis-input-row button{height:42px;padding:0 16px;background:var(--wine);color:white;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;}
-
-/* SCANNER TAB */
 .scanner-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:1rem;text-align:center;}
 .scanner-hero h2{font-family:'Lora',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
 .scanner-hero p{font-size:13px;color:var(--muted);line-height:1.5;}
@@ -111,8 +86,6 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .scan-result-meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
 .scan-result-info{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
 .scan-add-btn{width:100%;height:44px;background:var(--wine);color:white;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
-
-/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;overflow-y:auto;}
 .modal-overlay.open{display:block;}
 .modal{background:var(--card);max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
@@ -166,11 +139,9 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       <button class="tab active" onclick="switchTab('kelder',this)">🍷 Kelder</button>
       <button class="tab" onclick="switchTab('reviews',this)">⭐ Reviews</button>
       <button class="tab" onclick="switchTab('scanner',this)">📷 Scanner</button>
-      <button class="tab" onclick="switchTab('kennis',this)">📚 Kennis</button>
     </div>
   </header>
   <main>
-    <!-- KELDER -->
     <div id="tab-kelder">
       <div id="main-view">
         <div class="stats" id="stats"></div>
@@ -194,25 +165,21 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <div id="detail-content"></div>
       </div>
     </div>
-
-    <!-- REVIEWS -->
     <div id="tab-reviews" style="display:none"><div id="reviews-list"></div></div>
-
-    <!-- SCANNER -->
     <div id="tab-scanner" style="display:none">
       <div class="scanner-hero">
         <h2>📷 Winkelscanner</h2>
-        <p>Foto een wijnetiket in de winkel en krijg direct info over de wijn — druiven, regio, smaak en of het een goede koop is.</p>
+        <p>Foto een wijnetiket in de winkel en krijg direct info — druiven, regio, smaak en of het een goede koop is.</p>
       </div>
       <div class="scan-btns">
         <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">📷 Camera</button>
-        <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼️ Galerij</button>
+        <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼 Galerij</button>
       </div>
       <input type="file" id="sc-cam" accept="image/*" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
       <input type="file" id="sc-gal" accept="image/*" style="display:none" onchange="handleScanPhoto(this)">
       <div class="scan-preview-wrap" id="sc-preview-wrap">
         <img id="sc-preview-img" alt="preview">
-        <button class="btn-ai" style="width:100%;height:44px;margin-top:0" onclick="doWinkelScan()">✨ AI: analyseer deze wijn</button>
+        <button class="btn-ai" style="width:100%;height:44px" onclick="doWinkelScan()">✨ AI: analyseer deze wijn</button>
       </div>
       <div class="scan-result" id="sc-result">
         <h3 id="sc-name"></h3>
@@ -221,98 +188,37 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <button class="scan-add-btn" onclick="addScannedToKelder()">+ Voeg toe aan mijn kelder</button>
       </div>
     </div>
-
-    <!-- KENNIS -->
-    <div id="tab-kennis" style="display:none">
-      <div class="kennis-hero">
-        <h2>📚 Wijnkennis</h2>
-        <p>Leer meer over wijnregio's, productiemethoden, druivenrassen en de beste jaren.</p>
-      </div>
-      <div class="kennis-input-row">
-        <input type="text" id="kennis-vraag" placeholder="Stel een wijnvraag..." onkeydown="if(event.key==='Enter')vraagKennis()">
-        <button onclick="vraagKennis()">Vraag AI</button>
-      </div>
-      <div class="kennis-grid">
-        <button class="kennis-btn" onclick="kennisSnelVraag('Wat zijn de beste wijnregios ter wereld en wat maakt ze bijzonder?')">
-          <div class="kennis-btn-icon">🗺️</div>
-          <div class="kennis-btn-title">Wijnregio's</div>
-          <div class="kennis-btn-sub">Bordeaux, Bourgogne, Toscane & meer</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Wat zijn de beste wijnjaren van de afgelopen 20 jaar per regio?')">
-          <div class="kennis-btn-icon">📅</div>
-          <div class="kennis-btn-title">Beste jaren</div>
-          <div class="kennis-btn-sub">Vintage gidsen per regio</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Leg de belangrijkste druivenrassen uit: smaak, karakter en welke wijnen ze maken.')">
-          <div class="kennis-btn-icon">🍇</div>
-          <div class="kennis-btn-title">Druivenrassen</div>
-          <div class="kennis-btn-sub">Cabernet, Pinot, Chardonnay & meer</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Hoe werkt wijnproductie? Van druif tot fles, inclusief vergisting, vaten en rijping.')">
-          <div class="kennis-btn-icon">🏭</div>
-          <div class="kennis-btn-title">Productie</div>
-          <div class="kennis-btn-sub">Van druif tot fles</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Hoe lees ik een wijnlabel? Wat betekenen de termen op een Europees wijnlabel?')">
-          <div class="kennis-btn-icon">🏷️</div>
-          <div class="kennis-btn-title">Labels lezen</div>
-          <div class="kennis-btn-sub">AOC, DOC, Grand Cru uitgelegd</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Wat zijn de beste spijscombinaties met wijn? Geef praktische voorbeelden per wijntype.')">
-          <div class="kennis-btn-icon">🍽️</div>
-          <div class="kennis-btn-title">Spijscombinaties</div>
-          <div class="kennis-btn-sub">Welke wijn bij welk gerecht?</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Hoe bewaar ik wijn het beste? Temperatuur, luchtvochtigheid, licht en ligging.')">
-          <div class="kennis-btn-icon">🌡️</div>
-          <div class="kennis-btn-title">Bewaren</div>
-          <div class="kennis-btn-sub">Temperatuur, licht & ligging</div>
-        </button>
-        <button class="kennis-btn" onclick="kennisSnelVraag('Wat zijn de beroemdste wijnhuizen ter wereld en wat maakt ze bijzonder?')">
-          <div class="kennis-btn-icon">🏰</div>
-          <div class="kennis-btn-title">Wijnhuizen</div>
-          <div class="kennis-btn-sub">De grote namen uitgelegd</div>
-        </button>
-      </div>
-      <div class="kennis-result" id="kennis-result" style="display:none">
-        <h3 id="kennis-result-title"></h3>
-        <div class="ds-txt" id="kennis-result-text"></div>
-      </div>
-    </div>
   </main>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="modal-title">Wijn toevoegen</span>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <button class="modal-close" onclick="closeModal()">x</button>
     </div>
     <div class="modal-body">
       <div class="fg">
-        <label class="fl">📸 Scan wijnetiket</label>
+        <label class="fl">Scan wijnetiket</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <button class="btn-scan" onclick="document.getElementById('inp-cam').click()">📷 Camera</button>
-          <button class="btn-scan" onclick="document.getElementById('inp-gal').click()">🖼️ Galerij</button>
+          <button class="btn-scan" onclick="document.getElementById('inp-cam').click()">Camera</button>
+          <button class="btn-scan" onclick="document.getElementById('inp-gal').click()">Galerij</button>
         </div>
         <input type="file" id="inp-cam" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
         <input type="file" id="inp-gal" accept="image/*" style="display:none" onchange="handlePhoto(this)">
         <div class="ppw" id="ppw">
           <img id="pimg" alt="preview">
-          <button class="btn-ai" style="margin-top:6px" onclick="scanLabel()">✨ AI: herken wijn op foto</button>
+          <button class="btn-ai" style="margin-top:6px" onclick="scanLabel()">Herken wijn op foto</button>
         </div>
         <div class="ai-prev" id="scan-prev"></div>
       </div>
       <div class="fg">
         <label class="fl">Naam</label>
-        <input class="fi" id="f-name" placeholder="bijv. Château Margaux 2018" autocomplete="off">
-        <button class="btn-ai" onclick="fetchAI()">✨ AI: haal wijninfo op via naam</button>
-        <div class="ai-prev" id="ai-prev"></div>
+        <input class="fi" id="f-name" placeholder="bijv. Ramirez de la Piscina 2019" autocomplete="off">
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Type</label>
-          <select class="fsel" id="f-type"><option>Rood</option><option>Wit</option><option>Rosé</option><option>Mousserende</option><option>Dessertwijn</option></select></div>
+          <select class="fsel" id="f-type"><option>Rood</option><option>Wit</option><option>Rose</option><option>Mousserende</option><option>Dessertwijn</option></select></div>
         <div class="fg"><label class="fl">Jaar</label><input class="fi" id="f-year" type="number" placeholder="2020" min="1900" max="2030"></div>
       </div>
       <div class="frow">
@@ -321,7 +227,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Flessen</label><input class="fi" id="f-bottles" type="number" value="1" min="0"></div>
-        <div class="fg"><label class="fl">Prijs/fles (€)</label><input class="fi" id="f-price" type="number" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="fg"><label class="fl">Prijs/fles</label><input class="fi" id="f-price" type="number" placeholder="0.00" step="0.01" min="0"></div>
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Drink vanaf</label><input class="fi" id="f-dfrom" type="number" placeholder="2024"></div>
@@ -330,16 +236,16 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
       <div class="fg">
         <label class="fl">Beoordeling</label>
         <div class="star-row">
-          <button class="star-btn" onclick="setStar(1)">★</button>
-          <button class="star-btn" onclick="setStar(2)">★</button>
-          <button class="star-btn" onclick="setStar(3)">★</button>
-          <button class="star-btn" onclick="setStar(4)">★</button>
-          <button class="star-btn" onclick="setStar(5)">★</button>
+          <button class="star-btn" onclick="setStar(1)">&#9733;</button>
+          <button class="star-btn" onclick="setStar(2)">&#9733;</button>
+          <button class="star-btn" onclick="setStar(3)">&#9733;</button>
+          <button class="star-btn" onclick="setStar(4)">&#9733;</button>
+          <button class="star-btn" onclick="setStar(5)">&#9733;</button>
         </div>
       </div>
       <div class="fg">
         <label class="fl">Proefnotitie</label>
-        <textarea class="fta" id="f-notes" placeholder="Hoe smaakte de wijn? Aroma's, smaak, afdronk..."></textarea>
+        <textarea class="fta" id="f-notes" placeholder="Hoe smaakte de wijn? Aroma, smaak, afdronk..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
@@ -351,407 +257,404 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 </div>
 
 <div class="toast" id="toast"></div>
-<canvas id="conv-canvas" style="display:none"></canvas>
+<canvas id="cvs" style="display:none"></canvas>
 
 <script>
-var AAPI='https://api.anthropic.com/v1/messages';
-var SB_URL='https://yepcptjqjxjcblpozsia.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
+var AAPI = 'https://api.anthropic.com/v1/messages';
+var SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
+var sb, wines = [], editId = null, starRating = 0, detailId = null;
+var photoB64 = null, scPhotoB64 = null, scannedWine = null;
 
-var sb,wines=[],editId=null,starRating=0,detailId=null;
-var photoB64=null,scannedWine=null,scPhotoB64=null;
-
-// Converteer HEIF/HEIC/elk formaat naar JPEG via canvas
-function toJpegBase64(file,cb){
-  var url=URL.createObjectURL(file);
-  var img=new Image();
-  img.onload=function(){
-    var c=document.getElementById('conv-canvas');
-    var maxW=1200,maxH=1200,w=img.width,h=img.height;
-    if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-    if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
-    c.width=w;c.height=h;
-    c.getContext('2d').drawImage(img,0,0,w,h);
-    var b64=c.toDataURL('image/jpeg',0.85).split(',')[1];
-    URL.revokeObjectURL(url);
-    cb(b64,url);
+// Convert any image (incl HEIC) to JPEG via canvas
+function imgToJpeg(file, cb) {
+  var obj = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function() {
+    var c = document.getElementById('cvs');
+    var mw = 1200, mh = 1200, w = img.width, h = img.height;
+    if (w > mw) { h = Math.round(h * mw / w); w = mw; }
+    if (h > mh) { w = Math.round(w * mh / h); h = mh; }
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    var b64 = c.toDataURL('image/jpeg', 0.85).split(',')[1];
+    URL.revokeObjectURL(obj);
+    cb(b64, obj);
   };
-  img.onerror=function(){URL.revokeObjectURL(url);cb(null,null);};
-  img.src=url;
+  img.onerror = function() { URL.revokeObjectURL(obj); cb(null); };
+  img.src = obj;
 }
 
-async function init(){
-  sb=supabase.createClient(SB_URL,SB_KEY);
-  document.getElementById('app').style.display='flex';
-  setSS('spin','laden...');
+async function init() {
+  sb = supabase.createClient(SB_URL, SB_KEY);
+  document.getElementById('app').style.display = 'flex';
+  setSS('spin', 'laden...');
   await loadWines();
-  setSS('ok','verbonden');
+  setSS('ok', 'verbonden');
 }
 
-function setSS(cls,txt){
-  document.getElementById('sdot').className=cls==='ok'?'sync-dot':'sync-dot '+cls;
-  document.getElementById('slbl').textContent=txt;
+function setSS(cls, txt) {
+  document.getElementById('sdot').className = cls === 'ok' ? 'sync-dot' : ('sync-dot ' + cls);
+  document.getElementById('slbl').textContent = txt;
 }
 
-async function loadWines(){
-  var r=await sb.from('wines').select('*').order('created_at',{ascending:false});
-  if(r.error){setSS('err','fout');return;}
-  wines=r.data||[];renderAll();
+async function loadWines() {
+  var r = await sb.from('wines').select('*').order('created_at', { ascending: false });
+  if (r.error) { setSS('err', 'fout'); return; }
+  wines = r.data || [];
+  renderAll();
 }
 
-async function saveToDB(w){
-  setSS('spin','opslaan...');
-  var row={name:w.name,type:w.type,year:w.year||null,producer:w.producer,region:w.region,
-    bottles:w.bottles,price:w.price||null,drink_from:w.drinkFrom||null,drink_to:w.drinkTo||null,
-    rating:w.rating||null,notes:w.notes,ai_info:w.aiInfo||null};
-  var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
-  if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','verbonden');await loadWines();return true;
+async function saveToDB(w) {
+  setSS('spin', 'opslaan...');
+  var row = { name: w.name, type: w.type, year: w.year || null, producer: w.producer,
+    region: w.region, bottles: w.bottles, price: w.price || null,
+    drink_from: w.drinkFrom || null, drink_to: w.drinkTo || null,
+    rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
+  var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
+  if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
+  setSS('ok', 'verbonden'); await loadWines(); return true;
 }
 
-async function delFromDB(id){
-  setSS('spin','...');
-  await sb.from('wines').delete().eq('id',id);
-  setSS('ok','verbonden');await loadWines();
+async function delFromDB(id) {
+  await sb.from('wines').delete().eq('id', id);
+  await loadWines();
 }
 
-function switchTab(tab,el){
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
-  ['kelder','reviews','scanner','kennis'].forEach(function(t){
-    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+  ['kelder', 'reviews', 'scanner'].forEach(function(t) {
+    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
   });
-  if(tab==='reviews')renderReviews();
+  if (tab === 'reviews') renderReviews();
 }
 
-function renderAll(){renderStats();renderList();}
+function renderAll() { renderStats(); renderList(); }
 
-function renderStats(){
-  var total=wines.reduce(function(s,w){return s+(w.bottles||0);},0);
-  var rated=wines.filter(function(w){return w.rating;});
-  var avg=rated.length?(rated.reduce(function(s,w){return s+w.rating;},0)/rated.length).toFixed(1):'—';
-  var val=wines.reduce(function(s,w){return s+(w.price||0)*(w.bottles||0);},0);
-  document.getElementById('stats').innerHTML=
-    '<div class="stat"><div class="stat-num">'+total+'</div><div class="stat-label">Flessen</div></div>'+
-    '<div class="stat"><div class="stat-num">'+avg+'</div><div class="stat-label">Gem. score</div></div>'+
-    '<div class="stat"><div class="stat-num">€'+Math.round(val)+'</div><div class="stat-label">Waarde</div></div>';
+function renderStats() {
+  var total = wines.reduce(function(s, w) { return s + (w.bottles || 0); }, 0);
+  var rated = wines.filter(function(w) { return w.rating; });
+  var avg = rated.length ? (rated.reduce(function(s, w) { return s + w.rating; }, 0) / rated.length).toFixed(1) : '--';
+  var val = wines.reduce(function(s, w) { return s + (w.price || 0) * (w.bottles || 0); }, 0);
+  document.getElementById('stats').innerHTML =
+    '<div class="stat"><div class="stat-num">' + total + '</div><div class="stat-label">Flessen</div></div>' +
+    '<div class="stat"><div class="stat-num">' + avg + '</div><div class="stat-label">Gem. score</div></div>' +
+    '<div class="stat"><div class="stat-num">&#8364;' + Math.round(val) + '</div><div class="stat-label">Waarde</div></div>';
 }
 
-function renderList(){
-  var q=(document.getElementById('search-input').value||'').toLowerCase();
-  var tf=document.getElementById('type-filter').value;
-  var list=wines.filter(function(w){
-    return [w.name,w.producer,w.region,w.year].join(' ').toLowerCase().includes(q)&&(!tf||w.type===tf);
+function renderList() {
+  var q = (document.getElementById('search-input').value || '').toLowerCase();
+  var tf = document.getElementById('type-filter').value;
+  var list = wines.filter(function(w) {
+    return [w.name, w.producer, w.region, w.year].join(' ').toLowerCase().indexOf(q) >= 0 && (!tf || w.type === tf);
   });
-  var el=document.getElementById('wine-list');
-  if(!list.length){
-    el.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M7 2h10l2 7H5L7 2zm5 7v13M9 22h6"/></svg><p>'+(wines.length?'Geen resultaten.':'Kelder is leeg. Voeg je eerste wijn toe!')+'</p></div>';
+  var el = document.getElementById('wine-list');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M7 2h10l2 7H5L7 2zm5 7v13M9 22h6"/></svg><p>' + (wines.length ? 'Geen resultaten.' : 'Kelder is leeg. Voeg je eerste wijn toe!') + '</p></div>';
     return;
   }
-  el.innerHTML=list.map(function(w){
-    var tk=(w.type||'rood').toLowerCase().replace(/\s/g,'');
-    var stars=w.rating?'★'.repeat(w.rating):'';
-    return '<div class="wine-card" onclick="showDetail(\''+w.id+'\')">'
-      +'<div class="wc-top"><div style="min-width:0"><div class="wc-name">'+w.name+(w.year?' <span class="wc-year">'+w.year+'</span>':'')+'</div>'
-      +'<div class="wc-meta">'+([w.producer,w.region].filter(Boolean).join(' · ')||'—')+'</div></div>'
-      +'<div class="wc-right">'+(w.rating?'<div class="wc-score">'+w.rating+'/5</div><div class="wc-stars">'+stars+'</div>':'<div class="wc-bottles">'+(w.bottles||0)+' fles'+(w.bottles!==1?'sen':'')+'</div>')+'</div></div>'
-      +'<div class="wc-tags"><span class="tag tag-'+tk+'">'+(w.type||'Rood')+'</span>'
-      +'<span class="tag tag-n">🍾 '+(w.bottles||0)+' fles'+((w.bottles||0)!==1?'sen':'')+'</span>'
-      +(w.drink_from?'<span class="tag tag-n">📅 '+w.drink_from+'–'+(w.drink_to||'?')+'</span>':'')
-      +'</div></div>';
+  el.innerHTML = list.map(function(w) {
+    var tk = (w.type || 'rood').toLowerCase().replace(/\s/g, '');
+    var stars = w.rating ? '&#9733;'.repeat(w.rating) : '';
+    return '<div class="wine-card" onclick="showDetail(\'' + w.id + '\')">' +
+      '<div class="wc-top"><div style="min-width:0"><div class="wc-name">' + (w.name || '') + (w.year ? ' <span class="wc-year">' + w.year + '</span>' : '') + '</div>' +
+      '<div class="wc-meta">' + ([w.producer, w.region].filter(Boolean).join(' &middot; ') || '--') + '</div></div>' +
+      '<div class="wc-right">' + (w.rating ? '<div class="wc-score">' + w.rating + '/5</div><div class="wc-stars">' + stars + '</div>' : '<div class="wc-bottles">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</div>') + '</div></div>' +
+      '<div class="wc-tags"><span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span>' +
+      '<span class="tag tag-n">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</span>' +
+      (w.drink_from ? '<span class="tag tag-n">' + w.drink_from + '--' + (w.drink_to || '?') + '</span>' : '') +
+      '</div></div>';
   }).join('');
 }
 
-function showDetail(id){
-  detailId=id;var w=wines.find(function(x){return x.id===id;});if(!w)return;
-  var s5=w.rating||0,sh='★'.repeat(s5)+'☆'.repeat(5-s5);
-  document.getElementById('detail-content').innerHTML=
-    '<div class="detail-hero"><div class="detail-name">'+w.name+(w.year?' <span style="font-weight:400;color:var(--muted)">'+w.year+'</span>':'')+'</div>'
-    +'<div class="detail-sub">'+([w.producer,w.region].filter(Boolean).join(' · '))+'</div>'
-    +'<div class="detail-score-row"><div><div class="detail-score-big">'+(w.rating||'—')+'</div><div style="color:var(--wine-mid);font-size:18px">'+sh+'</div></div>'
-    +'<span class="tag tag-'+((w.type||'rood').toLowerCase().replace(/\s/g,''))+'">'+w.type+'</span></div></div>'
-    +'<div class="dgrid">'
-    +'<div class="ditem"><div class="di-l">In kelder</div><div class="di-v">'+(w.bottles||0)+' fles'+((w.bottles||0)!==1?'sen':'')+'</div></div>'
-    +'<div class="ditem"><div class="di-l">Waarde</div><div class="di-v">'+(w.price?'€'+((w.price||0)*(w.bottles||0)).toFixed(2):'—')+'</div></div>'
-    +(w.drink_from?'<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">'+w.drink_from+'–'+(w.drink_to||'?')+'</div></div>':'')
-    +'<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">'+(w.price?'€'+Number(w.price).toFixed(2):'—')+'</div></div>'
-    +'</div>'
-    +(w.notes?'<div class="dsec"><div class="ds-t">Proefnotitie</div><div class="ds-txt">'+w.notes+'</div></div>':'')
-    +'<div class="dsec"><div class="ds-t">AI Wijninfo</div><div id="ai-det">'
-    +(w.ai_info?'<div class="ai-box">'+w.ai_info+'</div>':'<button class="btn-ai-inline" onclick="loadAIDetail(\''+id+'\')">✨ Haal AI info op</button>')
-    +'</div></div>'
-    +'<div class="action-row">'
-    +'<button class="btn-a p" onclick="openModal(\''+id+'\')">✏️ Bewerk</button>'
-    +'<button class="btn-a" onclick="drinkFles(\''+id+'\')">🍷 Drinken</button>'
-    +'<button class="btn-a" onclick="addFles(\''+id+'\')">+ Fles</button>'
-    +'</div>';
-  document.getElementById('main-view').style.display='none';
-  document.getElementById('detail-view').style.display='block';
+function showDetail(id) {
+  detailId = id;
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
+  var s5 = w.rating || 0;
+  var sh = '&#9733;'.repeat(s5) + '&#9734;'.repeat(5 - s5);
+  var tk = (w.type || 'rood').toLowerCase().replace(/\s/g, '');
+  document.getElementById('detail-content').innerHTML =
+    '<div class="detail-hero">' +
+    '<div class="detail-name">' + (w.name || '') + (w.year ? ' <span style="font-weight:400;color:var(--muted)">' + w.year + '</span>' : '') + '</div>' +
+    '<div class="detail-sub">' + ([w.producer, w.region].filter(Boolean).join(' &middot; ')) + '</div>' +
+    '<div class="detail-score-row"><div><div class="detail-score-big">' + (w.rating || '--') + '</div><div style="color:var(--wine-mid);font-size:18px">' + sh + '</div></div>' +
+    '<span class="tag tag-' + tk + '">' + (w.type || 'Rood') + '</span></div></div>' +
+    '<div class="dgrid">' +
+    '<div class="ditem"><div class="di-l">In kelder</div><div class="di-v">' + (w.bottles || 0) + ' fles' + ((w.bottles || 0) !== 1 ? 'sen' : '') + '</div></div>' +
+    '<div class="ditem"><div class="di-l">Waarde</div><div class="di-v">' + (w.price ? '&#8364;' + ((w.price || 0) * (w.bottles || 0)).toFixed(2) : '--') + '</div></div>' +
+    (w.drink_from ? '<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">' + w.drink_from + '--' + (w.drink_to || '?') + '</div></div>' : '') +
+    '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '&#8364;' + Number(w.price).toFixed(2) : '--') + '</div></div>' +
+    '</div>' +
+    (w.notes ? '<div class="dsec"><div class="ds-t">Proefnotitie</div><div class="ds-txt">' + w.notes + '</div></div>' : '') +
+    '<div class="dsec"><div class="ds-t">Wijninfo</div><div id="ai-det">' +
+    (w.ai_info ? '<div class="ai-box">' + w.ai_info + '</div>' : '<button class="btn-ai-inline" onclick="loadAIDetail(\'' + id + '\')">Haal wijninfo op</button>') +
+    '</div></div>' +
+    '<div class="action-row">' +
+    '<button class="btn-a p" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
+    '<button class="btn-a" onclick="drinkFles(\'' + id + '\')">Drinken</button>' +
+    '<button class="btn-a" onclick="addFles(\'' + id + '\')">+ Fles</button>' +
+    '</div>';
+  document.getElementById('main-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'block';
 }
 
-function closeDetail(){
-  detailId=null;
-  document.getElementById('main-view').style.display='block';
-  document.getElementById('detail-view').style.display='none';
+function closeDetail() {
+  detailId = null;
+  document.getElementById('main-view').style.display = 'block';
+  document.getElementById('detail-view').style.display = 'none';
 }
 
-async function drinkFles(id){
-  var w=wines.find(function(x){return x.id===id;});
-  if(!w||w.bottles<=0){toast('Geen flessen meer');return;}
-  var note=prompt('Proefnotitie (optioneel):');
-  w.bottles=(w.bottles||0)-1;
-  if(note)w.notes=(w.notes?w.notes+'\n\n':'')+'['+new Date().toLocaleDateString('nl-NL')+'] '+note;
-  await saveToDB({id:id,name:w.name,type:w.type,year:w.year,producer:w.producer,region:w.region,
-    bottles:w.bottles,price:w.price,drinkFrom:w.drink_from,drinkTo:w.drink_to,rating:w.rating,notes:w.notes,aiInfo:w.ai_info});
+async function drinkFles(id) {
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w || w.bottles <= 0) { toast('Geen flessen meer'); return; }
+  var note = prompt('Proefnotitie (optioneel):');
+  w.bottles = (w.bottles || 0) - 1;
+  if (note) w.notes = (w.notes ? w.notes + '\n\n' : '') + '[' + new Date().toLocaleDateString('nl-NL') + '] ' + note;
+  await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
+    region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
+    drinkTo: w.drink_to, rating: w.rating, notes: w.notes, aiInfo: w.ai_info });
   showDetail(id);
 }
 
-async function addFles(id){
-  var w=wines.find(function(x){return x.id===id;});if(!w)return;
-  w.bottles=(w.bottles||0)+1;
-  await saveToDB({id:id,name:w.name,type:w.type,year:w.year,producer:w.producer,region:w.region,
-    bottles:w.bottles,price:w.price,drinkFrom:w.drink_from,drinkTo:w.drink_to,rating:w.rating,notes:w.notes,aiInfo:w.ai_info});
+async function addFles(id) {
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
+  w.bottles = (w.bottles || 0) + 1;
+  await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
+    region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
+    drinkTo: w.drink_to, rating: w.rating, notes: w.notes, aiInfo: w.ai_info });
   showDetail(id);
 }
 
-async function loadAIDetail(id){
-  var w=wines.find(function(x){return x.id===id;});
-  var box=document.getElementById('ai-det');
-  box.innerHTML='<span class="loading-txt">Info ophalen...</span>';
-  var info=await claude('Vertel in het Nederlands over: '+w.name+' '+(w.year||'')+' van '+(w.producer||'')+', '+(w.region||'')+', type: '+(w.type||'')+'. Behandel: druivenrassen, terroir, smaakprofiel, spijscombinaties, serveertemperatuur.');
-  box.innerHTML=info?'<div class="ai-box">'+info+'</div>':'<span class="loading-txt">Niet beschikbaar.</span>';
-  if(info){await sb.from('wines').update({ai_info:info}).eq('id',id);}
+async function loadAIDetail(id) {
+  var w = wines.find(function(x) { return x.id === id; });
+  var box = document.getElementById('ai-det');
+  box.innerHTML = '<span class="loading-txt">Info ophalen...</span>';
+  var info = await claudeText('Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: druivenrassen, terroir, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch.');
+  box.innerHTML = info ? '<div class="ai-box">' + info + '</div>' : '<span class="loading-txt">Niet beschikbaar.</span>';
+  if (info) { await sb.from('wines').update({ ai_info: info }).eq('id', id); }
 }
 
-function renderReviews(){
-  var rated=wines.filter(function(w){return w.rating&&w.notes;}).sort(function(a,b){return b.rating-a.rating;});
-  var el=document.getElementById('reviews-list');
-  if(!rated.length){el.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><p>Nog geen reviews.</p></div>';return;}
-  el.innerHTML=rated.map(function(w){
-    return '<div class="review-card" onclick="goToDetail(\''+w.id+'\')">'
-      +'<div style="display:flex;justify-content:space-between"><div class="rv-name">'+w.name+(w.year?' '+w.year:'')+'</div><div class="rv-meta">'+new Date(w.created_at).toLocaleDateString('nl-NL')+'</div></div>'
-      +'<div class="rv-meta">'+(w.producer||'')+'</div>'
-      +'<div class="rv-stars">'+'★'.repeat(w.rating)+'☆'.repeat(5-w.rating)+' '+w.rating+'/5</div>'
-      +'<div class="rv-text">'+w.notes+'</div></div>';
+function renderReviews() {
+  var rated = wines.filter(function(w) { return w.rating && w.notes; }).sort(function(a, b) { return b.rating - a.rating; });
+  var el = document.getElementById('reviews-list');
+  if (!rated.length) {
+    el.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><p>Nog geen reviews.</p></div>';
+    return;
+  }
+  el.innerHTML = rated.map(function(w) {
+    return '<div class="review-card" onclick="goToDetail(\'' + w.id + '\')">' +
+      '<div style="display:flex;justify-content:space-between"><div class="rv-name">' + (w.name || '') + (w.year ? ' ' + w.year : '') + '</div>' +
+      '<div class="rv-meta">' + new Date(w.created_at).toLocaleDateString('nl-NL') + '</div></div>' +
+      '<div class="rv-meta">' + (w.producer || '') + '</div>' +
+      '<div class="rv-stars">' + '&#9733;'.repeat(w.rating) + '&#9734;'.repeat(5 - w.rating) + ' ' + w.rating + '/5</div>' +
+      '<div class="rv-text">' + w.notes + '</div></div>';
   }).join('');
 }
 
-function goToDetail(id){
-  document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
-  ['kelder','reviews','scanner','kennis'].forEach(function(t,i){
-    document.getElementById('tab-'+t).style.display=i===0?'block':'none';
+function goToDetail(id) {
+  document.querySelectorAll('.tab').forEach(function(t, i) { t.classList.toggle('active', i === 0); });
+  ['kelder', 'reviews', 'scanner'].forEach(function(t, i) {
+    document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
   showDetail(id);
 }
 
-// MODAL
-function openModal(id){
-  editId=id||null;starRating=0;
-  document.getElementById('modal-title').textContent=id?'Wijn bewerken':'Wijn toevoegen';
-  document.getElementById('btn-del').style.display=id?'block':'none';
-  document.getElementById('ai-prev').className='ai-prev';
-  document.getElementById('scan-prev').className='ai-prev';
-  resetPhotoModal();
-  if(id){
-    var w=wines.find(function(x){return x.id===id;});
-    document.getElementById('f-name').value=w.name||'';
-    document.getElementById('f-type').value=w.type||'Rood';
-    document.getElementById('f-year').value=w.year||'';
-    document.getElementById('f-producer').value=w.producer||'';
-    document.getElementById('f-region').value=w.region||'';
-    document.getElementById('f-bottles').value=w.bottles||1;
-    document.getElementById('f-price').value=w.price||'';
-    document.getElementById('f-dfrom').value=w.drink_from||'';
-    document.getElementById('f-dto').value=w.drink_to||'';
-    document.getElementById('f-notes').value=w.notes||'';
-    starRating=w.rating||0;
+function openModal(id) {
+  editId = id || null; starRating = 0;
+  document.getElementById('modal-title').textContent = id ? 'Wijn bewerken' : 'Wijn toevoegen';
+  document.getElementById('btn-del').style.display = id ? 'block' : 'none';
+  document.getElementById('scan-prev').className = 'ai-prev';
+  photoB64 = null;
+  document.getElementById('ppw').style.display = 'none';
+  document.getElementById('inp-cam').value = '';
+  document.getElementById('inp-gal').value = '';
+  if (id) {
+    var w = wines.find(function(x) { return x.id === id; });
+    document.getElementById('f-name').value = w.name || '';
+    document.getElementById('f-type').value = w.type || 'Rood';
+    document.getElementById('f-year').value = w.year || '';
+    document.getElementById('f-producer').value = w.producer || '';
+    document.getElementById('f-region').value = w.region || '';
+    document.getElementById('f-bottles').value = w.bottles || 1;
+    document.getElementById('f-price').value = w.price || '';
+    document.getElementById('f-dfrom').value = w.drink_from || '';
+    document.getElementById('f-dto').value = w.drink_to || '';
+    document.getElementById('f-notes').value = w.notes || '';
+    starRating = w.rating || 0;
   } else {
-    ['f-name','f-year','f-producer','f-region','f-price','f-dfrom','f-dto','f-notes'].forEach(function(i){document.getElementById(i).value='';});
-    document.getElementById('f-type').value='Rood';
-    document.getElementById('f-bottles').value=1;
+    ['f-name', 'f-year', 'f-producer', 'f-region', 'f-price', 'f-dfrom', 'f-dto', 'f-notes'].forEach(function(i) { document.getElementById(i).value = ''; });
+    document.getElementById('f-type').value = 'Rood';
+    document.getElementById('f-bottles').value = 1;
   }
   updateStars();
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal(){document.getElementById('modal').classList.remove('open');resetPhotoModal();}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function setStar(n) { starRating = n; updateStars(); }
+function updateStars() { document.querySelectorAll('.star-btn').forEach(function(b, i) { b.classList.toggle('lit', i < starRating); }); }
 
-function resetPhotoModal(){
-  photoB64=null;
-  document.getElementById('ppw').style.display='none';
-  document.getElementById('inp-cam').value='';
-  document.getElementById('inp-gal').value='';
-}
-
-function setStar(n){starRating=n;updateStars();}
-function updateStars(){document.querySelectorAll('.star-btn').forEach(function(b,i){b.classList.toggle('lit',i<starRating);});}
-
-// FOTO — converteert alles naar JPEG via canvas
-function handlePhoto(input){
-  var file=input.files[0];if(!file)return;
-  toJpegBase64(file,function(b64,origUrl){
-    if(!b64){document.getElementById('scan-prev').className='ai-prev show';document.getElementById('scan-prev').textContent='Foto laden mislukt.';return;}
-    photoB64=b64;
-    var url=URL.createObjectURL(file);
-    document.getElementById('pimg').src=url;
-    document.getElementById('ppw').style.display='block';
-    document.getElementById('scan-prev').className='ai-prev';
+function handlePhoto(input) {
+  var file = input.files[0]; if (!file) return;
+  imgToJpeg(file, function(b64, objUrl) {
+    if (!b64) {
+      document.getElementById('scan-prev').className = 'ai-prev show';
+      document.getElementById('scan-prev').textContent = 'Foto laden mislukt. Probeer een andere foto.';
+      return;
+    }
+    photoB64 = b64;
+    // Show preview using a fresh object URL for display
+    var displayUrl = URL.createObjectURL(file);
+    document.getElementById('pimg').src = displayUrl;
+    document.getElementById('ppw').style.display = 'block';
+    document.getElementById('scan-prev').className = 'ai-prev';
   });
 }
 
-async function scanLabel(){
-  if(!photoB64)return;
-  var el=document.getElementById('scan-prev');
-  el.className='ai-prev show';el.textContent='Etiket herkennen...';
-  try{
-    var res=await fetch(AAPI,{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-cors':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
-        system:'Je bent een wijnexpert. Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rosé, Mousserende, Dessertwijn), druivenras, smaakprofiel, serveertemperatuur. Antwoord ALLEEN met geldige JSON zonder markdown.',
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
-          {type:'text',text:'Wat staat er op dit wijnetiket? Geef JSON.'}
+async function scanLabel() {
+  if (!photoB64) return;
+  var el = document.getElementById('scan-prev');
+  el.className = 'ai-prev show'; el.textContent = 'Etiket herkennen...';
+  try {
+    var res = await fetch(AAPI, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-allow-cors': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600,
+        system: 'Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn). Antwoord ALLEEN met geldige JSON zonder markdown.',
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photoB64 } },
+          { type: 'text', text: 'Wat staat er op dit wijnetiket? Geef JSON.' }
         ]}]})});
-    var data=await res.json();
-    if(data.error){el.textContent='Fout: '+data.error.message;return;}
-    var txt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var data = await res.json();
+    if (data.error) { el.textContent = 'Fout: ' + data.error.message; return; }
+    var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
-    try{w=JSON.parse(txt.replace(/```json|```/g,'').trim());}
-    catch(e){el.textContent=txt||'Kon etiket niet lezen.';return;}
-    if(w.name)document.getElementById('f-name').value=w.name;
-    if(w.producer)document.getElementById('f-producer').value=w.producer;
-    if(w.region)document.getElementById('f-region').value=w.region;
-    if(w.year)document.getElementById('f-year').value=w.year;
-    if(w.type)document.getElementById('f-type').value=w.type;
-    el.textContent='✓ '+[w.name,w.producer,w.region,w.year].filter(Boolean).join(', ');
-    toast('Etiket herkend ✓');
-  }catch(e){el.textContent='Fout: '+e.message;}
+    try { w = JSON.parse(txt.replace(/```json|```/g, '').trim()); }
+    catch(e) { el.textContent = txt || 'Kon etiket niet lezen.'; return; }
+    if (w.name) document.getElementById('f-name').value = w.name;
+    if (w.producer) document.getElementById('f-producer').value = w.producer;
+    if (w.region) document.getElementById('f-region').value = w.region;
+    if (w.year) document.getElementById('f-year').value = w.year;
+    if (w.type) document.getElementById('f-type').value = w.type;
+    el.textContent = 'Gevonden: ' + [w.name, w.producer, w.region, w.year].filter(Boolean).join(', ');
+    toast('Etiket herkend');
+  } catch(e) { el.textContent = 'Fout: ' + e.message; }
 }
 
-async function fetchAI(){
-  var name=document.getElementById('f-name').value.trim();
-  if(!name){alert('Vul eerst een naam in.');return;}
-  var el=document.getElementById('ai-prev');
-  el.className='ai-prev show';el.textContent='Info ophalen...';
-  var info=await claude('Vertel beknopt over wijn: "'+name+'". Geef: druivenras, regio, smaakprofiel (2 zinnen), serveertemperatuur, lageringsadvies. In het Nederlands.');
-  el.textContent=info||'Geen info beschikbaar.';
+async function saveWine() {
+  var name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Naam is verplicht.'); return; }
+  var btn = document.querySelector('.btn-save');
+  btn.textContent = 'Opslaan...'; btn.disabled = true;
+
+  // Generate AI info automatically for new wines or when editing without existing info
+  var existingAI = editId ? ((wines.find(function(w) { return w.id === editId; }) || {}).ai_info || null) : null;
+  var aiInfo = existingAI;
+  if (!aiInfo) {
+    var producer = document.getElementById('f-producer').value;
+    var region = document.getElementById('f-region').value;
+    var year = document.getElementById('f-year').value;
+    var type = document.getElementById('f-type').value;
+    aiInfo = await claudeText('Vertel in het Nederlands over wijn: "' + name + '"' + (year ? ' ' + year : '') + (producer ? ' van ' + producer : '') + (region ? ', ' + region : '') + ', type: ' + type + '. Behandel: druivenrassen, smaakprofiel, spijscombinaties, serveertemperatuur. Bondig en praktisch, max 120 woorden.');
+  }
+
+  var ok = await saveToDB({ id: editId || null, name: name,
+    type: document.getElementById('f-type').value,
+    year: parseInt(document.getElementById('f-year').value) || null,
+    producer: document.getElementById('f-producer').value,
+    region: document.getElementById('f-region').value,
+    bottles: parseInt(document.getElementById('f-bottles').value) || 1,
+    price: parseFloat(document.getElementById('f-price').value) || null,
+    drinkFrom: parseInt(document.getElementById('f-dfrom').value) || null,
+    drinkTo: parseInt(document.getElementById('f-dto').value) || null,
+    rating: starRating || null,
+    notes: document.getElementById('f-notes').value,
+    aiInfo: aiInfo });
+
+  btn.textContent = 'Opslaan'; btn.disabled = false;
+  if (ok) { closeModal(); toast('Opgeslagen'); if (detailId) showDetail(detailId); }
 }
 
-async function saveWine(){
-  var name=document.getElementById('f-name').value.trim();
-  if(!name){alert('Naam is verplicht.');return;}
-  var ok=await saveToDB({id:editId||null,name:name,
-    type:document.getElementById('f-type').value,
-    year:parseInt(document.getElementById('f-year').value)||null,
-    producer:document.getElementById('f-producer').value,
-    region:document.getElementById('f-region').value,
-    bottles:parseInt(document.getElementById('f-bottles').value)||1,
-    price:parseFloat(document.getElementById('f-price').value)||null,
-    drinkFrom:parseInt(document.getElementById('f-dfrom').value)||null,
-    drinkTo:parseInt(document.getElementById('f-dto').value)||null,
-    rating:starRating||null,
-    notes:document.getElementById('f-notes').value,
-    aiInfo:editId?(wines.find(function(w){return w.id===editId;})||{}).ai_info||null:null});
-  if(ok){closeModal();toast('Opgeslagen ✓');if(detailId)showDetail(detailId);}
-}
-
-async function deleteWine(){
-  if(!confirm('Wijn verwijderen?'))return;
+async function deleteWine() {
+  if (!confirm('Wijn verwijderen?')) return;
   await delFromDB(editId);
-  closeModal();closeDetail();toast('Verwijderd');
+  closeModal(); closeDetail(); toast('Verwijderd');
 }
 
 // WINKEL SCANNER
-function handleScanPhoto(input){
-  var file=input.files[0];if(!file)return;
-  toJpegBase64(file,function(b64){
-    if(!b64){toast('Foto laden mislukt');return;}
-    scPhotoB64=b64;
-    var url=URL.createObjectURL(file);
-    document.getElementById('sc-preview-img').src=url;
-    document.getElementById('sc-preview-wrap').style.display='block';
-    document.getElementById('sc-result').style.display='none';
+function handleScanPhoto(input) {
+  var file = input.files[0]; if (!file) return;
+  imgToJpeg(file, function(b64) {
+    if (!b64) { toast('Foto laden mislukt'); return; }
+    scPhotoB64 = b64;
+    var displayUrl = URL.createObjectURL(file);
+    document.getElementById('sc-preview-img').src = displayUrl;
+    document.getElementById('sc-preview-wrap').style.display = 'block';
+    document.getElementById('sc-result').style.display = 'none';
   });
 }
 
-async function doWinkelScan(){
-  if(!scPhotoB64)return;
-  var btn=document.querySelector('#sc-preview-wrap .btn-ai');
-  btn.textContent='⏳ Analyseren...';
-  try{
-    var res=await fetch(AAPI,{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-cors':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-        system:'Je bent een wijnexpert en sommelier. Analyseer het wijnetiket op de foto. Geef JSON terug met: name (string), producer (string), region (string), year (getal of null), type (Rood/Wit/Rosé/Mousserende/Dessertwijn), druivenras (string), smaakprofiel (string, 2-3 zinnen), advies (string: is dit een goede koop? wat maakt deze wijn bijzonder?), serveertemperatuur (string), spijscombinaties (string). Antwoord ALLEEN met geldige JSON.',
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scPhotoB64}},
-          {type:'text',text:'Analyseer dit wijnetiket volledig.'}
+async function doWinkelScan() {
+  if (!scPhotoB64) return;
+  var btn = document.querySelector('#sc-preview-wrap .btn-ai');
+  btn.textContent = 'Analyseren...';
+  try {
+    var res = await fetch(AAPI, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-allow-cors': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800,
+        system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: scPhotoB64 } },
+          { type: 'text', text: 'Analyseer dit wijnetiket volledig.' }
         ]}]})});
-    var data=await res.json();
-    if(data.error){toast('Fout: '+data.error.message);btn.textContent='✨ AI: analyseer deze wijn';return;}
-    var txt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
+    var data = await res.json();
+    if (data.error) { toast('Fout: ' + data.error.message); btn.textContent = 'AI: analyseer deze wijn'; return; }
+    var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
-    try{w=JSON.parse(txt.replace(/```json|```/g,'').trim());}
-    catch(e){toast('Kon etiket niet lezen');btn.textContent='✨ AI: analyseer deze wijn';return;}
-    scannedWine=w;
-    document.getElementById('sc-name').textContent=(w.name||'Onbekende wijn')+(w.year?' '+w.year:'');
-    document.getElementById('sc-meta').textContent=[w.producer,w.region,w.druivenras].filter(Boolean).join(' · ');
-    document.getElementById('sc-info').innerHTML=
-      (w.smaakprofiel?'<b>Smaak:</b> '+w.smaakprofiel+'<br><br>':'')
-      +(w.advies?'<b>Advies:</b> '+w.advies+'<br><br>':'')
-      +(w.serveertemperatuur?'<b>Serveer:</b> '+w.serveertemperatuur+'<br>':'')
-      +(w.spijscombinaties?'<b>Past bij:</b> '+w.spijscombinaties:'');
-    document.getElementById('sc-result').style.display='block';
-    btn.textContent='✨ AI: analyseer deze wijn';
-  }catch(e){toast('Fout: '+e.message);btn.textContent='✨ AI: analyseer deze wijn';}
+    try { w = JSON.parse(txt.replace(/```json|```/g, '').trim()); }
+    catch(e) { toast('Kon etiket niet lezen'); btn.textContent = 'AI: analyseer deze wijn'; return; }
+    scannedWine = w;
+    document.getElementById('sc-name').textContent = (w.name || 'Onbekend') + (w.year ? ' ' + w.year : '');
+    document.getElementById('sc-meta').textContent = [w.producer, w.region, w.druivenras].filter(Boolean).join(' - ');
+    document.getElementById('sc-info').innerHTML =
+      (w.smaakprofiel ? '<b>Smaak:</b> ' + w.smaakprofiel + '<br><br>' : '') +
+      (w.advies ? '<b>Advies:</b> ' + w.advies + '<br><br>' : '') +
+      (w.serveertemperatuur ? '<b>Serveer:</b> ' + w.serveertemperatuur + '<br>' : '') +
+      (w.spijscombinaties ? '<b>Past bij:</b> ' + w.spijscombinaties : '');
+    document.getElementById('sc-result').style.display = 'block';
+    btn.textContent = 'AI: analyseer deze wijn';
+  } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
 }
 
-function addScannedToKelder(){
-  if(!scannedWine)return;
+function addScannedToKelder() {
+  if (!scannedWine) return;
   openModal();
-  setTimeout(function(){
-    if(scannedWine.name)document.getElementById('f-name').value=scannedWine.name;
-    if(scannedWine.producer)document.getElementById('f-producer').value=scannedWine.producer;
-    if(scannedWine.region)document.getElementById('f-region').value=scannedWine.region;
-    if(scannedWine.year)document.getElementById('f-year').value=scannedWine.year;
-    if(scannedWine.type)document.getElementById('f-type').value=scannedWine.type;
-  },100);
+  setTimeout(function() {
+    if (scannedWine.name) document.getElementById('f-name').value = scannedWine.name;
+    if (scannedWine.producer) document.getElementById('f-producer').value = scannedWine.producer;
+    if (scannedWine.region) document.getElementById('f-region').value = scannedWine.region;
+    if (scannedWine.year) document.getElementById('f-year').value = scannedWine.year;
+    if (scannedWine.type) document.getElementById('f-type').value = scannedWine.type;
+  }, 100);
 }
 
-// KENNIS
-async function vraagKennis(){
-  var v=document.getElementById('kennis-vraag').value.trim();
-  if(!v)return;
-  kennisSnelVraag(v);
+async function claudeText(prompt) {
+  try {
+    var res = await fetch(AAPI, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-allow-cors': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 500,
+        system: 'Je bent een vriendelijke sommelier. Geef praktische wijninfo in het Nederlands. Geen bullet points, gewoon lopende tekst.',
+        messages: [{ role: 'user', content: prompt }] }) });
+    var data = await res.json();
+    return data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : null;
+  } catch(e) { return null; }
 }
 
-async function kennisSnelVraag(vraag){
-  var res=document.getElementById('kennis-result');
-  var tit=document.getElementById('kennis-result-title');
-  var txt=document.getElementById('kennis-result-text');
-  res.style.display='block';
-  tit.textContent=vraag.length>50?vraag.substring(0,50)+'...':vraag;
-  txt.textContent='Even nadenken...';
-  txt.style.fontStyle='italic';
-  var info=await claude(vraag+' Antwoord in het Nederlands, duidelijk en praktisch. Geen bullet points, gewoon lopende tekst van 150-250 woorden.');
-  txt.style.fontStyle='normal';
-  txt.textContent=info||'Geen antwoord beschikbaar.';
-  res.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-// AI
-async function claude(prompt){
-  try{
-    var res=await fetch(AAPI,{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-cors':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
-        system:'Je bent een vriendelijke sommelier en wijnexpert. Geef praktische wijninfo in het Nederlands.',
-        messages:[{role:'user',content:prompt}]})});
-    var data=await res.json();
-    return data.content?data.content.map(function(c){return c.text||'';}).join(''):null;
-  }catch(e){return null;}
-}
-
-function toast(msg){
-  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2500);
+function toast(msg) {
+  var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 
 init();
