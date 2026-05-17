@@ -135,7 +135,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.23</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.24</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -612,7 +612,7 @@ async function scanLabel() {
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
-      body: JSON.stringify({ model: 'gemini-1.5-flash', max_tokens: 600,
+      body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 600,
         system: 'Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn). Antwoord ALLEEN met geldige JSON zonder markdown.',
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
@@ -709,7 +709,7 @@ async function doWinkelScan() {
     var useB64 = scPhotoB64;
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
-      body: JSON.stringify({ model: 'gemini-1.5-flash', max_tokens: 800,
+      body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 800,
         system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: useB64 } },
@@ -776,7 +776,7 @@ async function claudeText(prompt) {
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
-      body: JSON.stringify({ model: 'gemini-1.5-flash', max_tokens: 500,
+      body: JSON.stringify({ model: 'gemini-2.5-flash', max_tokens: 500,
         system: 'Je bent een vriendelijke sommelier. Geef praktische wijninfo in het Nederlands. Geen bullet points, gewoon lopende tekst.',
         messages: [{ role: 'user', content: prompt }] }) });
     var data = await res.json();
