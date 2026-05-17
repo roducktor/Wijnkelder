@@ -96,7 +96,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .fg{margin-bottom:14px;}
 .fl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block;}
 .fi{width:100%;height:42px;padding:0 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;}
-.fi::placeholder{color:var(--muted);}
+.fi{color:var(--text) !important;} .fi::placeholder{color:var(--muted);opacity:0.5;}
 .fsel{width:100%;height:42px;padding:0 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;}
 .fta{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical;min-height:80px;line-height:1.5;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.14</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.17</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -667,7 +667,10 @@ async function doWinkelScan() {
       btn.textContent = 'AI: analyseer deze wijn'; return;
     }
     scannedWine = w;
-    document.getElementById('sc-name').textContent = (w.name || 'Onbekend') + (w.year ? ' ' + w.year : '');
+    var displayName = (w.name || w.producer || 'Onbekende wijn') + (w.year ? ' ' + w.year : '');
+    document.getElementById('sc-name').textContent = displayName;
+    // Also use producer as name fallback if name is empty
+    if (!w.name && w.producer) w.name = w.producer;
     document.getElementById('sc-meta').textContent = [w.producer, w.region, w.druivenras].filter(Boolean).join(' - ');
     document.getElementById('sc-info').innerHTML =
       (w.smaakprofiel ? '<b>Smaak:</b> ' + w.smaakprofiel + '<br><br>' : '') +
@@ -682,19 +685,20 @@ async function doWinkelScan() {
 
 function addScannedToKelder() {
   if (!scannedWine) return;
-  // Switch to kelder tab first so modal is visible
+  // Switch to kelder tab first
   document.querySelectorAll('.tab').forEach(function(t, i) { t.classList.toggle('active', i === 0); });
   ['kelder', 'reviews', 'scanner'].forEach(function(t, i) {
     document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
+  // Open modal and immediately fill fields (openModal resets fields, so we fill after)
   openModal();
-  setTimeout(function() {
-    if (scannedWine.name) document.getElementById('f-name').value = scannedWine.name;
-    if (scannedWine.producer) document.getElementById('f-producer').value = scannedWine.producer;
-    if (scannedWine.region) document.getElementById('f-region').value = scannedWine.region;
-    if (scannedWine.year) document.getElementById('f-year').value = scannedWine.year;
-    if (scannedWine.type) document.getElementById('f-type').value = scannedWine.type;
-  }, 100);
+  // Fill fields directly after openModal — no setTimeout needed
+  document.getElementById('f-name').value = scannedWine.name || '';
+  document.getElementById('f-producer').value = scannedWine.producer || '';
+  document.getElementById('f-region').value = scannedWine.region || '';
+  document.getElementById('f-year').value = scannedWine.year || '';
+  if (scannedWine.type) document.getElementById('f-type').value = scannedWine.type;
+  if (!scannedWine.name) document.getElementById('f-name').focus();
 }
 
 async function claudeText(prompt) {
