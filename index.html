@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.04</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.05</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -493,19 +493,28 @@ function setStar(n) { starRating = n; updateStars(); }
 function updateStars() { document.querySelectorAll('.star-btn').forEach(function(b, i) { b.classList.toggle('lit', i < starRating); }); }
 
 function handlePhoto(input) {
-  var file = input.files[0]; if (!file) return;
-  imgToJpeg(file, function(b64, objUrl, errMsg) {
-    if (!b64) {
-      document.getElementById('scan-prev').className = 'ai-prev show';
-      document.getElementById('scan-prev').textContent = errMsg || 'Foto laden mislukt. Probeer een JPEG foto.';
+  var file = input.files[0];
+  if (!file) return;
+  var el = document.getElementById('scan-prev');
+  el.className = 'ai-prev show';
+  el.textContent = 'Foto laden... (type: ' + (file.type || 'onbekend') + ', ' + Math.round(file.size/1024) + 'KB)';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    if (!dataUrl || dataUrl.indexOf(',') === -1) {
+      el.textContent = 'Fout: dataUrl leeg of ongeldig';
       return;
     }
-    photoB64 = b64;
-    var displayUrl = URL.createObjectURL(file);
-    document.getElementById('pimg').src = displayUrl;
+    photoB64 = dataUrl.split(',')[1];
+    document.getElementById('pimg').src = dataUrl;
     document.getElementById('ppw').style.display = 'block';
-    document.getElementById('scan-prev').className = 'ai-prev';
-  });
+    el.className = 'ai-prev';
+  };
+  reader.onerror = function(e) {
+    el.className = 'ai-prev show';
+    el.textContent = 'FileReader fout: ' + (e.target.error ? e.target.error.message : 'onbekend');
+  };
+  reader.readAsDataURL(file);
 }
 
 async function scanLabel() {
@@ -579,15 +588,25 @@ async function deleteWine() {
 
 // WINKEL SCANNER
 function handleScanPhoto(input) {
-  var file = input.files[0]; if (!file) return;
-  imgToJpeg(file, function(b64, objUrl, errMsg) {
-    if (!b64) { toast(errMsg || 'Foto laden mislukt'); return; }
-    scPhotoB64 = b64;
-    var displayUrl = URL.createObjectURL(file);
-    document.getElementById('sc-preview-img').src = displayUrl;
+  var file = input.files[0];
+  if (!file) return;
+  toast('Foto laden... ' + (file.type || 'onbekend'));
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    if (!dataUrl || dataUrl.indexOf(',') === -1) {
+      toast('Fout: dataUrl leeg');
+      return;
+    }
+    scPhotoB64 = dataUrl.split(',')[1];
+    document.getElementById('sc-preview-img').src = dataUrl;
     document.getElementById('sc-preview-wrap').style.display = 'block';
     document.getElementById('sc-result').style.display = 'none';
-  });
+  };
+  reader.onerror = function(e) {
+    toast('Fout: ' + (e.target.error ? e.target.error.message : 'onbekend'));
+  };
+  reader.readAsDataURL(file);
 }
 
 async function doWinkelScan() {
