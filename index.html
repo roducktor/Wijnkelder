@@ -249,6 +249,28 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 /* AI box */
 .ai-box{font-size:13px;color:var(--muted);line-height:1.7;}
 
+/* ── ADD CHOICE SCREEN ── */
+.add-choice{padding:40px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.add-choice-title{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;}
+.add-choice-sub{font-size:13px;color:var(--muted);margin-bottom:36px;}
+.add-choice-btns{display:flex;flex-direction:column;gap:12px;width:100%;}
+.add-choice-btn{background:var(--black2);border:none;border-radius:var(--r);padding:24px 20px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;transition:background .15s;}
+.add-choice-btn:active{background:var(--black3);}
+.acb-icon{width:52px;height:52px;background:var(--black3);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;}
+.acb-label{font-size:17px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.acb-sub{font-size:12px;color:var(--muted);line-height:1.4;}
+
+/* Scan flow header */
+.scan-flow-header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--black3);}
+.scan-back-btn{background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.scan-flow-title{font-size:14px;font-weight:700;color:var(--white);}
+
+/* Analyzing animation */
+.analyzing-indicator{display:flex;align-items:center;justify-content:center;padding:14px;gap:4px;}
+.analyzing-text{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+.analyzing-dots::after{content:'';animation:dots 1.2s infinite;letter-spacing:2px;color:var(--gold);}
+@keyframes dots{0%{content:'';}25%{content:'.';}50%{content:'..';}75%{content:'...';}100%{content:''}}
+
 /* ── EXPAND PANEL ── */
 .card-expand{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1);background:var(--expand-color,var(--black2));margin-top:-2px;position:relative;z-index:1;}
 .card-expand.open{max-height:1400px;}
@@ -288,9 +310,8 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.40</span>
+        <span class="version" id="slbl">v0.41</span>
         <span class="sync-dot spin" id="sdot"></span>
-        <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
     <div class="hero">
@@ -305,7 +326,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="tabs">
       <button class="tab active" onclick="switchTab('kelder',this)">Collectie</button>
       <button class="tab" onclick="switchTab('reviews',this)">Logboek</button>
-      <button class="tab" onclick="switchTab('scanner',this)">Scanner</button>
+      <button class="tab" onclick="switchTab('scanner',this)">+ Toevoegen</button>
     </div>
   </header>
 
@@ -343,18 +364,43 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 
     <!-- SCANNER TAB -->
     <div id="tab-scanner" style="display:none">
-      <div class="scanner-hero">
-        <h2>Scanner</h2>
-        <p>Foto een etiket en krijg direct info — druiven, regio, smaak en koopadvies.</p>
+      <div class="add-choice" id="add-choice">
+        <div class="add-choice-title">Toevoegen</div>
+        <div class="add-choice-sub">Hoe wil je de drank toevoegen?</div>
+        <div class="add-choice-btns">
+          <button class="add-choice-btn" onclick="startScan()">
+            <div class="acb-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div class="acb-label">Scan etiket</div>
+            <div class="acb-sub">Maak een foto of kies er een uit je galerij</div>
+          </button>
+          <button class="add-choice-btn" onclick="openModal()">
+            <div class="acb-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="acb-label">Handmatig</div>
+            <div class="acb-sub">Vul de details zelf in</div>
+          </button>
+        </div>
       </div>
-      <div class="scan-btns">
-        <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">Maak foto</button>
-        <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">Kies foto</button>
+      <div id="scan-flow" style="display:none">
+        <div class="scan-flow-header">
+          <button class="scan-back-btn" onclick="resetScanFlow()">← Terug</button>
+          <div class="scan-flow-title">Scan etiket</div>
+        </div>
+        <div class="scan-btns">
+          <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">📷 Camera</button>
+          <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼 Galerij</button>
+        </div>
       </div>
       <input type="file" id="sc-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
       <input type="file" id="sc-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleScanPhoto(this)">
       <div class="scan-preview-wrap" id="sc-preview-wrap">
         <img id="sc-preview-img" alt="preview">
+        <div class="analyzing-indicator" id="analyzing-indicator" style="display:none">
+          <span class="analyzing-text">Analyseren</span><span class="analyzing-dots"></span>
+        </div>
         <button class="btn-scan-ai" id="scan-analyze-btn" onclick="doWinkelScan()" style="display:none">Opnieuw analyseren</button>
       </div>
       <div class="scan-result" id="sc-result">
@@ -565,9 +611,9 @@ function initScrollHeader() {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.40');
+  setSS('spin', 'v0.41');
   await loadWines();
-  setSS('ok', 'v0.40');
+  setSS('ok', 'v0.41');
 }
 
 function setSS(cls, txt) {
@@ -592,7 +638,7 @@ async function saveToDB(w) {
     photo: w.photo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.40'); await loadWines(); return true;
+  setSS('ok', 'v0.41'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -1019,6 +1065,33 @@ async function deleteWine() {
   closeModal(); closeDetail(); toast('Verwijderd');
 }
 
+function startScan() {
+  document.getElementById('add-choice').style.display = 'none';
+  document.getElementById('scan-flow').style.display = 'block';
+}
+
+function resetScanFlow() {
+  document.getElementById('add-choice').style.display = 'flex';
+  document.getElementById('scan-flow').style.display = 'none';
+  document.getElementById('sc-preview-wrap').style.display = 'none';
+  document.getElementById('sc-result').style.display = 'none';
+  document.getElementById('analyzing-indicator').style.display = 'none';
+  document.getElementById('scan-analyze-btn').style.display = 'none';
+  scPhotoB64 = null;
+}
+
+// Reset scan flow when switching away from tab
+var _origSwitchTab = switchTab;
+function switchTab(tab, el) {
+  _origSwitchTab(tab, el);
+  if (tab !== 'scanner') return;
+  // Show choice screen when navigating to tab
+  document.getElementById('add-choice').style.display = 'flex';
+  document.getElementById('scan-flow').style.display = 'none';
+  document.getElementById('sc-preview-wrap').style.display = 'none';
+  document.getElementById('sc-result').style.display = 'none';
+}
+
 function handleScanPhoto(input) {
   var file = input.files[0]; if (!file) return;
   var reader = new FileReader();
@@ -1027,6 +1100,9 @@ function handleScanPhoto(input) {
     document.getElementById('sc-preview-img').src = e.target.result;
     document.getElementById('sc-preview-wrap').style.display = 'block';
     document.getElementById('sc-result').style.display = 'none';
+    // Show scan flow, hide choice
+    document.getElementById('add-choice').style.display = 'none';
+    document.getElementById('scan-flow').style.display = 'block';
     // Auto-analyze immediately
     doWinkelScan();
   };
@@ -1035,8 +1111,8 @@ function handleScanPhoto(input) {
 
 async function doWinkelScan() {
   if (!scPhotoB64) return;
-  var btn = document.getElementById('scan-analyze-btn');
-  if(btn) { btn.style.display='block'; btn.textContent = 'Analyseren...'; }
+  document.getElementById('analyzing-indicator').style.display = 'flex';
+  document.getElementById('scan-analyze-btn').style.display = 'none';
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
@@ -1063,9 +1139,10 @@ async function doWinkelScan() {
     if (w.advies) info += '<div class="sc-block" style="background:rgba(196,146,42,.06)"><div class="sc-label">Advies</div><div class="sc-val">' + w.advies + '</div></div>';
     document.getElementById('sc-info').innerHTML = info || '<div class="sc-block"><div class="sc-val" style="opacity:.4">Geen info beschikbaar.</div></div>';
     document.getElementById('sc-result').style.display = 'block';
+    document.getElementById('analyzing-indicator').style.display = 'none';
     document.getElementById('scan-analyze-btn').style.display = 'block';
     document.getElementById('scan-analyze-btn').textContent = 'Opnieuw analyseren';
-  } catch(e) { toast('Fout: ' + e.message); document.getElementById('scan-analyze-btn').style.display = 'block'; }
+  } catch(e) { toast('Fout: ' + e.message); document.getElementById('analyzing-indicator').style.display = 'none'; document.getElementById('scan-analyze-btn').style.display = 'block'; }
 }
 
 function logTasting() {
