@@ -268,6 +268,16 @@ var photoB64 = null, scPhotoB64 = null, scannedWine = null;
 
 // Convert any image (incl HEIC) to JPEG via canvas
 function imgToJpeg(file, cb) {
+  var type = (file.type || '').toLowerCase();
+  var fname = (file.name || '').toLowerCase();
+  var isHeic = type === 'image/heic' || type === 'image/heif' || fname.endsWith('.heic') || fname.endsWith('.heif');
+  if (!isHeic) {
+    var reader = new FileReader();
+    reader.onload = function(e) { var d = e.target.result; cb(d.split(',')[1], d); };
+    reader.onerror = function() { cb(null); };
+    reader.readAsDataURL(file);
+    return;
+  }
   var obj = URL.createObjectURL(file);
   var img = new Image();
   img.onload = function() {
@@ -281,7 +291,13 @@ function imgToJpeg(file, cb) {
     URL.revokeObjectURL(obj);
     cb(b64, obj);
   };
-  img.onerror = function() { URL.revokeObjectURL(obj); cb(null); };
+  img.onerror = function() {
+    URL.revokeObjectURL(obj);
+    var reader = new FileReader();
+    reader.onload = function(e) { cb(e.target.result.split(',')[1], e.target.result); };
+    reader.onerror = function() { cb(null); };
+    reader.readAsDataURL(file);
+  };
   img.src = obj;
 }
 
