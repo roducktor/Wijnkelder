@@ -250,15 +250,16 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .ai-box{font-size:13px;color:var(--muted);line-height:1.7;}
 
 /* ── EXPAND PANEL ── */
-.card-expand{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
+.card-expand{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1);background:var(--expand-color,var(--black2));}
 .card-expand.open{max-height:1400px;}
 .card-outer.expanded .drink-card{border-radius:var(--r) var(--r) 0 0;}
-.expand-inner{background:var(--expand-color,var(--black2));border-radius:0 0 var(--r) var(--r);padding-bottom:4px;}
+.card-outer{overflow:hidden;border-radius:var(--r);}
+.expand-inner{background:var(--expand-color,var(--black2));padding-bottom:4px;}
 .expand-close{display:flex;justify-content:flex-end;padding:10px 16px 4px;}
 .expand-close button{background:none;border:none;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
 .exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);}
 .exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
-.exp-ai-text{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;}
+.exp-ai-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;word-break:break-word;}
 .exp-ai-btn{width:100%;height:38px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
 .exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.2);}
 .exp-item{padding:12px 18px;border-right:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);}
@@ -284,7 +285,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.35</span>
+        <span class="version" id="slbl">v0.36</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
@@ -561,9 +562,9 @@ function initScrollHeader() {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.35');
+  setSS('spin', 'v0.36');
   await loadWines();
-  setSS('ok', 'v0.35');
+  setSS('ok', 'v0.36');
 }
 
 function setSS(cls, txt) {
@@ -587,7 +588,7 @@ async function saveToDB(w) {
     rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.35'); await loadWines(); return true;
+  setSS('ok', 'v0.36'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -751,6 +752,10 @@ function toggleCard(id) {
   outer.appendChild(panel);
   requestAnimationFrame(function() { panel.classList.add('open'); });
   setTimeout(function() { outer.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  // Auto-fetch AI info if not yet loaded
+  if (!w.ai_info) {
+    setTimeout(function() { loadAIDetail(id); }, 300);
+  }
 }
 
 function closeCard(id) {
@@ -838,10 +843,18 @@ async function clearNotes(id) {
 async function loadAIDetail(id) {
   var w = wines.find(function(x) { return x.id === id; });
   var box = document.getElementById('ai-det');
+  if (!box) return;
   box.innerHTML = '<span class="loading-txt">Info ophalen...</span>';
-  var info = await claudeText('Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: druivenrassen of granen, herkomst, smaakprofiel, spijscombinaties of cocktails, serveertemperatuur. Bondig, max 100 woorden.');
-  box.innerHTML = info ? '<div class="ai-box">' + info + '</div>' : '<span class="loading-txt">Niet beschikbaar.</span>';
-  if (info) { await sb.from('wines').update({ ai_info: info }).eq('id', id); }
+  var info = await claudeText('Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: herkomst, druivenrassen of granen, smaakprofiel, aroma, afdronk, serveertemperatuur en spijscombinaties. Schrijf lopende tekst, max 150 woorden.');
+  if (info) {
+    box.className = 'exp-ai-text';
+    box.innerHTML = info;
+    await sb.from('wines').update({ ai_info: info }).eq('id', id);
+    var idx = wines.findIndex(function(x) { return x.id === id; });
+    if (idx >= 0) wines[idx].ai_info = info;
+  } else {
+    box.innerHTML = '<span class="loading-txt">Niet beschikbaar.</span>';
+  }
 }
 
 function renderReviews() {
