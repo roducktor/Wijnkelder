@@ -171,7 +171,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .btn-a.primary{background:var(--gold);color:var(--black);}
 .btn-a.primary:active{background:var(--gold-light);}
 .btn-del-notes{width:calc(100% - 40px);margin:0 20px 16px;height:40px;background:none;border:1px solid rgba(194,1,20,.4);color:rgba(194,1,20,.7);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
-.btn-ai-inline{width:calc(100% - 40px);margin:0 20px;height:40px;background:none;border:1px solid var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+
 
 /* ── LOGBOEK ── */
 .log-card{background:var(--black2);margin:0 20px 10px;border-radius:var(--rs);padding:16px;cursor:pointer;}
@@ -288,7 +288,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.39</span>
+        <span class="version" id="slbl">v0.40</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
@@ -355,7 +355,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
       <input type="file" id="sc-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleScanPhoto(this)">
       <div class="scan-preview-wrap" id="sc-preview-wrap">
         <img id="sc-preview-img" alt="preview">
-        <button class="btn-scan-ai" onclick="doWinkelScan()">Analyseer etiket</button>
+        <button class="btn-scan-ai" id="scan-analyze-btn" onclick="doWinkelScan()" style="display:none">Opnieuw analyseren</button>
       </div>
       <div class="scan-result" id="sc-result">
         <div class="scan-result-card">
@@ -495,7 +495,7 @@ var SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
 
 var sb, wines = [], editId = null, starRating = 0, detailId = null;
-var photoB64 = null, scPhotoB64 = null, scannedWine = null, scannedAiInfo = null;
+var photoB64 = null, scPhotoB64 = null, scannedWine = null, scannedAiInfo = null, scannedPhotoForSave = null;
 var activeTypeFilter = '';
 var currentDrinkRating = 0, currentDrinkAmount = 'glas';
 
@@ -565,9 +565,9 @@ function initScrollHeader() {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.39');
+  setSS('spin', 'v0.40');
   await loadWines();
-  setSS('ok', 'v0.39');
+  setSS('ok', 'v0.40');
 }
 
 function setSS(cls, txt) {
@@ -587,11 +587,12 @@ async function saveToDB(w) {
   setSS('spin', 'opslaan...');
   var row = { name: w.name, type: w.type, year: w.year || null, producer: w.producer,
     region: w.region, bottles: w.bottles, price: w.price || null,
-    drink_from: w.drinkFrom || null, drink_to: w.drinkTo || null,
-    rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
+    drink_from: w.drinkFrom || null, drink_to: w.drink_to || null,
+    rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null,
+    photo: w.photo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.39'); await loadWines(); return true;
+  setSS('ok', 'v0.40'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -656,8 +657,13 @@ function renderList() {
       '<span class="dc-type"' + dark + '>' + (w.type || '') + (w.region ? ' · ' + w.region : '') + '</span>' +
       '<span class="dc-badge"' + dark + '>' + (w.bottles || 0) + ' fl.</span>' +
       '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">' +
+      '<div style="flex:1;min-width:0">' +
       '<div class="dc-name"' + dark + '>' + (w.name || '') + (w.year ? ' <span style="font-weight:400;opacity:.6">' + w.year + '</span>' : '') + '</div>' +
       '<div class="dc-producer"' + dark + '>' + (w.producer || '') + '</div>' +
+      '</div>' +
+      (w.photo ? '<img src="' + w.photo + '" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;opacity:.9">' : '') +
+      '</div>' +
       '<div class="dc-footer">' +
       '<div><div class="dc-region"' + dark + '>' + (w.drink_from ? w.drink_from + '–' + (w.drink_to || '?') : (w.region || '')) + '</div></div>' +
       '<div>' +
@@ -708,13 +714,7 @@ function toggleCard(id) {
     '<div class="expand-inner">' +
     '<div class="expand-close"><button onclick="closeCard(\'' + id + '\')">✕ Sluiten</button></div>' +
 
-    // AI info or fetch button
-    '<div class="exp-section">' +
-    '<div class="exp-label">Info</div>' +
-    (w.ai_info
-      ? '<div class="exp-ai-text" id="ai-det">' + w.ai_info + '</div>'
-      : '<button class="exp-ai-btn" id="ai-det" onclick="loadAIDetail(\'' + id + '\')">Haal info op</button>') +
-    '</div>' +
+
 
     // Data grid
     '<div class="exp-grid">' +
@@ -926,9 +926,12 @@ function handlePhoto(input) {
   reader.onload = function(e) {
     var dataUrl = e.target.result;
     photoB64 = dataUrl.split(',')[1];
+    scannedPhotoForSave = dataUrl;
     document.getElementById('pimg').src = dataUrl;
     document.getElementById('ppw').style.display = 'block';
     document.getElementById('scan-prev').className = 'ai-prev';
+    // Auto-scan after photo selected
+    scanLabel();
   };
   reader.readAsDataURL(file);
 }
@@ -990,7 +993,9 @@ async function saveWine() {
     drinkTo: parseInt(document.getElementById('f-dto').value) || null,
     rating: starRating || null,
     notes: document.getElementById('f-notes').value,
-    aiInfo: existingAI });
+    aiInfo: existingAI,
+    photo: scannedPhotoForSave || null });
+  scannedPhotoForSave = null;
   btn.textContent = 'Opslaan'; btn.disabled = false;
   if (ok) {
     closeModal(); toast('Opgeslagen');
@@ -1022,14 +1027,16 @@ function handleScanPhoto(input) {
     document.getElementById('sc-preview-img').src = e.target.result;
     document.getElementById('sc-preview-wrap').style.display = 'block';
     document.getElementById('sc-result').style.display = 'none';
+    // Auto-analyze immediately
+    doWinkelScan();
   };
   reader.readAsDataURL(file);
 }
 
 async function doWinkelScan() {
   if (!scPhotoB64) return;
-  var btn = document.querySelector('#sc-preview-wrap .btn-scan-ai');
-  btn.textContent = 'Analyseren...';
+  var btn = document.getElementById('scan-analyze-btn');
+  if(btn) { btn.style.display='block'; btn.textContent = 'Analyseren...'; }
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
@@ -1056,8 +1063,9 @@ async function doWinkelScan() {
     if (w.advies) info += '<div class="sc-block" style="background:rgba(196,146,42,.06)"><div class="sc-label">Advies</div><div class="sc-val">' + w.advies + '</div></div>';
     document.getElementById('sc-info').innerHTML = info || '<div class="sc-block"><div class="sc-val" style="opacity:.4">Geen info beschikbaar.</div></div>';
     document.getElementById('sc-result').style.display = 'block';
-    btn.textContent = 'Analyseer etiket';
-  } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'Analyseer etiket'; }
+    document.getElementById('scan-analyze-btn').style.display = 'block';
+    document.getElementById('scan-analyze-btn').textContent = 'Opnieuw analyseren';
+  } catch(e) { toast('Fout: ' + e.message); document.getElementById('scan-analyze-btn').style.display = 'block'; }
 }
 
 function logTasting() {
@@ -1092,6 +1100,11 @@ function addScannedToKelder() {
     estPrice = ((scannedWine.geschatte_prijs_min + scannedWine.geschatte_prijs_max) / 2).toFixed(2);
   }
 
+  // Store compressed photo for saving
+  if (scPhotoB64) {
+    var thumb = 'data:image/jpeg;base64,' + scPhotoB64.substring(0, 80000);
+    scannedPhotoForSave = 'data:image/jpeg;base64,' + scPhotoB64;
+  }
   openModal();
   document.getElementById('f-name').value = scannedWine.name || '';
   document.getElementById('f-producer').value = scannedWine.producer || '';
