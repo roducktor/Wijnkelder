@@ -262,17 +262,19 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
 .exp-ai-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;word-break:break-word;}
 .exp-ai-btn{width:100%;height:38px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
-.exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.2);}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.15);}
 .exp-item{padding:12px 18px;border-right:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);}
 .exp-item:nth-child(3n){border-right:none;}
 .exp-val{font-size:18px;font-weight:700;color:#fff;}
 .exp-stars-row{display:flex;align-items:center;justify-content:space-between;}
 .exp-stars{font-size:18px;color:rgba(255,255,255,.7);letter-spacing:3px;}
-.exp-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(0,0,0,.2);border-top:1px solid rgba(0,0,0,.2);}
-.exp-btn{height:46px;background:rgba(0,0,0,.25);color:rgba(255,255,255,.9);border:none;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
-.exp-btn.primary{background:rgba(0,0,0,.4);color:#fff;}
-.exp-del-btn{width:100%;height:38px;background:none;border:none;border-top:1px solid rgba(0,0,0,.2);color:rgba(255,255,255,.3);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
-.note-entry{padding:8px 0;border-bottom:1px solid rgba(0,0,0,.2);}
+.exp-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.15);}
+.exp-btn{flex:1;height:44px;background:rgba(0,0,0,.25);color:rgba(255,255,255,.9);border:none;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
+.exp-btn:active{opacity:.75;}
+.exp-btn.primary{background:rgba(255,255,255,.9);color:var(--expand-text,#000);flex:1.4;}
+.exp-btn.danger{background:rgba(0,0,0,.15);color:rgba(255,255,255,.45);}
+
+.note-entry{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.15);}
 .note-entry:last-child{border-bottom:none;}
 .note-date{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px;}
 .note-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5;}
@@ -286,7 +288,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.37</span>
+        <span class="version" id="slbl">v0.38</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
@@ -547,7 +549,7 @@ function initScrollHeader() {
   main.addEventListener('scroll', function() {
     if (!ticking) {
       requestAnimationFrame(function() {
-        var progress = Math.min(1, main.scrollTop / 160);
+        var progress = Math.min(1, main.scrollTop / 370);
         var h = Math.max(0, heroH * (1 - progress));
         var op = Math.max(0, 1 - progress * 1.4);
         hero.style.maxHeight = h + 'px';
@@ -563,9 +565,9 @@ function initScrollHeader() {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.37');
+  setSS('spin', 'v0.38');
   await loadWines();
-  setSS('ok', 'v0.37');
+  setSS('ok', 'v0.38');
 }
 
 function setSS(cls, txt) {
@@ -589,7 +591,7 @@ async function saveToDB(w) {
     rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.37'); await loadWines(); return true;
+  setSS('ok', 'v0.38'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -735,11 +737,11 @@ function toggleCard(id) {
 
     // Actions
     '<div class="exp-actions">' +
-    '<button class="exp-btn" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
-    '<button class="exp-btn primary" onclick="drinkFles(\'' + id + '\')">Loggen</button>' +
     '<button class="exp-btn" onclick="addFles(\'' + id + '\')">+ Fles</button>' +
+    '<button class="exp-btn primary" onclick="drinkFles(\'' + id + '\')">Loggen</button>' +
+    '<button class="exp-btn" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
+    (w.notes ? '<button class="exp-btn danger" onclick="clearNotes(\'' + id + '\')">Wis logs</button>' : '') +
     '</div>' +
-    (w.notes ? '<button class="exp-del-btn" onclick="clearNotes(\'' + id + '\')">Verwijder notities</button>' : '') +
     '</div>';
 
   var outer = document.getElementById('card-' + id);
