@@ -288,7 +288,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.38</span>
+        <span class="version" id="slbl">v0.39</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
@@ -495,7 +495,7 @@ var SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
 
 var sb, wines = [], editId = null, starRating = 0, detailId = null;
-var photoB64 = null, scPhotoB64 = null, scannedWine = null;
+var photoB64 = null, scPhotoB64 = null, scannedWine = null, scannedAiInfo = null;
 var activeTypeFilter = '';
 var currentDrinkRating = 0, currentDrinkAmount = 'glas';
 
@@ -549,7 +549,7 @@ function initScrollHeader() {
   main.addEventListener('scroll', function() {
     if (!ticking) {
       requestAnimationFrame(function() {
-        var progress = Math.min(1, main.scrollTop / 370);
+        var progress = Math.min(1, main.scrollTop / 676);
         var h = Math.max(0, heroH * (1 - progress));
         var op = Math.max(0, 1 - progress * 1.4);
         hero.style.maxHeight = h + 'px';
@@ -565,9 +565,9 @@ function initScrollHeader() {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.38');
+  setSS('spin', 'v0.39');
   await loadWines();
-  setSS('ok', 'v0.38');
+  setSS('ok', 'v0.39');
 }
 
 function setSS(cls, txt) {
@@ -591,7 +591,7 @@ async function saveToDB(w) {
     rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.38'); await loadWines(); return true;
+  setSS('ok', 'v0.39'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -849,7 +849,7 @@ async function loadAIDetail(id) {
   if (!box) return;
   box.innerHTML = '<span class="loading-txt">Info ophalen...</span>';
   var prompt = 'Vertel in het Nederlands over: ' + (w.name || '') + ' ' + (w.year || '') + ' van ' + (w.producer || '') + ', ' + (w.region || '') + ', type: ' + (w.type || '') + '. Behandel: herkomst, druivenrassen of granen, smaakprofiel, aroma, afdronk, serveertemperatuur en spijscombinaties. Schrijf lopende tekst, max 120 woorden. Eindig met een volledige zin.';
-  var info = await claudeText(prompt, 800);
+  var info = await claudeText(prompt, 1500);
   if (info) {
     box.className = 'exp-ai-text';
     box.innerHTML = info;
@@ -975,7 +975,10 @@ async function saveWine() {
   if (!name) { alert('Naam is verplicht.'); return; }
   var btn = document.querySelector('#modal .btn-save');
   btn.textContent = 'Opslaan...'; btn.disabled = true;
-  var existingAI = editId ? ((wines.find(function(w) { return w.id === editId; }) || {}).ai_info || null) : null;
+  var existingAI = editId
+    ? ((wines.find(function(w) { return w.id === editId; }) || {}).ai_info || null)
+    : (scannedAiInfo || null);
+  scannedAiInfo = null; // reset after use
   var ok = await saveToDB({ id: editId || null, name: name,
     type: document.getElementById('f-type').value,
     year: parseInt(document.getElementById('f-year').value) || null,
@@ -1045,6 +1048,7 @@ async function doWinkelScan() {
     document.getElementById('sc-name').textContent = (w.name || 'Onbekend') + (w.year ? ' ' + w.year : '');
     document.getElementById('sc-meta').textContent = [w.producer, w.region, w.type].filter(Boolean).join(' · ');
     var info = '';
+    if (w.geschatte_prijs_min && w.geschatte_prijs_max) info += '<div class="sc-block-row" style="background:rgba(196,146,42,.08)"><div class="sc-label" style="color:var(--gold)">Geschatte prijs</div><div class="sc-val" style="color:var(--gold);font-weight:700">€' + w.geschatte_prijs_min + ' – €' + w.geschatte_prijs_max + '</div></div>';
     if (w.druivenras) info += '<div class="sc-block"><div class="sc-label">Druivenras / Graan</div><div class="sc-val">' + w.druivenras + '</div></div>';
     if (w.smaakprofiel) info += '<div class="sc-block"><div class="sc-label">Smaakprofiel</div><div class="sc-val">' + w.smaakprofiel + '</div></div>';
     if (w.serveertemperatuur) info += '<div class="sc-block-row"><div class="sc-label">Serveer</div><div class="sc-val">' + w.serveertemperatuur + '</div></div>';
@@ -1073,12 +1077,28 @@ function addScannedToKelder() {
   ['kelder','reviews','scanner'].forEach(function(t, i) {
     document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
+  // Build AI info text from scan data
+  var aiParts = [];
+  if (scannedWine.druivenras) aiParts.push(scannedWine.druivenras + '.');
+  if (scannedWine.smaakprofiel) aiParts.push(scannedWine.smaakprofiel);
+  if (scannedWine.serveertemperatuur) aiParts.push('Serveer op ' + scannedWine.serveertemperatuur + '.');
+  if (scannedWine.spijscombinaties) aiParts.push('Past bij: ' + scannedWine.spijscombinaties + '.');
+  if (scannedWine.advies) aiParts.push(scannedWine.advies);
+  scannedAiInfo = aiParts.length ? aiParts.join(' ') : null;
+
+  // Estimated price midpoint
+  var estPrice = null;
+  if (scannedWine.geschatte_prijs_min && scannedWine.geschatte_prijs_max) {
+    estPrice = ((scannedWine.geschatte_prijs_min + scannedWine.geschatte_prijs_max) / 2).toFixed(2);
+  }
+
   openModal();
   document.getElementById('f-name').value = scannedWine.name || '';
   document.getElementById('f-producer').value = scannedWine.producer || '';
   document.getElementById('f-region').value = scannedWine.region || '';
   document.getElementById('f-year').value = scannedWine.year || '';
   if (scannedWine.type) document.getElementById('f-type').value = scannedWine.type;
+  if (estPrice) document.getElementById('f-price').value = estPrice;
 }
 
 async function claudeText(prompt, maxTok) {
