@@ -264,6 +264,21 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 
 /* AI box */
 .ai-box{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ── EXPAND PANEL ── */
+.card-expand{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.4,0,.2,1);
+  margin:0 20px;
+  border-radius:0 0 var(--r) var(--r);
+  background:var(--black2);
+  margin-top:-20px;
+  margin-bottom:8px;
+}
+.card-expand.open{max-height:1200px;}
+.expand-inner{padding-top:20px;}
+.expand-close{display:flex;justify-content:flex-end;padding:8px 16px 0;}
+.expand-close button{background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
 </style>
 </head>
 <body>
@@ -274,7 +289,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.31</span>
+        <span class="version" id="slbl">v0.32</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="add-pill" onclick="openModal()">+ Toevoegen</button>
       </div>
@@ -315,10 +330,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
         <div class="card-stack" id="wine-list"></div>
         <div class="stack-end"></div>
       </div>
-      <div id="detail-view">
-        <button class="back-btn" onclick="closeDetail()">← Terug</button>
-        <div id="detail-content"></div>
-      </div>
+
     </div>
 
     <!-- LOGBOEK TAB -->
@@ -495,6 +507,20 @@ var CARD_COLORS = {
   'whisky':'#C4922A','rum':'#3D1F6B','cognac':'#8B3A1F','gin':'#1F5A3A','overig':'#3A3A3A'
 };
 
+function typeKey(type) {
+  var t = (type || 'overig').toLowerCase().trim();
+  if (t === 'rosé' || t === 'rose') return 'rose';
+  if (t === 'rood') return 'rood';
+  if (t === 'wit') return 'wit';
+  if (t === 'mousserende') return 'mousserende';
+  if (t === 'dessertwijn') return 'dessertwijn';
+  if (t === 'whisky') return 'whisky';
+  if (t === 'rum') return 'rum';
+  if (t === 'cognac') return 'cognac';
+  if (t === 'gin') return 'gin';
+  return 'overig';
+}
+
 function getCardColor(type) {
   return CARD_COLORS[(type||'').toLowerCase()] || '#3A3A3A';
 }
@@ -517,9 +543,9 @@ function imgToJpeg(file, cb) {
 async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   document.getElementById('app').style.display = 'flex';
-  setSS('spin', 'v0.31');
+  setSS('spin', 'v0.32');
   await loadWines();
-  setSS('ok', 'v0.31');
+  setSS('ok', 'v0.32');
 }
 
 function setSS(cls, txt) {
@@ -543,7 +569,7 @@ async function saveToDB(w) {
     rating: w.rating || null, notes: w.notes, ai_info: w.aiInfo || null };
   var r = w.id ? await sb.from('wines').update(row).eq('id', w.id) : await sb.from('wines').insert(row);
   if (r.error) { setSS('err', 'fout'); toast('Opslaan mislukt'); return false; }
-  setSS('ok', 'v0.31'); await loadWines(); return true;
+  setSS('ok', 'v0.32'); await loadWines(); return true;
 }
 
 async function delFromDB(id) {
@@ -595,15 +621,15 @@ function renderList() {
   el.innerHTML = list.map(function(w, i) {
     var nextW = list[i + 1];
     var nextColor = nextW ? getCardColor(nextW.type) : '';
-    var nextLabel = nextW ? (nextW.type || '') + (nextW.name ? ' · ' + nextW.name : '') : '';
-    var tk = (w.type || 'overig').toLowerCase().replace(/\s/g,'').replace(/é/g,'e');
+    var nextLabel = nextW ? (nextW.type || '').toUpperCase() : '';
+    var tk = typeKey(w.type);
     var stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '';
-    var isAmber = tk === 'whisky';
+    var isAmber = tk === 'whisky' || tk === 'cognac' || tk === 'gin';
     var dark = isAmber ? ' style="color:#000"' : '';
-    return '<div class="card-outer"' +
+    return '<div class="card-outer" id="card-' + w.id + '"' +
       (nextColor ? ' style="--next-color:' + nextColor + '"' : '') +
       (nextLabel ? ' data-next-label="' + nextLabel + '"' : '') + '>' +
-      '<div class="drink-card dc-' + tk + '" onclick="showDetail(\'' + w.id + '\')">' +
+      '<div class="drink-card dc-' + tk + '" onclick="toggleCard(\'' + w.id + '\')">' +
       '<div class="dc-header">' +
       '<span class="dc-type"' + dark + '>' + (w.type || '') + (w.region ? ' · ' + w.region : '') + '</span>' +
       '<span class="dc-badge"' + dark + '>' + (w.bottles || 0) + ' fl.</span>' +
@@ -618,13 +644,21 @@ function renderList() {
   }).join('');
 }
 
-function showDetail(id) {
+var openCardId = null;
+
+function toggleCard(id) {
+  if (openCardId === id) {
+    closeCard(id);
+    return;
+  }
+  if (openCardId) closeCard(openCardId);
+  openCardId = id;
   detailId = id;
   var w = wines.find(function(x) { return x.id === id; });
   if (!w) return;
-  var tk = (w.type || 'overig').toLowerCase().replace(/\s/g,'').replace(/é/g,'e');
+  var tk = typeKey(w.type);
   var color = getCardColor(w.type);
-  var isAmber = tk === 'whisky';
+  var isAmber = (tk === 'whisky' || tk === 'cognac' || tk === 'gin');
   var textColor = isAmber ? '#000' : '#fff';
   var s5 = w.rating || 0;
   var sh = '★'.repeat(s5) + '☆'.repeat(5 - s5);
@@ -639,8 +673,9 @@ function showDetail(id) {
         (rest ? '<div class="note-text">' + rest + '</div>' : '') + '</div>';
     }).join('');
   }
-  document.getElementById('detail-content').innerHTML =
-    '<div class="detail-hero dc-' + tk + '" style="background:' + color + ';color:' + textColor + '">' +
+  var expandHtml = '<div class="expand-inner">' +
+    '<div class="expand-close"><button onclick="closeCard(\'' + id + '\')">✕ Sluiten</button></div>' +
+    '<div style="background:' + color + ';color:' + textColor + ';border-radius:var(--r);margin:0 0 1px;padding:20px;">' +
     '<div class="detail-category" style="color:' + (isAmber ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.55)') + '">' + (w.type || '') + (w.region ? ' · ' + w.region : '') + '</div>' +
     '<div class="detail-name-big">' + (w.name || '') + '</div>' +
     '<div class="detail-vintage">' + (w.year || '') + '</div>' +
@@ -654,7 +689,7 @@ function showDetail(id) {
     '<div class="detail-meta-label" style="margin-top:8px;color:' + (isAmber ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.35)') + '">Waarde</div>' +
     '<div class="detail-meta-val">' + (w.price ? '€' + ((w.price) * (w.bottles || 0)).toFixed(2) : '—') + '</div>' +
     '</div></div></div>' +
-    '<div class="detail-grid">' +
+    '</div>' + '<div class="detail-grid">' +
     '<div class="ditem"><div class="di-l">Type</div><div class="di-v">' + (w.type || '—') + '</div></div>' +
     '<div class="ditem"><div class="di-l">Jaar</div><div class="di-v">' + (w.year || '—') + '</div></div>' +
     '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '€' + Number(w.price).toFixed(2) : '—') + '</div></div>' +
@@ -670,9 +705,32 @@ function showDetail(id) {
     (w.ai_info ? '<div class="ai-box">' + w.ai_info + '</div>' : '<button class="btn-ai-inline" onclick="loadAIDetail(\'' + id + '\')">Haal info op</button>') +
     '</div></div>' +
     (w.notes ? '<button class="btn-del-notes" onclick="clearNotes(\'' + id + '\')">Verwijder alle notities</button>' : '');
-  document.getElementById('main-view').style.display = 'none';
-  document.getElementById('detail-view').style.display = 'block';
+  // Insert expand panel after the card
+  var outer = document.getElementById('card-' + id);
+  if (!outer) return;
+  var panel = document.createElement('div');
+  panel.id = 'expand-' + id;
+  panel.className = 'card-expand';
+  panel.innerHTML = expandHtml;
+  outer.parentNode.insertBefore(panel, outer.nextSibling);
+  // Animate in
+  requestAnimationFrame(function() { panel.classList.add('open'); });
+  // Scroll card into view
+  setTimeout(function() { outer.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
 }
+
+function closeCard(id) {
+  var panel = document.getElementById('expand-' + id);
+  if (panel) {
+    panel.classList.remove('open');
+    setTimeout(function() { if (panel.parentNode) panel.parentNode.removeChild(panel); }, 300);
+  }
+  if (openCardId === id) openCardId = null;
+  detailId = null;
+}
+
+function showDetail(id) { toggleCard(id); }
+function closeDetail() { if (openCardId) closeCard(openCardId); }
 
 function closeDetail() {
   detailId = null;
@@ -772,7 +830,7 @@ function goToDetail(id) {
   ['kelder','reviews','scanner'].forEach(function(t, i) {
     document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
   });
-  showDetail(id);
+  setTimeout(function() { toggleCard(id); }, 100);
 }
 
 function openModal(id) {
