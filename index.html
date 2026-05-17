@@ -9,7 +9,6 @@
 <title>MijnKelder</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js" onerror="window.heic2any=null"></script>
 <style>
 :root{--wine:#7B2D3E;--wine-dark:#5a1f2c;--wine-light:#f9f0f2;--wine-mid:#c4849a;--bg:#faf8f5;--card:#ffffff;--text:#1a1410;--muted:#6b5c52;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);--r:12px;--rs:8px;}
 @media(prefers-color-scheme:dark){:root{--bg:#12100e;--card:#1e1a17;--text:#f0ebe5;--muted:#9a8a7e;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);--wine-light:#2a1520;}}
@@ -133,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.03</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.04</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -177,8 +176,8 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <button class="scan-big-btn" onclick="document.getElementById('sc-cam').click()">📷 Camera</button>
         <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼 Galerij</button>
       </div>
-      <input type="file" id="sc-cam" accept="image/*" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
-      <input type="file" id="sc-gal" accept="image/*" style="display:none" onchange="handleScanPhoto(this)">
+      <input type="file" id="sc-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
+      <input type="file" id="sc-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleScanPhoto(this)">
       <div class="scan-preview-wrap" id="sc-preview-wrap">
         <img id="sc-preview-img" alt="preview">
         <button class="btn-ai" style="width:100%;height:44px" onclick="doWinkelScan()">✨ AI: analyseer deze wijn</button>
@@ -206,8 +205,8 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
           <button class="btn-scan" onclick="document.getElementById('inp-cam').click()">Camera</button>
           <button class="btn-scan" onclick="document.getElementById('inp-gal').click()">Galerij</button>
         </div>
-        <input type="file" id="inp-cam" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
-        <input type="file" id="inp-gal" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        <input type="file" id="inp-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handlePhoto(this)">
+        <input type="file" id="inp-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhoto(this)">
         <div class="ppw" id="ppw">
           <img id="pimg" alt="preview">
           <button class="btn-ai" style="margin-top:6px" onclick="scanLabel()">Herken wijn op foto</button>
@@ -259,7 +258,6 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 </div>
 
 <div class="toast" id="toast"></div>
-<canvas id="cvs" style="display:none"></canvas>
 
 <script>
 var AAPI = 'https://api.anthropic.com/v1/messages';
@@ -269,37 +267,16 @@ var sb, wines = [], editId = null, starRating = 0, detailId = null;
 var photoB64 = null, scPhotoB64 = null, scannedWine = null;
 
 // Convert any image (incl HEIC) to JPEG via canvas
-async function imgToJpeg(file, cb) {
-  var type = (file.type || '').toLowerCase();
-  var fname = (file.name || '').toLowerCase();
-  var isHeic = type === 'image/heic' || type === 'image/heif' || fname.endsWith('.heic') || fname.endsWith('.heif');
-
-  if (isHeic) {
-    if (typeof heic2any === 'undefined' || !heic2any) {
-      cb(null, null, 'heic2any library niet geladen. Probeer de pagina te herladen.');
-      return;
-    }
-    try {
-      var jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var d = e.target.result;
-        cb(d.split(',')[1], d);
-      };
-      reader.onerror = function() { cb(null); };
-      reader.readAsDataURL(jpegBlob);
-      return;
-    } catch(e) {
-      console.warn('heic2any failed:', e);
-      cb(null, null, 'HEIC conversie mislukt: ' + e.message);
-      return;
-    }
-  }
-
-  // Non-HEIC: read directly via FileReader
+function imgToJpeg(file, cb) {
+  // iOS auto-converts HEIC to JPEG when accept= specifies jpeg/png/webp
+  // So we can just read the file directly with FileReader
   var reader = new FileReader();
-  reader.onload = function(e) { var d = e.target.result; cb(d.split(',')[1], d); };
-  reader.onerror = function() { cb(null); };
+  reader.onload = function(e) {
+    var d = e.target.result;
+    if (!d || d.indexOf(',') === -1) { cb(null, null, 'Foto kon niet worden gelezen.'); return; }
+    cb(d.split(',')[1], d);
+  };
+  reader.onerror = function() { cb(null, null, 'Foto laden mislukt. Probeer een andere foto.'); };
   reader.readAsDataURL(file);
 }
 
