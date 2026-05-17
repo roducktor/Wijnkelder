@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.17</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.18</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -667,16 +667,20 @@ async function doWinkelScan() {
       btn.textContent = 'AI: analyseer deze wijn'; return;
     }
     scannedWine = w;
-    var displayName = (w.name || w.producer || 'Onbekende wijn') + (w.year ? ' ' + w.year : '');
-    document.getElementById('sc-name').textContent = displayName;
-    // Also use producer as name fallback if name is empty
+    // Use producer as name if name is empty
     if (!w.name && w.producer) w.name = w.producer;
+    // Use name+producer combo if still empty
+    if (!w.name) w.name = [w.region, w.type].filter(Boolean).join(' ');
+    var displayName = w.name + (w.year ? ' ' + w.year : '');
+    document.getElementById('sc-name').textContent = displayName || 'Wijn gevonden';
     document.getElementById('sc-meta').textContent = [w.producer, w.region, w.druivenras].filter(Boolean).join(' - ');
-    document.getElementById('sc-info').innerHTML =
-      (w.smaakprofiel ? '<b>Smaak:</b> ' + w.smaakprofiel + '<br><br>' : '') +
-      (w.advies ? '<b>Advies:</b> ' + w.advies + '<br><br>' : '') +
-      (w.serveertemperatuur ? '<b>Serveer:</b> ' + w.serveertemperatuur + '<br>' : '') +
-      (w.spijscombinaties ? '<b>Past bij:</b> ' + w.spijscombinaties : '');
+    var infoHtml = '';
+    if (w.smaakprofiel) infoHtml += '<b>Smaak:</b> ' + w.smaakprofiel + '<br><br>';
+    if (w.advies) infoHtml += '<b>Advies:</b> ' + w.advies + '<br><br>';
+    if (w.serveertemperatuur) infoHtml += '<b>Serveer:</b> ' + w.serveertemperatuur + '<br>';
+    if (w.spijscombinaties) infoHtml += '<b>Past bij:</b> ' + w.spijscombinaties;
+    if (!infoHtml) infoHtml = 'Wijn herkend. Druk op "+ Voeg toe" om details in te vullen.';
+    document.getElementById('sc-info').innerHTML = infoHtml;
     document.getElementById('sc-result').style.display = 'block';
     btn.textContent = 'AI: analyseer deze wijn';
   } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
