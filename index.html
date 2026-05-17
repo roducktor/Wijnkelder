@@ -9,6 +9,7 @@
 <title>MijnKelder</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js" onerror="window.heic2any=null"></script>
 <style>
 :root{--wine:#7B2D3E;--wine-dark:#5a1f2c;--wine-light:#f9f0f2;--wine-mid:#c4849a;--bg:#faf8f5;--card:#ffffff;--text:#1a1410;--muted:#6b5c52;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);--r:12px;--rs:8px;}
 @media(prefers-color-scheme:dark){:root{--bg:#12100e;--card:#1e1a17;--text:#f0ebe5;--muted:#9a8a7e;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);--wine-light:#2a1520;}}
@@ -120,6 +121,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1410;color:white;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .loading-txt{color:var(--muted);font-size:13px;font-style:italic;}
+.version{font-size:10px;color:var(--muted);opacity:0.6;letter-spacing:.3px;}
 </style>
 </head>
 <body>
@@ -131,7 +133,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.03</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -267,38 +269,38 @@ var sb, wines = [], editId = null, starRating = 0, detailId = null;
 var photoB64 = null, scPhotoB64 = null, scannedWine = null;
 
 // Convert any image (incl HEIC) to JPEG via canvas
-function imgToJpeg(file, cb) {
+async function imgToJpeg(file, cb) {
   var type = (file.type || '').toLowerCase();
   var fname = (file.name || '').toLowerCase();
   var isHeic = type === 'image/heic' || type === 'image/heif' || fname.endsWith('.heic') || fname.endsWith('.heif');
-  if (!isHeic) {
-    var reader = new FileReader();
-    reader.onload = function(e) { var d = e.target.result; cb(d.split(',')[1], d); };
-    reader.onerror = function() { cb(null); };
-    reader.readAsDataURL(file);
-    return;
+
+  if (isHeic) {
+    if (typeof heic2any === 'undefined' || !heic2any) {
+      cb(null, null, 'heic2any library niet geladen. Probeer de pagina te herladen.');
+      return;
+    }
+    try {
+      var jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var d = e.target.result;
+        cb(d.split(',')[1], d);
+      };
+      reader.onerror = function() { cb(null); };
+      reader.readAsDataURL(jpegBlob);
+      return;
+    } catch(e) {
+      console.warn('heic2any failed:', e);
+      cb(null, null, 'HEIC conversie mislukt: ' + e.message);
+      return;
+    }
   }
-  var obj = URL.createObjectURL(file);
-  var img = new Image();
-  img.onload = function() {
-    var c = document.getElementById('cvs');
-    var mw = 1200, mh = 1200, w = img.width, h = img.height;
-    if (w > mw) { h = Math.round(h * mw / w); w = mw; }
-    if (h > mh) { w = Math.round(w * mh / h); h = mh; }
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    var b64 = c.toDataURL('image/jpeg', 0.85).split(',')[1];
-    URL.revokeObjectURL(obj);
-    cb(b64, obj);
-  };
-  img.onerror = function() {
-    URL.revokeObjectURL(obj);
-    var reader = new FileReader();
-    reader.onload = function(e) { cb(e.target.result.split(',')[1], e.target.result); };
-    reader.onerror = function() { cb(null); };
-    reader.readAsDataURL(file);
-  };
-  img.src = obj;
+
+  // Non-HEIC: read directly via FileReader
+  var reader = new FileReader();
+  reader.onload = function(e) { var d = e.target.result; cb(d.split(',')[1], d); };
+  reader.onerror = function() { cb(null); };
+  reader.readAsDataURL(file);
 }
 
 async function init() {
@@ -515,14 +517,13 @@ function updateStars() { document.querySelectorAll('.star-btn').forEach(function
 
 function handlePhoto(input) {
   var file = input.files[0]; if (!file) return;
-  imgToJpeg(file, function(b64, objUrl) {
+  imgToJpeg(file, function(b64, objUrl, errMsg) {
     if (!b64) {
       document.getElementById('scan-prev').className = 'ai-prev show';
-      document.getElementById('scan-prev').textContent = 'Foto laden mislukt. Probeer een andere foto.';
+      document.getElementById('scan-prev').textContent = errMsg || 'Foto laden mislukt. Probeer een JPEG foto.';
       return;
     }
     photoB64 = b64;
-    // Show preview using a fresh object URL for display
     var displayUrl = URL.createObjectURL(file);
     document.getElementById('pimg').src = displayUrl;
     document.getElementById('ppw').style.display = 'block';
@@ -602,8 +603,8 @@ async function deleteWine() {
 // WINKEL SCANNER
 function handleScanPhoto(input) {
   var file = input.files[0]; if (!file) return;
-  imgToJpeg(file, function(b64) {
-    if (!b64) { toast('Foto laden mislukt'); return; }
+  imgToJpeg(file, function(b64, objUrl, errMsg) {
+    if (!b64) { toast(errMsg || 'Foto laden mislukt'); return; }
     scPhotoB64 = b64;
     var displayUrl = URL.createObjectURL(file);
     document.getElementById('sc-preview-img').src = displayUrl;
