@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.18</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.19</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -537,9 +537,8 @@ function handlePhoto(input) {
 async function scanLabel() {
   if (!photoB64) return;
   var el = document.getElementById('scan-prev');
-  el.className = 'ai-prev show'; el.textContent = 'Afbeelding verkleinen...';
-  compressImage(photoB64, async function(smallB64) {
-  el.textContent = 'Etiket herkennen...';
+  el.className = 'ai-prev show'; el.textContent = 'Etiket herkennen...';
+  var smallB64 = photoB64;
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_PUB_KEY, 'apikey': SB_PUB_KEY },
@@ -567,7 +566,6 @@ async function scanLabel() {
     el.textContent = 'Gevonden: ' + [w.name, w.producer, w.region, w.year].filter(Boolean).join(', ');
     toast('Etiket herkend');
   } catch(e) { el.textContent = 'Fout: ' + e.message; }
-  }); // end compressImage
 }
 
 async function saveWine() {
@@ -637,14 +635,14 @@ async function doWinkelScan() {
   if (!scPhotoB64) return;
   var btn = document.querySelector('#sc-preview-wrap .btn-ai');
   btn.textContent = 'Analyseren...';
-  compressImage(scPhotoB64, async function(smallB64) {
   try {
+    var useB64 = scPhotoB64;
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_PUB_KEY, 'apikey': SB_PUB_KEY },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800,
         system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: useB64 } },
           { type: 'text', text: 'Analyseer dit wijnetiket volledig.' }
         ]}]})});
     var data = await res.json();
@@ -684,7 +682,6 @@ async function doWinkelScan() {
     document.getElementById('sc-result').style.display = 'block';
     btn.textContent = 'AI: analyseer deze wijn';
   } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
-  }); // end compressImage
 }
 
 function addScannedToKelder() {
