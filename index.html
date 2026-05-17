@@ -120,6 +120,9 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1410;color:white;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .loading-txt{color:var(--muted);font-size:13px;font-style:italic;}
+.btn-del-notes{width:100%;height:38px;border:1px solid #e24b4a;background:none;color:#e24b4a;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.drink-star{background:none;border:none;cursor:pointer;font-size:28px;color:#ccc;padding:2px;line-height:1;}
+.drink-star.lit{color:var(--wine);}
 .version{font-size:10px;color:var(--muted);opacity:0.6;letter-spacing:.3px;}
 </style>
 </head>
@@ -132,7 +135,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.21</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.22</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -234,16 +237,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <div class="fg"><label class="fl">Drink vanaf</label><input class="fi" id="f-dfrom" type="number" placeholder="2024"></div>
         <div class="fg"><label class="fl">Drink voor</label><input class="fi" id="f-dto" type="number" placeholder="2032"></div>
       </div>
-      <div class="fg">
-        <label class="fl">Beoordeling</label>
-        <div class="star-row">
-          <button class="star-btn" onclick="setStar(1)">&#9733;</button>
-          <button class="star-btn" onclick="setStar(2)">&#9733;</button>
-          <button class="star-btn" onclick="setStar(3)">&#9733;</button>
-          <button class="star-btn" onclick="setStar(4)">&#9733;</button>
-          <button class="star-btn" onclick="setStar(5)">&#9733;</button>
-        </div>
-      </div>
+
       <div class="fg">
         <label class="fl">Proefnotitie</label>
         <textarea class="fta" id="f-notes" placeholder="Hoe smaakte de wijn? Aroma, smaak, afdronk..."></textarea>
@@ -258,6 +252,36 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="drink-modal">
+  <div class="modal" style="min-height:auto;max-height:80dvh;margin-top:auto;border-radius:var(--r) var(--r) 0 0">
+    <div class="modal-header">
+      <span class="modal-title">Fles loggen</span>
+      <button class="modal-close" onclick="document.getElementById('drink-modal').classList.remove('open')">x</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="drink-wine-id">
+      <div class="fg">
+        <label class="fl">Beoordeling</label>
+        <div class="star-row">
+          <button class="drink-star" onclick="setDrinkStar(1)">&#9733;</button>
+          <button class="drink-star" onclick="setDrinkStar(2)">&#9733;</button>
+          <button class="drink-star" onclick="setDrinkStar(3)">&#9733;</button>
+          <button class="drink-star" onclick="setDrinkStar(4)">&#9733;</button>
+          <button class="drink-star" onclick="setDrinkStar(5)">&#9733;</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Proefnotitie</label>
+        <textarea class="fta" id="drink-note" placeholder="Hoe smaakte de wijn? Gelegenheid, aroma, smaak, afdronk..." style="min-height:100px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="document.getElementById('drink-modal').classList.remove('open')">Annuleer</button>
+      <button class="btn-save" onclick="saveDrinkLog()">Opslaan</button>
+    </div>
+  </div>
+</div>
 <canvas id="cvs" style="display:none"></canvas>
 
 <script>
@@ -296,6 +320,17 @@ function compressImage(b64, cb) {
   };
   img.onerror = function() { cb(b64); }; // fallback to original
   img.src = 'data:image/jpeg;base64,' + b64;
+}
+
+async function clearNotes(id) {
+  if (!confirm('Alle proefnotities verwijderen?')) return;
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
+  w.notes = '';
+  await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
+    region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
+    drinkTo: w.drink_to, rating: w.rating, notes: '', aiInfo: w.ai_info });
+  showDetail(id);
 }
 
 async function init() {
@@ -400,15 +435,19 @@ function showDetail(id) {
     (w.drink_from ? '<div class="ditem"><div class="di-l">Drinkvenster</div><div class="di-v">' + w.drink_from + '--' + (w.drink_to || '?') + '</div></div>' : '') +
     '<div class="ditem"><div class="di-l">Prijs/fles</div><div class="di-v">' + (w.price ? '&#8364;' + Number(w.price).toFixed(2) : '--') + '</div></div>' +
     '</div>' +
-    (w.notes ? '<div class="dsec"><div class="ds-t">Proefnotitie</div><div class="ds-txt">' + w.notes + '</div></div>' : '') +
+    (w.notes ? '<div class="dsec"><div class="ds-t">Proefnotities</div>' +
+    w.notes.split('\n---\n').reverse().map(function(entry) {
+      return '<div class="ds-txt" style="padding:8px 0;border-bottom:1px solid var(--border)">' + entry.replace(/\n/g,'<br>') + '</div>';
+    }).join('') + '</div>' : '') +
     '<div class="dsec"><div class="ds-t">Wijninfo</div><div id="ai-det">' +
     (w.ai_info ? '<div class="ai-box">' + w.ai_info + '</div>' : '<button class="btn-ai-inline" onclick="loadAIDetail(\'' + id + '\')">Haal wijninfo op</button>') +
     '</div></div>' +
     '<div class="action-row">' +
     '<button class="btn-a p" onclick="openModal(\'' + id + '\')">Bewerk</button>' +
-    '<button class="btn-a" onclick="drinkFles(\'' + id + '\')">Drinken</button>' +
+    '<button class="btn-a" onclick="drinkFles(\'' + id + '\')">🍷 Drinken</button>' +
     '<button class="btn-a" onclick="addFles(\'' + id + '\')">+ Fles</button>' +
-    '</div>';
+    '</div>' +
+    (w.notes ? '<button class="btn-del-notes" onclick="clearNotes(\'' + id + '\')">Verwijder alle notities</button>' : '');
   document.getElementById('main-view').style.display = 'none';
   document.getElementById('detail-view').style.display = 'block';
 }
@@ -422,9 +461,40 @@ function closeDetail() {
 async function drinkFles(id) {
   var w = wines.find(function(x) { return x.id === id; });
   if (!w || w.bottles <= 0) { toast('Geen flessen meer'); return; }
-  var note = prompt('Proefnotitie (optioneel):');
+  openDrinkModal(id);
+}
+
+function openDrinkModal(id) {
+  var w = wines.find(function(x) { return x.id === id; });
+  document.getElementById('drink-modal').classList.add('open');
+  document.getElementById('drink-wine-id').value = id;
+  document.getElementById('drink-note').value = '';
+  document.getElementById('drink-rating').value = 0;
+  currentDrinkRating = 0;
+  updateDrinkStars();
+}
+
+var currentDrinkRating = 0;
+function setDrinkStar(n) { currentDrinkRating = n; updateDrinkStars(); }
+function updateDrinkStars() {
+  document.querySelectorAll('.drink-star').forEach(function(b, i) { b.classList.toggle('lit', i < currentDrinkRating); });
+}
+
+async function saveDrinkLog() {
+  var id = document.getElementById('drink-wine-id').value;
+  var note = document.getElementById('drink-note').value.trim();
+  var w = wines.find(function(x) { return x.id === id; });
+  if (!w) return;
   w.bottles = (w.bottles || 0) - 1;
-  if (note) w.notes = (w.notes ? w.notes + '\n\n' : '') + '[' + new Date().toLocaleDateString('nl-NL') + '] ' + note;
+  var date = new Date().toLocaleDateString('nl-NL');
+  var logEntry = '[' + date + ']';
+  if (currentDrinkRating) logEntry += ' ' + Array(currentDrinkRating+1).join('★') + Array(6-currentDrinkRating).join('☆');
+  if (note) logEntry += ' ' + note;
+  if (currentDrinkRating || note) {
+    w.notes = (w.notes ? w.notes + '\n---\n' : '') + logEntry;
+    if (currentDrinkRating) w.rating = currentDrinkRating;
+  }
+  document.getElementById('drink-modal').classList.remove('open');
   await saveToDB({ id: id, name: w.name, type: w.type, year: w.year, producer: w.producer,
     region: w.region, bottles: w.bottles, price: w.price, drinkFrom: w.drink_from,
     drinkTo: w.drink_to, rating: w.rating, notes: w.notes, aiInfo: w.ai_info });
@@ -594,7 +664,7 @@ async function saveWine() {
     price: parseFloat(document.getElementById('f-price').value) || null,
     drinkFrom: parseInt(document.getElementById('f-dfrom').value) || null,
     drinkTo: parseInt(document.getElementById('f-dto').value) || null,
-    rating: starRating || null,
+    rating: editId ? ((wines.find(function(w){return w.id===editId;})||{}).rating||null) : null,
     notes: document.getElementById('f-notes').value,
     aiInfo: aiInfo });
 
