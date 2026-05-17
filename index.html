@@ -99,22 +99,22 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .card-outer.expanded .drink-card{border-radius:var(--r) var(--r) 0 0;}
 .card-expand.open{border-radius:0 0 var(--r) var(--r);}
 .expand-inner{padding-bottom:4px;}
-.expand-close{display:flex;justify-content:flex-end;padding:10px 16px 4px;}
+.expand-close{display:flex;justify-content:flex-end;padding:10px 16px 4px;background:var(--expand-color,var(--black2));}
 .expand-close button{background:none;border:none;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
-.exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);}
+.exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
-.exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.15);}
-.exp-item{padding:12px 18px;border-right:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
+.exp-item{padding:12px 18px;border-right:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-item:nth-child(3n){border-right:none;}
 .exp-val{font-size:18px;font-weight:700;color:#fff;}
 .exp-stars-row{display:flex;align-items:center;justify-content:space-between;}
 .exp-stars{font-size:18px;color:rgba(255,255,255,.7);letter-spacing:3px;}
-.exp-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.15);}
+.exp-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-btn{flex:1;height:44px;background:rgba(0,0,0,.25);color:rgba(255,255,255,.9);border:none;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
 .exp-btn:active{opacity:.75;}
 .exp-btn.primary{background:rgba(255,255,255,.9);color:var(--expand-text,#000);flex:1.4;}
 .exp-btn.danger{background:rgba(0,0,0,.15);color:rgba(255,255,255,.45);}
-.note-entry{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.15);}
+.note-entry{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .note-entry:last-child{border-bottom:none;}
 .note-date{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px;}
 .note-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5;}
@@ -215,7 +215,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.44</span>
+        <span class="version" id="slbl">v0.50</span>
         <span class="sync-dot spin" id="sdot"></span>
       </div>
     </div>
@@ -490,9 +490,9 @@ function compressImage(dataUrl, maxWidth, quality, callback) {
 async function init(){
   sb=supabase.createClient(SB_URL,SB_KEY);
   document.getElementById('app').style.display='flex';
-  setSS('spin','v0.48');
+  setSS('spin','v0.50');
   await loadWines();
-  setSS('ok','v0.48');
+  setSS('ok','v0.50');
   initScrollHeader();
 }
 
@@ -521,7 +521,7 @@ async function saveToDB(w){
   };
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','v0.48');await loadWines();return true;
+  setSS('ok','v0.50');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -671,9 +671,9 @@ function closeCard(id){
   var outer=document.getElementById('card-'+id);
   if(panel){
     panel.classList.remove('open');
-    // Remove expanded (border-radius) just before panel fully closes
-    setTimeout(function(){if(outer) outer.classList.remove('expanded');},380);
-    setTimeout(function(){if(panel.parentNode) panel.parentNode.removeChild(panel);},420);
+    // Start rounding at 60% of animation (330ms of 550ms)
+    setTimeout(function(){if(outer) outer.classList.remove('expanded');},330);
+    setTimeout(function(){if(panel.parentNode) panel.parentNode.removeChild(panel);},560);
   } else {
     if(outer) outer.classList.remove('expanded');
   }
@@ -858,7 +858,7 @@ async function scanLabel(){
     var data=await res.json();
     if(data.error){el.textContent='Fout: '+data.error.message;return;}
     var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor your current usage[^\n]*/gi,'').replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
+    var txt=rawTxt.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/[a-z.]+\/[^\s]*/gi,'').replace(/AI\.DEV[^\n]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){el.textContent=txt;return;}
     if(!w.name&&w.producer) w.name=w.producer;
     if(w.name) document.getElementById('f-name').value=w.name;
@@ -967,7 +967,7 @@ async function doWinkelScan(){
     document.getElementById('scan-analyze-btn').style.display='block';
     if(data.error){toast('Fout: '+data.error.message);return;}
     var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor your current usage[^\n]*/gi,'').replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
+    var txt=rawTxt.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/[a-z.]+\/[^\s]*/gi,'').replace(/AI\.DEV[^\n]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){toast('Kon etiket niet lezen');return;}
     if(!w.name&&w.producer) w.name=w.producer;
     scannedWine=w;
