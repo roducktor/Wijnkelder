@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.19</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.20</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -262,7 +262,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 
 <script>
 var AAPI = 'https://yepcptjqjxjcblpozsia.supabase.co/functions/v1/claude-proxy';
-var SB_PUB_KEY = 'sb_publishable_t3PxyvxxkepTx2nWu2XVSQ_yue6Imnv'; // sb_publishable_... key uit Supabase API Keys
+// Using anon JWT key for Edge Function auth
 var SB_URL = 'https://yepcptjqjxjcblpozsia.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
 var sb, wines = [], editId = null, starRating = 0, detailId = null;
@@ -541,7 +541,7 @@ async function scanLabel() {
   var smallB64 = photoB64;
   try {
     var res = await fetch(AAPI, { method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_PUB_KEY, 'apikey': SB_PUB_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600,
         system: 'Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn). Antwoord ALLEEN met geldige JSON zonder markdown.',
         messages: [{ role: 'user', content: [
@@ -638,7 +638,7 @@ async function doWinkelScan() {
   try {
     var useB64 = scPhotoB64;
     var res = await fetch(AAPI, { method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_PUB_KEY, 'apikey': SB_PUB_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800,
         system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
         messages: [{ role: 'user', content: [
@@ -705,7 +705,7 @@ function addScannedToKelder() {
 async function claudeText(prompt) {
   try {
     var res = await fetch(AAPI, { method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_PUB_KEY, 'apikey': SB_PUB_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY, 'apikey': SB_KEY },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 500,
         system: 'Je bent een vriendelijke sommelier. Geef praktische wijninfo in het Nederlands. Geen bullet points, gewoon lopende tekst.',
         messages: [{ role: 'user', content: prompt }] }) });
