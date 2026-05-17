@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.05</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.07</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -258,6 +258,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
 </div>
 
 <div class="toast" id="toast"></div>
+<canvas id="cvs" style="display:none"></canvas>
 
 <script>
 var AAPI = 'https://api.anthropic.com/v1/messages';
@@ -278,6 +279,22 @@ function imgToJpeg(file, cb) {
   };
   reader.onerror = function() { cb(null, null, 'Foto laden mislukt. Probeer een andere foto.'); };
   reader.readAsDataURL(file);
+}
+
+// Compress image to max 800px wide/tall and return small base64 for API
+function compressImage(b64, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var c = document.getElementById('cvs');
+    var max = 800, w = img.width, h = img.height;
+    if (w > max) { h = Math.round(h * max / w); w = max; }
+    if (h > max) { w = Math.round(w * max / h); h = max; }
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    cb(c.toDataURL('image/jpeg', 0.7).split(',')[1]);
+  };
+  img.onerror = function() { cb(b64); }; // fallback to original
+  img.src = 'data:image/jpeg;base64,' + b64;
 }
 
 async function init() {
@@ -496,8 +513,7 @@ function handlePhoto(input) {
   var file = input.files[0];
   if (!file) return;
   var el = document.getElementById('scan-prev');
-  el.className = 'ai-prev show';
-  el.textContent = 'Foto laden... (type: ' + (file.type || 'onbekend') + ', ' + Math.round(file.size/1024) + 'KB)';
+  el.className = 'ai-prev';
   var reader = new FileReader();
   reader.onload = function(e) {
     var dataUrl = e.target.result;
@@ -520,14 +536,16 @@ function handlePhoto(input) {
 async function scanLabel() {
   if (!photoB64) return;
   var el = document.getElementById('scan-prev');
-  el.className = 'ai-prev show'; el.textContent = 'Etiket herkennen...';
+  el.className = 'ai-prev show'; el.textContent = 'Afbeelding verkleinen...';
+  compressImage(photoB64, async function(smallB64) {
+  el.textContent = 'Etiket herkennen...';
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-allow-cors': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600,
         system: 'Analyseer het wijnetiket en geef JSON terug met: name, producer, region, year (getal of null), type (kies uit: Rood, Wit, Rose, Mousserende, Dessertwijn). Antwoord ALLEEN met geldige JSON zonder markdown.',
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photoB64 } },
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
           { type: 'text', text: 'Wat staat er op dit wijnetiket? Geef JSON.' }
         ]}]})});
     var data = await res.json();
@@ -544,6 +562,7 @@ async function scanLabel() {
     el.textContent = 'Gevonden: ' + [w.name, w.producer, w.region, w.year].filter(Boolean).join(', ');
     toast('Etiket herkend');
   } catch(e) { el.textContent = 'Fout: ' + e.message; }
+  }); // end compressImage
 }
 
 async function saveWine() {
@@ -590,7 +609,7 @@ async function deleteWine() {
 function handleScanPhoto(input) {
   var file = input.files[0];
   if (!file) return;
-  toast('Foto laden... ' + (file.type || 'onbekend'));
+
   var reader = new FileReader();
   reader.onload = function(e) {
     var dataUrl = e.target.result;
@@ -613,13 +632,14 @@ async function doWinkelScan() {
   if (!scPhotoB64) return;
   var btn = document.querySelector('#sc-preview-wrap .btn-ai');
   btn.textContent = 'Analyseren...';
+  compressImage(scPhotoB64, async function(smallB64) {
   try {
     var res = await fetch(AAPI, { method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-allow-cors': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800,
         system: 'Analyseer het wijnetiket. Geef JSON met: name, producer, region, year (getal of null), type (Rood/Wit/Rose/Mousserende/Dessertwijn), druivenras, smaakprofiel (2-3 zinnen), advies (is dit een goede koop en wat maakt het bijzonder?), serveertemperatuur, spijscombinaties. ALLEEN geldige JSON.',
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: scPhotoB64 } },
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
           { type: 'text', text: 'Analyseer dit wijnetiket volledig.' }
         ]}]})});
     var data = await res.json();
@@ -639,6 +659,7 @@ async function doWinkelScan() {
     document.getElementById('sc-result').style.display = 'block';
     btn.textContent = 'AI: analyseer deze wijn';
   } catch(e) { toast('Fout: ' + e.message); btn.textContent = 'AI: analyseer deze wijn'; }
+  }); // end compressImage
 }
 
 function addScannedToKelder() {
