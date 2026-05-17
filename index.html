@@ -135,7 +135,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.24</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.25</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -623,7 +623,7 @@ async function scanLabel() {
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
     try {
-      var clean = txt.replace(/```json|```/g, '').trim();
+      var clean = txt.replace(/```json/g, '').replace(/```/g, '').trim();
       var jsonMatch = clean.match(/\{[\s\S]*\}/);
       if (jsonMatch) clean = jsonMatch[0];
       w = JSON.parse(clean);
@@ -720,7 +720,7 @@ async function doWinkelScan() {
     var txt = data.content ? data.content.map(function(c) { return c.text || ''; }).join('') : '';
     var w;
     try {
-      var clean = txt.replace(/```json|```/g, '').trim();
+      var clean = txt.replace(/```json/g, '').replace(/```/g, '').trim();
       // Find JSON object in response even if there's surrounding text
       var jsonMatch = clean.match(/\{[\s\S]*\}/);
       if (jsonMatch) clean = jsonMatch[0];
