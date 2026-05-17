@@ -132,7 +132,7 @@ select.filter{height:38px;padding:0 8px;border:1px solid var(--border2);border-r
         <span class="logo-name">MijnKelder</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="version">v0.13</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
+        <span class="version">v0.14</span><span class="sync-lbl"><span class="sync-dot" id="sdot"></span><span id="slbl">laden...</span></span>
         <button class="add-fab" onclick="openModal()">+ Toevoegen</button>
       </div>
     </div>
@@ -658,10 +658,11 @@ async function doWinkelScan() {
       if (jsonMatch) clean = jsonMatch[0];
       w = JSON.parse(clean);
     } catch(e) {
-      // AI gave text instead of JSON - show it directly
-      document.getElementById('sc-name').textContent = 'Wijninfo';
-      document.getElementById('sc-meta').textContent = '';
-      document.getElementById('sc-info').textContent = txt;
+      // AI gave text instead of JSON - show raw text, allow manual add
+      scannedWine = { name: '', producer: '', region: '', year: null, type: 'Rood' };
+      document.getElementById('sc-name').textContent = 'Wijn gevonden';
+      document.getElementById('sc-meta').textContent = 'Info kon niet automatisch worden ingelezen';
+      document.getElementById('sc-info').textContent = txt || 'Geen info beschikbaar. Voeg de wijn handmatig toe.';
       document.getElementById('sc-result').style.display = 'block';
       btn.textContent = 'AI: analyseer deze wijn'; return;
     }
@@ -681,6 +682,11 @@ async function doWinkelScan() {
 
 function addScannedToKelder() {
   if (!scannedWine) return;
+  // Switch to kelder tab first so modal is visible
+  document.querySelectorAll('.tab').forEach(function(t, i) { t.classList.toggle('active', i === 0); });
+  ['kelder', 'reviews', 'scanner'].forEach(function(t, i) {
+    document.getElementById('tab-' + t).style.display = i === 0 ? 'block' : 'none';
+  });
   openModal();
   setTimeout(function() {
     if (scannedWine.name) document.getElementById('f-name').value = scannedWine.name;
