@@ -1032,7 +1032,7 @@ async function scanLabel(){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:400,
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:400,
         system:'Lees dit etiket. JSON only: {"name":"","producer":"","region":"","year":null,"type":"Rood of Wit of Rose of Mousserende of Dessertwijn of Whisky of Rum of Cognac of Gin of Overig"}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
@@ -1170,7 +1170,7 @@ async function doWinkelScan(){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:800,
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,
         system:'Lees dit etiket. JSON only: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_min":0,"geschatte_prijs_max":0}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scPhotoB64}},
@@ -1252,7 +1252,7 @@ async function claudeText(prompt,maxTok){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:maxTok||500,
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:maxTok||500,
         system:'Je bent een drank expert. Geef praktische info in het Nederlands. Geen bullet points, gewoon lopende tekst.',
         messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
