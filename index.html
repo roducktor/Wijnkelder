@@ -99,7 +99,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .card-outer.expanded .drink-card{border-radius:var(--r) var(--r) 0 0;}
 .card-expand.open{border-radius:0 0 var(--r) var(--r);}
 .expand-inner{padding-bottom:4px;}
-.expand-close{display:flex;justify-content:flex-end;padding:10px 16px 4px;background:var(--expand-color,var(--black2));}
+.expand-close{display:flex;justify-content:flex-end;padding:28px 16px 4px;background:var(--expand-color,var(--black2));}
 .expand-close button{background:none;border:none;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
 .exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
@@ -215,7 +215,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.50</span>
+        <span class="version" id="slbl">v0.52</span>
         <span class="sync-dot spin" id="sdot"></span>
       </div>
     </div>
@@ -490,9 +490,9 @@ function compressImage(dataUrl, maxWidth, quality, callback) {
 async function init(){
   sb=supabase.createClient(SB_URL,SB_KEY);
   document.getElementById('app').style.display='flex';
-  setSS('spin','v0.50');
+  setSS('spin','v0.52');
   await loadWines();
-  setSS('ok','v0.50');
+  setSS('ok','v0.52');
   initScrollHeader();
 }
 
@@ -521,7 +521,7 @@ async function saveToDB(w){
   };
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','v0.50');await loadWines();return true;
+  setSS('ok','v0.52');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -671,9 +671,11 @@ function closeCard(id){
   var outer=document.getElementById('card-'+id);
   if(panel){
     panel.classList.remove('open');
-    // Start rounding at 60% of animation (330ms of 550ms)
-    setTimeout(function(){if(outer) outer.classList.remove('expanded');},330);
-    setTimeout(function(){if(panel.parentNode) panel.parentNode.removeChild(panel);},560);
+    // Wait for panel to fully collapse, THEN animate border-radius
+    setTimeout(function(){
+      if(panel.parentNode) panel.parentNode.removeChild(panel);
+      if(outer) outer.classList.remove('expanded');
+    },560);
   } else {
     if(outer) outer.classList.remove('expanded');
   }
@@ -858,7 +860,7 @@ async function scanLabel(){
     var data=await res.json();
     if(data.error){el.textContent='Fout: '+data.error.message;return;}
     var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/[a-z.]+\/[^\s]*/gi,'').replace(/AI\.DEV[^\n]*/gi,'').trim();
+    var txt=rawTxt.replace(/to monitor[^\n\r]*/gi,'').replace(/head to[^\n\r]*/gi,'').replace(/https?:\/\/\S+/gi,'').replace(/ai\.dev\S*/gi,'').replace(/monitor your[^\n\r]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){el.textContent=txt;return;}
     if(!w.name&&w.producer) w.name=w.producer;
     if(w.name) document.getElementById('f-name').value=w.name;
@@ -936,15 +938,17 @@ function handleScanPhoto(input){
     document.getElementById('sc-result').style.display='none';
     document.getElementById('add-choice').style.display='none';
     document.getElementById('scan-flow').style.display='block';
-    // Compress to 800px for API — fewer tokens, still readable
-    compressImage(fullDataUrl, 800, 0.8, function(compressed) {
+    // Use 1200px for API — good balance between token cost and readability
+    compressImage(fullDataUrl, 1200, 0.85, function(compressed) {
       scPhotoB64=compressed.split(',')[1];
-      // Also store thumbnail for card (120px)
-      compressImage(fullDataUrl, 120, 0.7, function(thumb) {
-        scannedPhotoForSave=thumb;
-      });
-      doWinkelScan();
     });
+    // Separate small thumbnail for card display only
+    compressImage(fullDataUrl, 120, 0.7, function(thumb) {
+      scannedPhotoForSave=thumb;
+    });
+    // Start scan immediately with full image, switch to compressed when ready
+    scPhotoB64=fullDataUrl.split(',')[1];
+    doWinkelScan();
   };
   reader.readAsDataURL(file);
 }
@@ -967,7 +971,7 @@ async function doWinkelScan(){
     document.getElementById('scan-analyze-btn').style.display='block';
     if(data.error){toast('Fout: '+data.error.message);return;}
     var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/[a-z.]+\/[^\s]*/gi,'').replace(/AI\.DEV[^\n]*/gi,'').trim();
+    var txt=rawTxt.replace(/to monitor[^\n\r]*/gi,'').replace(/head to[^\n\r]*/gi,'').replace(/https?:\/\/\S+/gi,'').replace(/ai\.dev\S*/gi,'').replace(/monitor your[^\n\r]*/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){toast('Kon etiket niet lezen');return;}
     if(!w.name&&w.producer) w.name=w.producer;
     scannedWine=w;
