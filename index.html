@@ -15,26 +15,46 @@
   --gold:#C4922A;--gold-light:#E8B84B;
   --white:#FFFFFF;--white2:#E8E4DC;--muted:#555555;--muted2:#333333;
   --r:20px;--rs:12px;
-  --c-rood:#C20114;--c-wit:#2D4A6B;--c-rose:#7B2D5A;--c-rosé:#7B2D5A;
+  --c-rood:#C20114;--c-wit:#2D4A6B;--c-rose:#7B2D5A;
   --c-mousserende:#1A5C3A;--c-dessertwijn:#6B3A1F;
-  --c-whisky:#C4922A;--c-rum:#3D1F6B;--c-cognac:#8B3A1F;--c-gin:#1F5A3A;--c-overig:#3A3A3A;
+  --c-whisky:#C4922A;--c-rum:#3D1F6B;--c-cognac:#8B3A1F;
+  --c-gin:#1F5A3A;--c-overig:#3A3A3A;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--black);color:var(--white);font-family:'Space Grotesk',sans-serif;}
 body{max-width:480px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
 
-/* HEADER */
+/* ── AUTH SCREEN ── */
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:40px 24px;background:var(--black);}
+.auth-logo{font-size:32px;font-weight:900;letter-spacing:6px;margin-bottom:8px;}
+.auth-sub{font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:48px;}
+.auth-card{background:var(--black2);border-radius:var(--r);padding:28px 24px;width:100%;max-width:360px;}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:20px;}
+.auth-tabs{display:flex;gap:1px;background:var(--black3);border-radius:var(--rs);margin-bottom:24px;overflow:hidden;}
+.auth-tab{flex:1;padding:10px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.auth-tab.active{background:var(--black);color:var(--white);}
+.auth-field{margin-bottom:16px;}
+.auth-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block;}
+.auth-input{width:100%;height:46px;padding:0 16px;background:var(--black3);border:none;border-radius:var(--rs);color:var(--white);font-size:15px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.auth-input::placeholder{color:var(--muted);}
+.auth-btn{width:100%;height:50px;background:var(--gold);color:var(--black);border:none;border-radius:var(--rs);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-top:8px;}
+.auth-err{font-size:12px;color:#e24b4a;margin-top:12px;text-align:center;min-height:18px;}
+.auth-magic{width:100%;height:44px;background:none;border:1px solid var(--black3);color:var(--muted);border-radius:var(--rs);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-top:8px;}
+.auth-magic:active{border-color:var(--gold);color:var(--gold);}
+
+/* ── HEADER ── */
 header{background:var(--black);padding:20px 20px 0;position:sticky;top:0;z-index:50;}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .wordmark{font-size:20px;font-weight:900;letter-spacing:5px;}
-.header-right{display:flex;align-items:center;gap:8px;}
+.header-right{display:flex;align-items:center;gap:10px;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
 .sync-dot.err{background:#C20114;}.sync-dot.spin{animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .version{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.user-btn{background:var(--black3);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
 
-/* HERO */
-.hero{padding:0 0 20px;overflow:hidden;}
+/* Hero */
+.hero{padding:0 0 20px;max-height:300px;opacity:1;overflow:hidden;}
 .hero-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
 .hero-number{font-size:54px;font-weight:900;line-height:1;letter-spacing:-2px;}
 .hero-number span{font-size:22px;color:var(--muted);font-weight:500;letter-spacing:0;}
@@ -43,101 +63,101 @@ header{background:var(--black);padding:20px 20px 0;position:sticky;top:0;z-index
 .ms-val{font-size:20px;font-weight:700;color:var(--gold);}
 .ms-label{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
 
-/* TABS */
+/* Tabs */
 .tabs{display:flex;border-bottom:1px solid var(--black3);}
 .tab{flex:1;padding:10px 0;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-bottom:-1px;}
 .tab.active{color:var(--white);border-bottom-color:var(--gold);}
 
-main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
+main{flex:1;overflow-y:auto;padding-bottom:2rem;}
 
-/* SEARCH */
+/* Search + filters */
 .search-row{margin:14px 20px 10px;background:var(--black3);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:10px;}
 .search-row input{background:none;border:none;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;flex:1;}
 .search-row input::placeholder{color:var(--muted);}
-
-/* FILTER PILLS */
 .filter-pills{display:flex;gap:7px;padding:0 20px 16px;overflow-x:auto;}
 .filter-pills::-webkit-scrollbar{display:none;}
 .fpill{background:none;color:var(--muted);border:1px solid var(--muted2);border-radius:30px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;font-family:'Space Grotesk',sans-serif;}
 .fpill.active{background:var(--white);color:var(--black);border-color:var(--white);}
 
-/* CARD STACK */
+/* Cards */
 .card-stack{padding:0 16px;}
 .card-outer{position:relative;margin-bottom:10px;}
 .card-outer:last-child{margin-bottom:0;}
-
-.drink-card{border-radius:var(--r);padding:16px 18px;cursor:pointer;position:relative;z-index:2;transition:opacity .15s;}
+.drink-card{border-radius:var(--r);padding:16px 18px;cursor:pointer;position:relative;z-index:2;transition:opacity .15s,border-radius .4s cubic-bezier(.4,0,.2,1);}
 .drink-card:active{opacity:.85;}
-
-.dc-rood{background:var(--c-rood);}.dc-wit{background:var(--c-wit);}
-.dc-rose,.dc-rosé{background:var(--c-rose);}.dc-mousserende{background:var(--c-mousserende);}
-.dc-dessertwijn{background:var(--c-dessertwijn);}.dc-whisky{background:var(--c-whisky);}
-.dc-rum{background:var(--c-rum);}.dc-cognac{background:var(--c-cognac);}
+.dc-rood{background:var(--c-rood);}.dc-wit{background:var(--c-wit);}.dc-rose{background:var(--c-rose);}
+.dc-mousserende{background:var(--c-mousserende);}.dc-dessertwijn{background:var(--c-dessertwijn);}
+.dc-whisky{background:var(--c-whisky);}.dc-rum{background:var(--c-rum);}.dc-cognac{background:var(--c-cognac);}
 .dc-gin{background:var(--c-gin);}.dc-overig{background:var(--c-overig);}
-
 .dc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
 .dc-type{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.6);}
 .dc-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.25);border-radius:30px;padding:4px 12px;color:rgba(255,255,255,.8);}
-.dc-dark .dc-type{color:rgba(0,0,0,.55);}.dc-dark .dc-badge{color:rgba(0,0,0,.7);}
-.dc-dark .dc-name{color:#000;}.dc-dark .dc-producer{color:rgba(0,0,0,.45);}
-.dc-dark .dc-region{color:rgba(0,0,0,.4);}.dc-dark .dc-score{color:#000;}
-.dc-dark .dc-stars{color:rgba(0,0,0,.5);}
-.dc-name{font-size:24px;font-weight:900;line-height:1.05;letter-spacing:-.5px;margin-bottom:3px;}
-.dc-producer{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:16px;}
+.dc-whisky .dc-type,.dc-cognac .dc-type,.dc-gin .dc-type{color:rgba(0,0,0,.55);}
+.dc-whisky .dc-badge,.dc-cognac .dc-badge,.dc-gin .dc-badge{color:rgba(0,0,0,.7);}
+.dc-whisky .dc-name,.dc-cognac .dc-name,.dc-gin .dc-name{color:var(--black);}
+.dc-whisky .dc-producer,.dc-cognac .dc-producer,.dc-gin .dc-producer{color:rgba(0,0,0,.45);}
+.dc-whisky .dc-region,.dc-cognac .dc-region,.dc-gin .dc-region{color:rgba(0,0,0,.4);}
+.dc-whisky .dc-score,.dc-cognac .dc-score,.dc-gin .dc-score{color:var(--black);}
+.dc-whisky .dc-stars,.dc-cognac .dc-stars,.dc-gin .dc-stars{color:rgba(0,0,0,.5);}
+.dc-name{font-size:26px;font-weight:900;line-height:1.05;letter-spacing:-.5px;margin-bottom:3px;}
+.dc-producer{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:18px;}
 .dc-footer{display:flex;justify-content:space-between;align-items:flex-end;}
 .dc-region{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);}
-.dc-score{font-size:40px;font-weight:900;line-height:1;letter-spacing:-2px;}
+.dc-score{font-size:42px;font-weight:900;line-height:1;letter-spacing:-2px;}
 .dc-stars{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:2px;text-align:right;margin-top:2px;}
 .dc-no-score{font-size:11px;color:rgba(255,255,255,.25);padding-bottom:8px;}
 
-/* CARD PHOTO */
-.dc-photo{width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;opacity:.9;}
-
-/* EXPAND */
-.card-expand{overflow:hidden;max-height:0;transition:max-height .5s cubic-bezier(.16,1,.3,1);margin-top:-2px;position:relative;z-index:1;}
+/* Expand */
+.card-expand{overflow:hidden;max-height:0;transition:max-height .55s cubic-bezier(.25,.46,.45,.94);background:var(--expand-color,var(--black2));margin-top:-2px;position:relative;z-index:1;}
 .card-expand.open{max-height:1400px;}
 .card-outer.expanded .drink-card{border-radius:var(--r) var(--r) 0 0;}
 .card-expand.open{border-radius:0 0 var(--r) var(--r);}
 .expand-inner{padding-bottom:4px;}
 .expand-close{display:flex;justify-content:flex-end;padding:28px 16px 4px;background:var(--expand-color,var(--black2));}
 .expand-close button{background:none;border:none;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
-.exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
-.exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
 .exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-item{padding:12px 18px;border-right:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-item:nth-child(3n){border-right:none;}
+.exp-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
 .exp-val{font-size:18px;font-weight:700;color:#fff;}
+.exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-stars-row{display:flex;align-items:center;justify-content:space-between;}
 .exp-stars{font-size:18px;color:rgba(255,255,255,.7);letter-spacing:3px;}
 .exp-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-btn{flex:1;height:44px;background:rgba(0,0,0,.25);color:rgba(255,255,255,.9);border:none;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
 .exp-btn:active{opacity:.75;}
-.exp-btn.primary{background:rgba(255,255,255,.9);color:var(--expand-text,#000);flex:1.4;}
+.exp-btn.primary{background:rgba(255,255,255,.9);color:#000;flex:1.4;}
 .exp-btn.danger{background:rgba(0,0,0,.15);color:rgba(255,255,255,.45);}
+.exp-del-btn{width:100%;height:38px;background:none;border:none;border-top:1px solid rgba(0,0,0,.2);color:rgba(255,255,255,.3);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
 .note-entry{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .note-entry:last-child{border-bottom:none;}
 .note-date{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px;}
 .note-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5;}
 
-/* EMPTY */
+/* Empty */
 .empty{text-align:center;padding:4rem 2rem;color:var(--muted);}
 .empty-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px;}
-.empty-sub{font-size:13px;line-height:1.6;}
+.empty-sub{font-size:13px;letter-spacing:.5px;line-height:1.6;}
 
-/* LOGBOEK */
-.log-card{background:var(--black2);margin:0 16px 10px;border-radius:var(--r);padding:16px;cursor:pointer;}
+/* Logboek */
+.log-card{background:var(--black2);margin:0 16px 10px;border-radius:var(--rs);padding:16px;cursor:pointer;}
 .lc-name{font-size:16px;font-weight:700;margin-bottom:4px;}
 .lc-meta{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.lc-stars{color:var(--gold);font-size:13px;letter-spacing:2px;margin-bottom:6px;}
+.lc-stars{color:var(--gold);font-size:13px;margin-bottom:6px;}
 .lc-text{font-size:13px;color:var(--muted);line-height:1.6;}
-.logboek-empty{text-align:center;padding:3rem 2rem;color:var(--muted);}
 
-/* ADD/SCANNER TAB */
-.add-choice{padding:24px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+/* Proeverijen tab */
+.tasting-card{margin:0 16px 10px;border-radius:var(--r);padding:18px;cursor:default;}
+.tc-date{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;}
+.tc-name{font-size:20px;font-weight:900;margin-bottom:4px;}
+.tc-meta{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:10px;}
+.tc-note{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5;}
+.tc-stars{font-size:14px;margin-top:8px;}
 
-
+/* Scanner / Toevoegen */
+.add-choice{padding:24px 16px;display:flex;flex-direction:column;align-items:center;}
 .add-choice-btns{display:flex;flex-direction:column;gap:12px;width:100%;}
-.add-choice-btn{background:var(--black2);border:none;border-radius:var(--r);padding:24px 20px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;}
+.add-choice-btn{background:var(--black2);border:none;border-radius:var(--r);padding:24px 20px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;transition:background .15s;}
 .add-choice-btn:active{background:var(--black3);}
 .acb-icon{width:52px;height:52px;background:var(--black3);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;}
 .acb-label{font-size:17px;font-weight:700;color:var(--white);margin-bottom:4px;}
@@ -145,36 +165,35 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .scan-flow-header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--black3);}
 .scan-back-btn{background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
 .scan-flow-title{font-size:14px;font-weight:700;}
-.scan-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;}
+.scan-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 16px 0;}
 .scan-big-btn{height:54px;background:var(--black2);color:var(--white);border:none;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--r);}
-.scan-preview-wrap{display:none;padding:0 16px 16px;}
-.scan-preview-wrap img{width:100%;max-height:260px;object-fit:cover;border-radius:var(--r);margin-bottom:12px;}
+.scan-preview-wrap{display:none;padding:16px 20px;border-bottom:1px solid var(--black3);}
+.scan-preview-wrap img{width:100%;max-height:240px;object-fit:cover;border-radius:var(--rs);margin-bottom:10px;}
 .analyzing-indicator{display:flex;align-items:center;justify-content:center;padding:14px;gap:4px;}
 .analyzing-text{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
-.analyzing-dots::after{content:'';animation:adots 1.2s infinite;color:var(--gold);font-weight:700;}
-@keyframes adots{0%{content:'';}25%{content:'.';}50%{content:'..';}75%{content:'...';}100%{content:'';}}
-.btn-scan-ai{width:100%;height:50px;background:var(--black3);color:var(--muted);border:none;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--r);}
-.scan-result{display:none;padding:0 16px 16px;}
-.scan-result-inner{background:var(--black2);border-radius:var(--r);overflow:hidden;}
-.src-name{font-size:22px;font-weight:900;padding:18px 18px 4px;}
-.src-meta{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 18px 14px;border-bottom:1px solid var(--black3);}
-.sc-block{padding:12px 18px;border-bottom:1px solid var(--black3);}
-.sc-block-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--black3);}
+.analyzing-dots::after{content:'';animation:dots 1.2s infinite;letter-spacing:2px;color:var(--gold);}
+@keyframes dots{0%{content:'';}25%{content:'.';}50%{content:'..';}75%{content:'...';}100%{content:''}}
+.btn-scan-ai{width:100%;height:50px;background:var(--gold);color:var(--black);border:none;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--r);}
+.scan-result{display:none;}
+.src-name{font-size:24px;font-weight:900;padding:20px 20px 4px;}
+.src-meta{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 20px 14px;border-bottom:1px solid var(--black3);}
+.sc-block{padding:12px 20px;border-bottom:1px solid var(--black3);}
+.sc-block-row{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid var(--black3);}
 .sc-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
 .sc-block-row .sc-label{margin-bottom:0;}
 .sc-val{font-size:13px;color:var(--white2);line-height:1.6;}
 .sc-block-row .sc-val{font-size:13px;color:var(--white);text-align:right;max-width:55%;}
-.scan-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px 18px;}
-.scan-action-btn{height:50px;background:var(--black3);color:var(--white);border:none;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--r);}
+.scan-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 16px;}
+.scan-action-btn{height:50px;background:var(--black2);color:var(--white);border:none;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--r);}
 .scan-action-btn.primary{background:var(--gold);color:var(--black);}
 
-/* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;overflow-y:auto;}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;overflow-y:auto;}
 .modal-overlay.open{display:block;}
 .modal{background:var(--black2);max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
 .modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--black3);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--black2);z-index:10;}
 .modal-title{font-size:18px;font-weight:900;letter-spacing:-.3px;}
-.modal-close{background:var(--black3);border:none;color:var(--white);cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-close{background:var(--black3);border:none;color:var(--white);cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;}
 .modal-body{padding:20px;flex:1;}
 .fg{margin-bottom:20px;}
 .fl{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block;}
@@ -184,6 +203,9 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .fsel option,.fsel optgroup{background:var(--black2);}
 .fta{width:100%;padding:14px 16px;border:none;background:var(--black3);border-radius:var(--rs);font-size:14px;color:var(--white);font-family:'Space Grotesk',sans-serif;resize:none;min-height:90px;line-height:1.5;outline:none;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.star-row{display:flex;gap:8px;margin-top:4px;}
+.star-btn{background:none;border:none;cursor:pointer;font-size:28px;color:var(--black3);padding:2px;line-height:1;}
+.star-btn.lit{color:var(--gold);}
 .btn-scan-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 .btn-scan{height:46px;border:1px solid var(--black3);background:var(--black3);color:var(--white);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
 .btn-ai-fetch{width:100%;height:42px;background:none;border:1px solid var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);margin-top:8px;}
@@ -192,34 +214,65 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 .ppw{display:none;margin-bottom:10px;}
 .ppw img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--rs);}
 .modal-footer{padding:16px 20px;border-top:1px solid var(--black3);display:flex;gap:8px;position:sticky;bottom:0;background:var(--black2);}
-.btn-save{flex:1;height:50px;background:var(--gold);color:var(--black);border:none;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
-.btn-cancel{height:50px;padding:0 16px;background:var(--black3);color:var(--muted);border:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
-.btn-delete{height:50px;padding:0 16px;background:none;border:1px solid rgba(194,1,20,.4);color:rgba(194,1,20,.8);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
-
-/* DRINK MODAL */
-.drink-amount-btn{height:42px;border:1px solid var(--black3);background:var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
+.btn-save{flex:1;height:50px;background:var(--gold);color:var(--black);border:none;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-cancel{height:50px;padding:0 16px;background:var(--black3);color:var(--muted);border:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.btn-delete{height:50px;padding:0 16px;background:none;border:1px solid rgba(194,1,20,.4);color:rgba(194,1,20,.8);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
+.drink-amount-btn{height:42px;border:1px solid var(--black3);background:var(--black3);color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:var(--rs);}
 .drink-amount-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold);}
 .drink-star{background:none;border:none;cursor:pointer;font-size:28px;color:var(--black3);padding:2px;line-height:1;}
 .drink-star.lit{color:var(--gold);}
 
-/* TOAST */
+/* User menu */
+.user-menu{position:fixed;top:72px;right:16px;background:var(--black2);border-radius:var(--rs);padding:8px;z-index:100;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;}
+.user-menu.open{display:block;}
+.um-email{font-size:11px;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--black3);margin-bottom:4px;}
+.um-btn{width:100%;height:40px;background:none;border:none;color:var(--white);font-size:12px;font-weight:700;text-align:left;padding:0 12px;cursor:pointer;border-radius:8px;font-family:'Space Grotesk',sans-serif;}
+.um-btn:hover{background:var(--black3);}
+.um-btn.danger{color:#e24b4a;}
+
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--black4);color:var(--white);padding:10px 20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;z-index:999;transition:transform .25s;white-space:nowrap;pointer-events:none;border-radius:30px;border:1px solid var(--black3);}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .loading-txt{color:var(--muted);font-size:12px;font-style:italic;}
-.stack-end{height:30px;}
 </style>
 </head>
 <body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo">SECTIO</div>
+  <div class="auth-sub">Collectio Spiritus</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showAuthTab('login',this)">Inloggen</button>
+      <button class="auth-tab" onclick="showAuthTab('register',this)">Registreren</button>
+    </div>
+    <div id="auth-login">
+      <div class="auth-field"><label class="auth-label">E-mail</label><input class="auth-input" id="login-email" type="email" placeholder="jij@email.com"></div>
+      <div class="auth-field"><label class="auth-label">Wachtwoord</label><input class="auth-input" id="login-pass" type="password" placeholder="••••••••"></div>
+      <button class="auth-btn" onclick="doLogin()">Inloggen</button>
+      <button class="auth-magic" onclick="doMagicLink()">Stuur magic link</button>
+    </div>
+    <div id="auth-register" style="display:none">
+      <div class="auth-field"><label class="auth-label">E-mail</label><input class="auth-input" id="reg-email" type="email" placeholder="jij@email.com"></div>
+      <div class="auth-field"><label class="auth-label">Wachtwoord</label><input class="auth-input" id="reg-pass" type="password" placeholder="Min. 6 tekens"></div>
+      <button class="auth-btn" onclick="doRegister()">Account aanmaken</button>
+    </div>
+    <div class="auth-err" id="auth-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.54</span>
+        <span class="version" id="slbl">v0.55</span>
         <span class="sync-dot spin" id="sdot"></span>
+        <button class="user-btn" onclick="toggleUserMenu()">👤</button>
       </div>
     </div>
-    <div class="hero" id="hero-section">
+    <div class="hero">
       <div class="hero-label">Totale collectie</div>
       <div class="hero-number" id="hero-num">0 <span>flessen</span></div>
       <div class="mini-stats">
@@ -229,11 +282,18 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
       </div>
     </div>
     <div class="tabs">
-      <button class="tab active" id="tab-btn-kelder" onclick="switchTab('kelder',this)">Collectie</button>
-      <button class="tab" id="tab-btn-reviews" onclick="switchTab('reviews',this)">Logboek</button>
-      <button class="tab" id="tab-btn-scanner" onclick="switchTab('scanner',this)">+ Toevoegen</button>
+      <button class="tab active" onclick="switchTab('kelder',this)">Collectie</button>
+      <button class="tab" onclick="switchTab('reviews',this)">Logboek</button>
+      <button class="tab" onclick="switchTab('proeverijen',this)">Proeverijen</button>
+      <button class="tab" onclick="switchTab('scanner',this)">+ Toevoegen</button>
     </div>
   </header>
+
+  <!-- User menu -->
+  <div class="user-menu" id="user-menu">
+    <div class="um-email" id="um-email"></div>
+    <button class="um-btn danger" onclick="doLogout()">Uitloggen</button>
+  </div>
 
   <main id="main-scroll">
     <!-- COLLECTIE -->
@@ -252,39 +312,35 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
         <button class="fpill" onclick="setFilter(this,'Gin')">Gin</button>
       </div>
       <div class="card-stack" id="wine-list"></div>
-      <div class="stack-end"></div>
+      <div style="height:30px"></div>
     </div>
 
     <!-- LOGBOEK -->
     <div id="tab-reviews" style="display:none">
-      <div style="padding:20px 16px 10px">
-        <div style="font-size:24px;font-weight:900;margin-bottom:4px">Logboek</div>
-        <div style="font-size:12px;color:var(--muted)">Gelogde proeverijen</div>
-      </div>
+      <div style="height:16px"></div>
       <div id="reviews-list"></div>
     </div>
 
-    <!-- TOEVOEGEN/SCANNER -->
+    <!-- PROEVERIJEN -->
+    <div id="tab-proeverijen" style="display:none">
+      <div style="height:16px"></div>
+      <div id="tastings-list"></div>
+    </div>
+
+    <!-- TOEVOEGEN -->
     <div id="tab-scanner" style="display:none">
-      <!-- Choice screen -->
       <div class="add-choice" id="add-choice">
         <div class="add-choice-btns">
           <button class="add-choice-btn" onclick="startScan()">
-            <div class="acb-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>
+            <div class="acb-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
             <div><div class="acb-label">Scan etiket</div><div class="acb-sub">Maak een foto of kies uit galerij</div></div>
           </button>
           <button class="add-choice-btn" onclick="openModal()">
-            <div class="acb-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </div>
+            <div class="acb-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <div><div class="acb-label">Handmatig</div><div class="acb-sub">Vul de details zelf in</div></div>
           </button>
         </div>
       </div>
-
-      <!-- Scan flow -->
       <div id="scan-flow" style="display:none">
         <div class="scan-flow-header">
           <button class="scan-back-btn" onclick="resetScanFlow()">← Terug</button>
@@ -295,27 +351,22 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
           <button class="scan-big-btn" onclick="document.getElementById('sc-gal').click()">🖼 Galerij</button>
         </div>
       </div>
-
       <input type="file" id="sc-cam" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" onchange="handleScanPhoto(this)">
       <input type="file" id="sc-gal" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleScanPhoto(this)">
-
       <div class="scan-preview-wrap" id="sc-preview-wrap">
-        <img id="sc-preview-img" alt="preview">
+        <img id="sc-preview-img" alt="">
         <div class="analyzing-indicator" id="analyzing-indicator" style="display:none">
           <span class="analyzing-text">Analyseren</span><span class="analyzing-dots"></span>
         </div>
         <button class="btn-scan-ai" id="scan-analyze-btn" onclick="doWinkelScan()" style="display:none">Opnieuw analyseren</button>
       </div>
-
       <div class="scan-result" id="sc-result">
-        <div class="scan-result-inner">
-          <div class="src-name" id="sc-name"></div>
-          <div class="src-meta" id="sc-meta"></div>
-          <div id="sc-info"></div>
-          <div class="scan-actions">
-            <button class="scan-action-btn" onclick="logTasting()">Noteer proeverij</button>
-            <button class="scan-action-btn primary" onclick="addScannedToKelder()">+ Voeg toe</button>
-          </div>
+        <div class="src-name" id="sc-name"></div>
+        <div class="src-meta" id="sc-meta"></div>
+        <div id="sc-info"></div>
+        <div class="scan-actions">
+          <button class="scan-action-btn" onclick="logTasting()">Noteer proeverij</button>
+          <button class="scan-action-btn primary" onclick="addScannedToKelder()">+ Voeg toe</button>
         </div>
       </div>
     </div>
@@ -354,9 +405,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
             <optgroup label="Spirits"><option>Whisky</option><option>Rum</option><option>Cognac</option><option>Gin</option><option>Overig</option></optgroup>
           </select>
         </div>
-        <div class="fg"><label class="fl">Jaar</label>
-          <input class="fi" id="f-year" type="number" placeholder="2020" min="1800" max="2030">
-        </div>
+        <div class="fg"><label class="fl">Jaar</label><input class="fi" id="f-year" type="number" placeholder="2020" min="1800" max="2030"></div>
       </div>
       <div class="frow">
         <div class="fg"><label class="fl">Producent</label><input class="fi" id="f-producer" placeholder="bijv. Deanston"></div>
@@ -371,8 +420,8 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
         <div class="fg"><label class="fl">Drink voor</label><input class="fi" id="f-dto" type="number" placeholder="2032"></div>
       </div>
       <div class="fg">
-        <label class="fl">Notities</label>
-        <textarea class="fta" id="f-notes" placeholder="Eerste indruk, aroma, smaak, gelegenheid..."></textarea>
+        <label class="fl">Eerste proefnotitie <span style="opacity:.4;font-weight:400">(optioneel)</span></label>
+        <textarea class="fta" id="f-notes" placeholder="Aroma, smaak, afdronk, gelegenheid..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
@@ -383,7 +432,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
   </div>
 </div>
 
-<!-- DRINK/LOG MODAL -->
+<!-- DRINK MODAL -->
 <div class="modal-overlay" id="drink-modal">
   <div class="modal" style="min-height:auto;max-height:85dvh;margin-top:auto;border-radius:var(--r) var(--r) 0 0;">
     <div class="modal-header">
@@ -403,7 +452,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
       </div>
       <div class="fg">
         <label class="fl">Beoordeling</label>
-        <div class="star-row" style="display:flex;gap:8px;margin-top:4px">
+        <div class="star-row">
           <button class="drink-star" onclick="setDrinkStar(1)">★</button>
           <button class="drink-star" onclick="setDrinkStar(2)">★</button>
           <button class="drink-star" onclick="setDrinkStar(3)">★</button>
@@ -429,114 +478,211 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
 var AAPI='https://yepcptjqjxjcblpozsia.supabase.co/functions/v1/claude-proxy';
 var SB_URL='https://yepcptjqjxjcblpozsia.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllcGNwdGpxanhqY2JscG96c2lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA1MTksImV4cCI6MjA5NDUxNjUxOX0.9NvfgUCEVXnyHuTBfF6IWCH89dWwfvt4STf1UAGSHh0';
+var STORAGE_URL=SB_URL+'/storage/v1/object/public/wine-photos/';
 
-var sb,wines=[],editId=null,detailId=null,openCardId=null;
-var activeTypeFilter='',starRating=0;
-var photoB64=null,scPhotoB64=null,scannedWine=null,scannedAiInfo=null,scannedPhotoForSave=null;
-var currentDrinkRating=0,currentDrinkAmount='glas';
+var sb, wines=[], editId=null, detailId=null, openCardId=null;
+var activeTypeFilter='', starRating=0;
+var photoB64=null, scPhotoB64=null, scannedWine=null, scannedAiInfo=null, scannedPhotoFile=null;
+var currentDrinkRating=0, currentDrinkAmount='glas';
+var currentUser=null;
 
-var CARD_COLORS={
-  rood:'#C20114',wit:'#2D4A6B',rose:'#7B2D5A',rose:'#7B2D5A',
-  mousserende:'#1A5C3A',dessertwijn:'#6B3A1F',
-  whisky:'#C4922A',rum:'#3D1F6B',cognac:'#8B3A1F',gin:'#1F5A3A',overig:'#3A3A3A'
-};
+var CARD_COLORS={rood:'#C20114',wit:'#2D4A6B',rose:'#7B2D5A',rosé:'#7B2D5A',mousserende:'#1A5C3A',dessertwijn:'#6B3A1F',whisky:'#C4922A',rum:'#3D1F6B',cognac:'#8B3A1F',gin:'#1F5A3A',overig:'#3A3A3A'};
 var DARK_TYPES=['whisky','cognac','gin'];
 
 function typeKey(type){
   var t=(type||'overig').toLowerCase().trim();
   if(t==='rosé'||t==='rose') return 'rose';
-  if(t==='rood') return 'rood';
-  if(t==='wit') return 'wit';
-  if(t==='mousserende') return 'mousserende';
-  if(t==='dessertwijn') return 'dessertwijn';
-  if(t==='whisky') return 'whisky';
-  if(t==='rum') return 'rum';
-  if(t==='cognac') return 'cognac';
-  if(t==='gin') return 'gin';
-  return 'overig';
+  var map={rood:'rood',wit:'wit',mousserende:'mousserende',dessertwijn:'dessertwijn',whisky:'whisky',rum:'rum',cognac:'cognac',gin:'gin'};
+  return map[t]||'overig';
+}
+function getCardColor(type){return CARD_COLORS[typeKey(type)]||'#3A3A3A';}
+function getUnit(type,count){return count===1?'fles':'flessen';}
+
+// ── AUTH ──
+function showAuthTab(tab,el){
+  document.querySelectorAll('.auth-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('auth-register').style.display=tab==='register'?'block':'none';
+  document.getElementById('auth-err').textContent='';
 }
 
-function getCardColor(type){ return CARD_COLORS[typeKey(type)]||'#3A3A3A'; }
-function getUnit(type,count){ return count===1?'fles':'flessen'; }
-
-function imgToJpeg(file,cb){
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var d=e.target.result;
-    if(!d||d.indexOf(',')===-1){cb(null,null,'Foto laden mislukt.');return;}
-    cb(d.split(',')[1],d);
-  };
-  reader.onerror=function(){cb(null,null,'Foto laden mislukt.');};
-  reader.readAsDataURL(file);
+async function doLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var pass=document.getElementById('login-pass').value;
+  var err=document.getElementById('auth-err');
+  if(!email||!pass){err.textContent='Vul e-mail en wachtwoord in.';return;}
+  err.textContent='Bezig...';
+  var r=await sb.auth.signInWithPassword({email,password:pass});
+  if(r.error){err.textContent=r.error.message;return;}
+  startApp(r.data.user);
 }
 
-// Compress photo to small thumbnail for card display (saves storage)
-// AND returns a resized version for API (saves tokens)
-function compressImage(dataUrl, maxWidth, quality, callback) {
-  var img = new Image();
-  img.onload = function() {
-    var canvas = document.createElement('canvas');
-    var ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-    if (ratio > 1) ratio = 1;
-    canvas.width = Math.round(img.width * ratio);
-    canvas.height = Math.round(img.height * ratio);
-    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-    callback(canvas.toDataURL('image/jpeg', quality));
-  };
-  img.onerror = function() { callback(dataUrl); };
-  img.src = dataUrl;
+async function doRegister(){
+  var email=document.getElementById('reg-email').value.trim();
+  var pass=document.getElementById('reg-pass').value;
+  var err=document.getElementById('auth-err');
+  if(!email||!pass){err.textContent='Vul e-mail en wachtwoord in.';return;}
+  if(pass.length<6){err.textContent='Wachtwoord min. 6 tekens.';return;}
+  err.textContent='Bezig...';
+  var r=await sb.auth.signUp({email,password:pass});
+  if(r.error){err.textContent=r.error.message;return;}
+  err.style.color='#4CAF50';
+  err.textContent='Bevestigingsmail verstuurd! Check je inbox.';
 }
 
+async function doMagicLink(){
+  var email=document.getElementById('login-email').value.trim();
+  var err=document.getElementById('auth-err');
+  if(!email){err.textContent='Vul eerst je e-mail in.';return;}
+  err.textContent='Bezig...';
+  var r=await sb.auth.signInWithOtp({email});
+  if(r.error){err.textContent=r.error.message;return;}
+  err.style.color='#4CAF50';
+  err.textContent='Magic link verstuurd! Check je inbox.';
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser=null; wines=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('user-menu').classList.remove('open');
+}
+
+function toggleUserMenu(){
+  document.getElementById('user-menu').classList.toggle('open');
+}
+
+function startApp(user){
+  currentUser=user;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('um-email').textContent=user.email;
+  loadWines();
+  initScrollHeader();
+}
+
+// ── INIT ──
 async function init(){
   sb=supabase.createClient(SB_URL,SB_KEY);
-  document.getElementById('app').style.display='flex';
-  setSS('spin','v0.54');
-  await loadWines();
-  setSS('ok','v0.54');
-  initScrollHeader();
+  // Check existing session
+  var r=await sb.auth.getSession();
+  if(r.data.session){
+    startApp(r.data.session.user);
+  } else {
+    document.getElementById('auth-screen').style.display='flex';
+  }
+  // Listen for auth changes
+  sb.auth.onAuthStateChange(function(event,session){
+    if(event==='SIGNED_IN'&&session) startApp(session.user);
+    if(event==='SIGNED_OUT'){
+      document.getElementById('app').style.display='none';
+      document.getElementById('auth-screen').style.display='flex';
+    }
+  });
 }
 
 function setSS(cls,txt){
   var dot=document.getElementById('sdot');
+  if(!dot) return;
   dot.className=cls==='ok'?'sync-dot':('sync-dot '+cls);
   document.getElementById('slbl').textContent=txt;
 }
 
 async function loadWines(){
-  var r=await sb.from('wines').select('*').order('created_at',{ascending:false});
+  setSS('spin','v0.55');
+  var r=await sb.from('wines').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
   if(r.error){setSS('err','fout');return;}
   wines=r.data||[];
   renderAll();
+  setSS('ok','v0.55');
 }
 
+// ── PHOTO UPLOAD TO SUPABASE STORAGE ──
+async function uploadPhoto(dataUrl, filename){
+  // Convert data URL to blob
+  var arr=dataUrl.split(','), mime=arr[0].match(/:(.*?);/)[1];
+  var bstr=atob(arr[1]), n=bstr.length, u8arr=new Uint8Array(n);
+  while(n--) u8arr[n]=bstr.charCodeAt(n);
+  var blob=new Blob([u8arr],{type:mime});
+
+  var path=currentUser.id+'/'+filename;
+  var r=await sb.storage.from('wine-photos').upload(path,blob,{contentType:mime,upsert:true});
+  if(r.error){console.error('Photo upload error:',r.error);return null;}
+  return STORAGE_URL+path;
+}
+
+// ── SAVE TO DB ──
 async function saveToDB(w){
   setSS('spin','...');
-  var photo=w.photo||null;
-  // Photos are pre-compressed thumbnails — no truncation needed
   var row={
+    user_id:currentUser.id,
     name:w.name,type:w.type,year:w.year||null,producer:w.producer,
     region:w.region,bottles:w.bottles,price:w.price||null,
     drink_from:w.drinkFrom||null,drink_to:w.drinkTo||null,
-    rating:w.rating||null,notes:w.notes,ai_info:w.aiInfo||null,photo:photo
+    rating:w.rating||null,notes:w.notes,ai_info:w.aiInfo||null,
+    photo:w.photo||null
   };
-  var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
-  if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','v0.54');await loadWines();return true;
+  var r=w.id?await sb.from('wines').update(row).eq('id',w.id).eq('user_id',currentUser.id)
+           :await sb.from('wines').insert(row);
+  if(r.error){setSS('err','fout');toast('Opslaan mislukt: '+r.error.message);return false;}
+  setSS('ok','v0.55');await loadWines();return true;
 }
 
 async function delFromDB(id){
-  await sb.from('wines').delete().eq('id',id);
+  await sb.from('wines').delete().eq('id',id).eq('user_id',currentUser.id);
   await loadWines();
 }
 
+// ── SHARED SCANS DB ──
+async function saveToScansDB(w, photoUrl){
+  if(!w||!w.name) return;
+  try {
+    await sb.from('scans').insert({
+      name:w.name, producer:w.producer||null, region:w.region||null,
+      year:w.year||null, type:w.type||null, ai_info:w.ai_info||null,
+      photo_url:photoUrl||null
+    });
+  } catch(e){ console.log('scans insert error:', e); }
+}
+
+async function lookupScan(name, producer){
+  if(!name) return null;
+  try {
+    var q=sb.from('scans').select('*').ilike('name','%'+name+'%');
+    if(producer) q=q.ilike('producer','%'+producer+'%');
+    var r=await q.limit(1);
+    if(r.data&&r.data.length>0) return r.data[0];
+  } catch(e){}
+  return null;
+}
+
+// ── TASTINGS ──
+async function saveTasting(t){
+  var r=await sb.from('tastings').insert({
+    user_id:currentUser.id,
+    name:t.name, type:t.type||null, region:t.region||null,
+    note:t.note||null, rating:t.rating||null
+  });
+  if(r.error) console.error('tasting save error:', r.error);
+}
+
+async function loadTastings(){
+  var r=await sb.from('tastings').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+  return r.data||[];
+}
+
+// ── TABS ──
 function switchTab(tab,el){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   if(el) el.classList.add('active');
-  ['kelder','reviews','scanner'].forEach(function(t){
+  ['kelder','reviews','proeverijen','scanner'].forEach(function(t){
     var e=document.getElementById('tab-'+t);
     if(e) e.style.display=t===tab?'block':'none';
   });
   if(tab==='reviews') renderReviews();
+  if(tab==='proeverijen') renderTastings();
   if(tab==='scanner'){
     var ac=document.getElementById('add-choice');
     var sf=document.getElementById('scan-flow');
@@ -547,6 +693,7 @@ function switchTab(tab,el){
     if(spw) spw.style.display='none';
     if(sr) sr.style.display='none';
   }
+  document.getElementById('user-menu').classList.remove('open');
 }
 
 function setFilter(btn,type){
@@ -578,16 +725,15 @@ function renderList(){
   });
   var el=document.getElementById('wine-list');
   if(!list.length){
-    el.innerHTML='<div class="empty"><div class="empty-title">'+(wines.length?'Geen resultaten':'Collectie is leeg')+'</div><div class="empty-sub">'+(wines.length?'Probeer een andere zoekterm.':'Voeg uw eerste fles toe.')+'</div></div>';
+    el.innerHTML='<div class="empty"><div class="empty-title">'+(wines.length?'Geen resultaten':'Collectie is leeg')+'</div><div class="empty-sub">'+(wines.length?'Probeer andere zoekterm.':'Voeg je eerste fles toe.')+'</div></div>';
     return;
   }
-  el.innerHTML=list.map(function(w,i){
+  el.innerHTML=list.map(function(w){
     var tk=typeKey(w.type);
     var isDark=DARK_TYPES.indexOf(tk)>=0;
     var dc=isDark?' style="color:#000"':'';
     var stars=w.rating?'★'.repeat(w.rating)+'☆'.repeat(5-w.rating):'';
-    var nextW=list[i+1];
-    var nextColor=nextW?getCardColor(nextW.type):'';
+    var photoUrl=w.photo||null;
     return '<div class="card-outer" id="card-'+w.id+'">'
       +'<div class="drink-card dc-'+tk+'" onclick="toggleCard(\''+w.id+'\')">'
       +'<div class="dc-header">'
@@ -599,7 +745,7 @@ function renderList(){
       +'<div class="dc-name"'+dc+'>'+(w.name||'')+(w.year?' <span style="font-weight:400;opacity:.6">'+w.year+'</span>':'')+'</div>'
       +'<div class="dc-producer"'+dc+'>'+(w.producer||'')+'</div>'
       +'</div>'
-      +(w.photo?'<img src="'+w.photo+'" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;opacity:.9">':'')
+      +(photoUrl?'<img src="'+photoUrl+'" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;opacity:.9" onerror="this.style.display=\'none\'">':'')
       +'</div>'
       +'<div class="dc-footer">'
       +'<div><div class="dc-region"'+dc+'>'+(w.drink_from?w.drink_from+'–'+(w.drink_to||'?'):(w.region||''))+'</div></div>'
@@ -608,17 +754,17 @@ function renderList(){
   }).join('');
 }
 
+// ── CARD EXPAND ──
 var openCardId=null;
 
 function toggleCard(id){
   if(openCardId===id){closeCard(id);return;}
   if(openCardId) closeCard(openCardId);
-  openCardId=id;detailId=id;
+  openCardId=id; detailId=id;
   var w=wines.find(function(x){return x.id===id;});
   if(!w) return;
   var tk=typeKey(w.type);
   var color=getCardColor(w.type);
-  var isDark=DARK_TYPES.indexOf(tk)>=0;
   var s5=w.rating||0;
   var sh='★'.repeat(s5)+'☆'.repeat(5-s5);
   var notesHtml='';
@@ -626,8 +772,7 @@ function toggleCard(id){
     w.notes.split('\n---\n').reverse().forEach(function(e){
       var ls=e.split('\n');
       notesHtml+='<div class="note-entry"><div class="note-date">'+(ls[0]||'')+'</div>'
-        +(ls.slice(1).join('\n')?'<div class="note-text">'+ls.slice(1).join('<br>')+'</div>':'')
-        +'</div>';
+        +(ls.slice(1).join('\n')?'<div class="note-text">'+ls.slice(1).join('<br>')+'</div>':'')+'</div>';
     });
   }
   var expandHtml=''
@@ -671,11 +816,8 @@ function closeCard(id){
   var outer=document.getElementById('card-'+id);
   if(panel){
     panel.classList.remove('open');
-    // Wait for panel to fully collapse, THEN animate border-radius
-    setTimeout(function(){
-      if(panel.parentNode) panel.parentNode.removeChild(panel);
-      if(outer) outer.classList.remove('expanded');
-    },560);
+    setTimeout(function(){if(outer) outer.classList.remove('expanded');},460);
+    setTimeout(function(){if(panel.parentNode) panel.parentNode.removeChild(panel);},570);
   } else {
     if(outer) outer.classList.remove('expanded');
   }
@@ -686,13 +828,12 @@ function closeCard(id){
 function showDetail(id){toggleCard(id);}
 function closeDetail(){if(openCardId) closeCard(openCardId);}
 
+// ── DRINK LOG ──
 async function drinkFles(id){
-  var w=wines.find(function(x){return x.id===id;});
-  if(!w) return;
   document.getElementById('drink-modal').classList.add('open');
   document.getElementById('drink-wine-id').value=id;
   document.getElementById('drink-note').value='';
-  currentDrinkRating=0;currentDrinkAmount='glas';
+  currentDrinkRating=0; currentDrinkAmount='glas';
   document.querySelectorAll('.drink-amount-btn').forEach(function(b,i){b.classList.toggle('active',i===0);});
   document.querySelectorAll('.drink-star').forEach(function(b){b.classList.remove('lit');});
 }
@@ -747,6 +888,7 @@ async function clearNotes(id){
     drinkTo:w.drink_to,rating:w.rating,notes:'',aiInfo:w.ai_info,photo:w.photo});
 }
 
+// ── LOGBOEK ──
 function renderReviews(){
   var logged=wines.filter(function(w){return w.rating||w.notes;})
     .sort(function(a,b){return(b.rating||0)-(a.rating||0);});
@@ -773,9 +915,35 @@ function renderReviews(){
       +'</div>'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
       +'<div class="dc-name"'+dc+'>'+(w.name||'')+'</div>'
-      +(w.photo?'<img src="'+w.photo+'" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0">':'')
+      +(w.photo?'<img src="'+w.photo+'" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.style.display=\'none\'">':'')
       +'</div>'
       +(lastNote?'<div style="font-size:12px;margin-top:8px;line-height:1.5;opacity:.6"'+dc+'>'+lastNote+(lastNote.length>=90?'…':'')+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+// ── PROEVERIJEN ──
+async function renderTastings(){
+  var el=document.getElementById('tastings-list');
+  el.innerHTML='<div class="empty"><div class="empty-sub">Laden...</div></div>';
+  var tastings=await loadTastings();
+  if(!tastings.length){
+    el.innerHTML='<div class="empty"><div class="empty-title">Geen proeverijen</div><div class="empty-sub">Scan een etiket en kies "Noteer proeverij".</div></div>';
+    return;
+  }
+  el.innerHTML=tastings.map(function(t){
+    var tk=typeKey(t.type);
+    var color=getCardColor(t.type);
+    var isDark=DARK_TYPES.indexOf(tk)>=0;
+    var dc=isDark?' style="color:#000"':'';
+    var stars=t.rating?'★'.repeat(t.rating)+'☆'.repeat(5-t.rating):'';
+    var date=t.created_at?new Date(t.created_at).toLocaleDateString('nl-NL'):'';
+    return '<div class="tasting-card dc-'+tk+'">'
+      +'<div class="tc-date"'+dc+'>'+date+'</div>'
+      +'<div class="tc-name"'+dc+'>'+(t.name||'')+'</div>'
+      +'<div class="tc-meta"'+dc+'>'+(t.type||'')+(t.region?' · '+t.region:'')+'</div>'
+      +(t.note?'<div class="tc-note"'+dc+'>'+t.note+'</div>':'')
+      +(t.rating?'<div class="tc-stars"'+dc+'>'+stars+'</div>':'')
       +'</div>';
   }).join('');
 }
@@ -783,19 +951,20 @@ function renderReviews(){
 function goToDetail(el){
   var id=el.dataset?el.dataset.id:el;
   document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
-  ['kelder','reviews','scanner'].forEach(function(t,i){
+  ['kelder','reviews','proeverijen','scanner'].forEach(function(t,i){
     document.getElementById('tab-'+t).style.display=i===0?'block':'none';
   });
   setTimeout(function(){toggleCard(id);},100);
 }
 
+// ── MODAL ──
 function openModal(id){
-  editId=id||null;starRating=0;
+  editId=id||null; starRating=0;
   document.getElementById('modal-title').textContent=id?'Bewerken':'Toevoegen';
   document.getElementById('btn-del').style.display=id?'block':'none';
   document.getElementById('scan-prev').className='ai-prev';
   document.getElementById('ai-prev').className='ai-prev';
-  photoB64=null;
+  photoB64=null; scannedPhotoFile=null;
   document.getElementById('ppw').style.display='none';
   document.getElementById('inp-cam').value='';
   document.getElementById('inp-gal').value='';
@@ -823,6 +992,22 @@ function openModal(id){
 
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 
+// ── PHOTO HANDLING ──
+function compressImage(dataUrl,maxWidth,quality,callback){
+  var img=new Image();
+  img.onload=function(){
+    var canvas=document.createElement('canvas');
+    var ratio=Math.min(maxWidth/img.width,maxWidth/img.height);
+    if(ratio>1) ratio=1;
+    canvas.width=Math.round(img.width*ratio);
+    canvas.height=Math.round(img.height*ratio);
+    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+    callback(canvas.toDataURL('image/jpeg',quality));
+  };
+  img.onerror=function(){callback(dataUrl);};
+  img.src=dataUrl;
+}
+
 function handlePhoto(input){
   var file=input.files[0];if(!file) return;
   var reader=new FileReader();
@@ -831,13 +1016,9 @@ function handlePhoto(input){
     document.getElementById('pimg').src=fullDataUrl;
     document.getElementById('ppw').style.display='block';
     document.getElementById('scan-prev').className='ai-prev';
-    // Compress for API
-    compressImage(fullDataUrl, 800, 0.8, function(compressed) {
+    scannedPhotoFile=file;
+    compressImage(fullDataUrl,800,0.8,function(compressed){
       photoB64=compressed.split(',')[1];
-      // Thumbnail for card
-      compressImage(fullDataUrl, 120, 0.7, function(thumb) {
-        scannedPhotoForSave=thumb;
-      });
       scanLabel();
     });
   };
@@ -851,16 +1032,15 @@ async function scanLabel(){
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:600,
-        system:'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"","producer":"","region":"","year":null,"type":"Rood of Wit of Rose of Mousserende of Dessertwijn of Whisky of Rum of Cognac of Gin of Overig"}',
+      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:400,
+        system:'Lees dit etiket. JSON only: {"name":"","producer":"","region":"","year":null,"type":"Rood of Wit of Rose of Mousserende of Dessertwijn of Whisky of Rum of Cognac of Gin of Overig"}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
-          {type:'text',text:'Wat staat er op dit etiket? Geef JSON.'}
+          {type:'text',text:'Etiket JSON?'}
         ]}]})});
     var data=await res.json();
     if(data.error){el.textContent='Fout: '+data.error.message;return;}
-    var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor[^\n\r]*/gi,'').replace(/head to[^\n\r]*/gi,'').replace(/https?:\/\/\S+/gi,'').replace(/ai\.dev\S*/gi,'').replace(/monitor your[^\n\r]*/gi,'').trim();
+    var txt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){el.textContent=txt;return;}
     if(!w.name&&w.producer) w.name=w.producer;
     if(w.name) document.getElementById('f-name').value=w.name;
@@ -878,7 +1058,7 @@ async function fetchAI(){
   if(!name){alert('Vul eerst een naam in.');return;}
   var el=document.getElementById('ai-prev');
   el.className='ai-prev show';el.textContent='Info ophalen…';
-  var info=await claudeText('Vertel beknopt over: "'+name+'". Geef: herkomst, druivenras of graan, smaakprofiel (2 zinnen), serveertemperatuur. In het Nederlands, eindig met volledige zin.',800);
+  var info=await claudeText('Vertel beknopt over: "'+name+'". Geef: herkomst, druivenras of graan, smaakprofiel (2 zinnen), serveertemperatuur. In het Nederlands, eindig met volledige zin.',600);
   el.textContent=info||'Geen info beschikbaar.';
 }
 
@@ -887,6 +1067,27 @@ async function saveWine(){
   if(!name){alert('Naam is verplicht.');return;}
   var btn=document.querySelector('#modal .btn-save');
   btn.textContent='Opslaan…';btn.disabled=true;
+
+  // Upload photo to Storage if we have one
+  var photoUrl=null;
+  if(editId){
+    var existing=wines.find(function(w){return w.id===editId;});
+    photoUrl=existing?existing.photo:null;
+  }
+  if(scannedPhotoFile){
+    var fname=Date.now()+'.jpg';
+    compressImage(URL.createObjectURL(scannedPhotoFile),400,0.8,async function(compressed){
+      photoUrl=await uploadPhoto(compressed,fname);
+      await doSave(name,photoUrl);
+      btn.textContent='Opslaan';btn.disabled=false;
+    });
+    return;
+  }
+  await doSave(name,photoUrl);
+  btn.textContent='Opslaan';btn.disabled=false;
+}
+
+async function doSave(name,photoUrl){
   var existingAI=editId?((wines.find(function(w){return w.id===editId;})||{}).ai_info||null):(scannedAiInfo||null);
   scannedAiInfo=null;
   var ok=await saveToDB({id:editId||null,name:name,
@@ -901,10 +1102,17 @@ async function saveWine(){
     rating:starRating||null,
     notes:document.getElementById('f-notes').value,
     aiInfo:existingAI,
-    photo:scannedPhotoForSave||null});
-  scannedPhotoForSave=null;
-  btn.textContent='Opslaan';btn.disabled=false;
-  if(ok){closeModal();toast('Opgeslagen');}
+    photo:photoUrl});
+  if(ok){
+    closeModal();toast('Opgeslagen');
+    // Save to shared scans DB for future lookups
+    if(!editId){
+      saveToScansDB({name:name,producer:document.getElementById('f-producer').value,
+        region:document.getElementById('f-region').value,
+        year:parseInt(document.getElementById('f-year').value)||null,
+        type:document.getElementById('f-type').value,ai_info:existingAI},photoUrl);
+    }
+  }
 }
 
 async function deleteWine(){
@@ -913,6 +1121,7 @@ async function deleteWine(){
   closeModal();closeDetail();toast('Verwijderd');
 }
 
+// ── SCANNER ──
 function startScan(){
   document.getElementById('add-choice').style.display='none';
   document.getElementById('scan-flow').style.display='block';
@@ -938,14 +1147,11 @@ function handleScanPhoto(input){
     document.getElementById('sc-result').style.display='none';
     document.getElementById('add-choice').style.display='none';
     document.getElementById('scan-flow').style.display='block';
-    // Show analyzing immediately
     document.getElementById('analyzing-indicator').style.display='flex';
-    // Compress thumbnail for card storage
-    compressImage(fullDataUrl, 120, 0.7, function(thumb) {
-      scannedPhotoForSave=thumb;
-    });
-    // Compress for API then scan — doWinkelScan inside callback so scPhotoB64 is ready
-    compressImage(fullDataUrl, 1200, 0.85, function(compressed) {
+    // Store original file for upload
+    scannedPhotoFile=file;
+    // Compress for API
+    compressImage(fullDataUrl,1200,0.85,function(compressed){
       scPhotoB64=compressed.split(',')[1];
       doWinkelScan();
     });
@@ -954,15 +1160,18 @@ function handleScanPhoto(input){
 }
 
 async function doWinkelScan(){
-  if(!scPhotoB64) return;
+  if(!scPhotoB64){toast('Geen foto beschikbaar');return;}
   document.getElementById('analyzing-indicator').style.display='flex';
   document.getElementById('scan-analyze-btn').style.display='none';
-  if(!scPhotoB64){toast('Geen foto beschikbaar');return;}
+
+  // First: check shared scans DB
+  // We don't have a name yet so skip lookup here, do it after recognition
+
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
-      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:600,
-        system:'Analyseer het etiket. Antwoord ALLEEN met JSON: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_min":0,"geschatte_prijs_max":0}',
+      body:JSON.stringify({model:'gemini-2.0-flash-lite',max_tokens:800,
+        system:'Lees dit etiket. JSON only: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_min":0,"geschatte_prijs_max":0}',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scPhotoB64}},
           {type:'text',text:'Analyseer dit etiket volledig.'}
@@ -972,10 +1181,18 @@ async function doWinkelScan(){
     document.getElementById('scan-analyze-btn').style.display='block';
     if(data.error){toast('Fout: '+data.error.message);return;}
     var rawTxt=data.content?data.content.map(function(c){return c.text||'';}).join(''):'';
-    var txt=rawTxt.replace(/to monitor[^\n\r]*/gi,'').replace(/head to[^\n\r]*/gi,'').replace(/https?:\/\/\S+/gi,'').replace(/ai\.dev\S*/gi,'').replace(/monitor your[^\n\r]*/gi,'').trim();
+    var txt=rawTxt.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/\S+/gi,'').trim();
     var w;try{var m=txt.match(/\{[\s\S]*\}/);w=JSON.parse(m?m[0]:txt);}catch(e){toast('Kon etiket niet lezen');return;}
     if(!w.name&&w.producer) w.name=w.producer;
     scannedWine=w;
+
+    // Check shared DB for existing info
+    var existing=await lookupScan(w.name,w.producer);
+    if(existing&&existing.ai_info&&!w.smaakprofiel){
+      w.smaakprofiel=existing.ai_info;
+      toast('Info uit gedeelde database!');
+    }
+
     document.getElementById('sc-name').textContent=(w.name||'Onbekend')+(w.year?' '+w.year:'');
     document.getElementById('sc-meta').textContent=[w.producer,w.region,w.type].filter(Boolean).join(' · ');
     var info='';
@@ -995,18 +1212,17 @@ async function doWinkelScan(){
   }
 }
 
-function logTasting(){
+async function logTasting(){
   if(!scannedWine) return;
   var name=scannedWine.name||'Onbekend';
-  var note=prompt('Proefnotitie voor '+name+':');
-  var date=new Date().toLocaleDateString('nl-NL');
-  var tastings=JSON.parse(localStorage.getItem('sectio_tastings')||'[]');
-  tastings.unshift({date:date,name:name,note:note,type:scannedWine.type,region:scannedWine.region});
-  localStorage.setItem('sectio_tastings',JSON.stringify(tastings.slice(0,100)));
-  toast('Proeverij genoteerd');
+  var note=prompt('Proefnotitie voor '+name+' (optioneel):');
+  var ratingStr=prompt('Score 1-5 (optioneel):');
+  var rating=parseInt(ratingStr)||null;
+  await saveTasting({name:name,type:scannedWine.type,region:scannedWine.region,note:note,rating:rating});
+  toast('Proeverij opgeslagen');
 }
 
-function addScannedToKelder(){
+async function addScannedToKelder(){
   if(!scannedWine) return;
   var aiParts=[];
   if(scannedWine.druivenras) aiParts.push(scannedWine.druivenras+'.');
@@ -1019,9 +1235,8 @@ function addScannedToKelder(){
   if(scannedWine.geschatte_prijs_min&&scannedWine.geschatte_prijs_max){
     estPrice=((scannedWine.geschatte_prijs_min+scannedWine.geschatte_prijs_max)/2).toFixed(2);
   }
-  if(scPhotoB64) scannedPhotoForSave='data:image/jpeg;base64,'+scPhotoB64;
   document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
-  ['kelder','reviews','scanner'].forEach(function(t,i){
+  ['kelder','reviews','proeverijen','scanner'].forEach(function(t,i){
     document.getElementById('tab-'+t).style.display=i===0?'block':'none';
   });
   openModal();
@@ -1043,9 +1258,7 @@ async function claudeText(prompt,maxTok){
     var data=await res.json();
     if(!data.content) return null;
     var text=data.content.map(function(c){return c.text||'';}).join('');
-    // Strip Gemini warning messages
-    text=text.replace(/to monitor your current usage[^\n]*/gi,'').trim();
-    text=text.replace(/https:\/\/ai\.dev\/[^\s]*/gi,'').trim();
+    text=text.replace(/to monitor[^\n]*/gi,'').replace(/head to[^\n]*/gi,'').replace(/https?:\/\/\S+/gi,'').trim();
     return text||null;
   }catch(e){return null;}
 }
@@ -1057,7 +1270,7 @@ function toast(msg){
 
 function initScrollHeader(){
   var hero=document.querySelector('.hero');
-  var main=document.querySelector('main');
+  var main=document.getElementById('main-scroll');
   if(!main||!hero) return;
   var ticking=false;
   main.addEventListener('scroll',function(){
