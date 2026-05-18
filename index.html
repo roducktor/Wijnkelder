@@ -215,7 +215,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;background:var(--black);}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.53</span>
+        <span class="version" id="slbl">v0.54</span>
         <span class="sync-dot spin" id="sdot"></span>
       </div>
     </div>
@@ -490,9 +490,9 @@ function compressImage(dataUrl, maxWidth, quality, callback) {
 async function init(){
   sb=supabase.createClient(SB_URL,SB_KEY);
   document.getElementById('app').style.display='flex';
-  setSS('spin','v0.53');
+  setSS('spin','v0.54');
   await loadWines();
-  setSS('ok','v0.53');
+  setSS('ok','v0.54');
   initScrollHeader();
 }
 
@@ -521,7 +521,7 @@ async function saveToDB(w){
   };
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id):await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt');return false;}
-  setSS('ok','v0.53');await loadWines();return true;
+  setSS('ok','v0.54');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -938,17 +938,17 @@ function handleScanPhoto(input){
     document.getElementById('sc-result').style.display='none';
     document.getElementById('add-choice').style.display='none';
     document.getElementById('scan-flow').style.display='block';
-    // Use 1200px for API — good balance between token cost and readability
-    compressImage(fullDataUrl, 1200, 0.85, function(compressed) {
-      scPhotoB64=compressed.split(',')[1];
-    });
-    // Separate small thumbnail for card display only
+    // Show analyzing immediately
+    document.getElementById('analyzing-indicator').style.display='flex';
+    // Compress thumbnail for card storage
     compressImage(fullDataUrl, 120, 0.7, function(thumb) {
       scannedPhotoForSave=thumb;
     });
-    // Start scan immediately with full image, switch to compressed when ready
-    scPhotoB64=fullDataUrl.split(',')[1];
-    doWinkelScan();
+    // Compress for API then scan — doWinkelScan inside callback so scPhotoB64 is ready
+    compressImage(fullDataUrl, 1200, 0.85, function(compressed) {
+      scPhotoB64=compressed.split(',')[1];
+      doWinkelScan();
+    });
   };
   reader.readAsDataURL(file);
 }
@@ -957,6 +957,7 @@ async function doWinkelScan(){
   if(!scPhotoB64) return;
   document.getElementById('analyzing-indicator').style.display='flex';
   document.getElementById('scan-analyze-btn').style.display='none';
+  if(!scPhotoB64){toast('Geen foto beschikbaar');return;}
   try{
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
