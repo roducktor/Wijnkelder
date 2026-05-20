@@ -242,7 +242,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;}
 <div id="auth-screen">
   <div class="auth-logo">SECTIO</div>
   <div class="auth-sub">Collectio Spiritus</div>
-  <div style="font-size:9px;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:32px;">v0.56</div>
+  <div style="font-size:9px;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:32px;">v0.57</div>
   <div class="auth-card">
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="showAuthTab('login',this)">Inloggen</button>
@@ -269,7 +269,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.56</span>
+        <span class="version" id="slbl">v0.57</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="user-btn" onclick="toggleUserMenu()">👤</button>
       </div>
@@ -593,12 +593,12 @@ function setSS(cls,txt){
 }
 
 async function loadWines(){
-  setSS('spin','v0.56');
+  setSS('spin','v0.57');
   var r=await sb.from('wines').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
   if(r.error){setSS('err','fout');return;}
   wines=r.data||[];
   renderAll();
-  setSS('ok','v0.56');
+  setSS('ok','v0.57');
 }
 
 // ── PHOTO UPLOAD TO SUPABASE STORAGE ──
@@ -629,7 +629,7 @@ async function saveToDB(w){
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id).eq('user_id',currentUser.id)
            :await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt: '+r.error.message);return false;}
-  setSS('ok','v0.56');await loadWines();return true;
+  setSS('ok','v0.57');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -652,11 +652,42 @@ async function saveToScansDB(w, photoUrl){
 async function lookupScan(name, producer){
   if(!name) return null;
   try {
-    var q=sb.from('scans').select('*').ilike('name','%'+name+'%');
-    if(producer) q=q.ilike('producer','%'+producer+'%');
-    var r=await q.limit(1);
-    if(r.data&&r.data.length>0) return r.data[0];
-  } catch(e){}
+    // Strategy A: fuzzy match on first significant word of name
+    var firstWord=name.split(' ')[0].replace(/[^a-zA-Z0-9]/g,'');
+    if(firstWord.length<3) firstWord=name.split(' ').slice(0,2).join(' ');
+
+    var q=sb.from('scans').select('*').ilike('name','%'+firstWord+'%');
+    var r=await q.limit(5);
+
+    if(r.data&&r.data.length>0){
+      // Find best match: prefer exact name match, then producer match
+      var exact=r.data.find(function(s){
+        return s.name.toLowerCase()===name.toLowerCase();
+      });
+      if(exact) return exact;
+
+      // Strategy C: match on producer if available
+      if(producer){
+        var prodMatch=r.data.find(function(s){
+          return s.producer&&s.producer.toLowerCase().indexOf(producer.toLowerCase().split(' ')[0])>=0;
+        });
+        if(prodMatch) return prodMatch;
+      }
+
+      // Return first fuzzy match
+      return r.data[0];
+    }
+
+    // Fallback: search on producer alone
+    if(producer){
+      var prodFirst=producer.split(' ')[0];
+      if(prodFirst.length>=4){
+        var q2=sb.from('scans').select('*').ilike('producer','%'+prodFirst+'%').limit(1);
+        var r2=await q2;
+        if(r2.data&&r2.data.length>0) return r2.data[0];
+      }
+    }
+  } catch(e){ console.log('lookup error:',e); }
   return null;
 }
 
@@ -1179,7 +1210,7 @@ async function doWinkelScan(){
     var res=await fetch(AAPI,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY,'apikey':SB_KEY},
       body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,
-        system:'Lees dit etiket. JSON only: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_min":0,"geschatte_prijs_max":0}',
+        system:'Lees dit etiket. JSON only, geen uitleg: {"name":"","producer":"","region":"","year":null,"type":"Rood/Wit/Rose/Mousserende/Dessertwijn/Whisky/Rum/Cognac/Gin/Overig","druivenras":"","smaakprofiel":"","advies":"","serveertemperatuur":"","spijscombinaties":"","geschatte_prijs_eur":0,"kan_rijpen":false,"drink_vanaf":null,"drink_tot":null}. Regels: geschatte_prijs_eur is de meest waarschijnlijke Nederlandse winkelprijs als enkel getal zonder range. kan_rijpen is true alleen als de wijn aantoonbaar beter wordt met jaren bewaren. drink_vanaf en drink_tot alleen invullen als kan_rijpen true is.',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scPhotoB64}},
           {type:'text',text:'Analyseer dit etiket volledig.'}
@@ -1204,7 +1235,9 @@ async function doWinkelScan(){
     document.getElementById('sc-name').textContent=(w.name||'Onbekend')+(w.year?' '+w.year:'');
     document.getElementById('sc-meta').textContent=[w.producer,w.region,w.type].filter(Boolean).join(' · ');
     var info='';
-    if(w.geschatte_prijs_min&&w.geschatte_prijs_max)
+    if(w.geschatte_prijs_eur)
+      info+='<div class="sc-block-row" style="background:rgba(196,146,42,.1)"><div class="sc-label" style="color:var(--gold)">Geschatte prijs</div><div class="sc-val" style="color:var(--gold);font-weight:700">€'+w.geschatte_prijs_eur+'</div></div>';
+    else if(w.geschatte_prijs_min&&w.geschatte_prijs_max)
       info+='<div class="sc-block-row" style="background:rgba(196,146,42,.1)"><div class="sc-label" style="color:var(--gold)">Geschatte prijs</div><div class="sc-val" style="color:var(--gold);font-weight:700">€'+w.geschatte_prijs_min+' – €'+w.geschatte_prijs_max+'</div></div>';
     if(w.druivenras) info+='<div class="sc-block"><div class="sc-label">Druivenras / Graan</div><div class="sc-val">'+w.druivenras+'</div></div>';
     if(w.smaakprofiel) info+='<div class="sc-block"><div class="sc-label">Smaakprofiel</div><div class="sc-val">'+w.smaakprofiel+'</div></div>';
@@ -1245,7 +1278,9 @@ async function addScannedToKelder(){
   if(scannedWine.advies) aiParts.push(scannedWine.advies);
   scannedAiInfo=aiParts.length?aiParts.join(' '):null;
   var estPrice=null;
-  if(scannedWine.geschatte_prijs_min&&scannedWine.geschatte_prijs_max){
+  if(scannedWine.geschatte_prijs_eur){
+    estPrice=Number(scannedWine.geschatte_prijs_eur).toFixed(2);
+  } else if(scannedWine.geschatte_prijs_min&&scannedWine.geschatte_prijs_max){
     estPrice=((scannedWine.geschatte_prijs_min+scannedWine.geschatte_prijs_max)/2).toFixed(2);
   }
   document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
@@ -1259,6 +1294,8 @@ async function addScannedToKelder(){
   document.getElementById('f-year').value=scannedWine.year||'';
   if(scannedWine.type) document.getElementById('f-type').value=scannedWine.type;
   if(estPrice) document.getElementById('f-price').value=estPrice;
+  if(scannedWine.kan_rijpen&&scannedWine.drink_vanaf) document.getElementById('f-dfrom').value=scannedWine.drink_vanaf;
+  if(scannedWine.kan_rijpen&&scannedWine.drink_tot) document.getElementById('f-dto').value=scannedWine.drink_tot;
 }
 
 async function claudeText(prompt,maxTok){
