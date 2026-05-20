@@ -123,6 +123,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;}
 .exp-section{padding:12px 18px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-stars-row{display:flex;align-items:center;justify-content:space-between;}
 .exp-stars{font-size:18px;color:rgba(255,255,255,.7);letter-spacing:3px;}
+.exp-ai-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.75;word-break:break-word;}
 .exp-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.2);background:var(--expand-color,var(--black2));}
 .exp-btn{flex:1;height:44px;background:rgba(0,0,0,.25);color:rgba(255,255,255,.9);border:none;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;border-radius:30px;}
 .exp-btn:active{opacity:.75;}
@@ -241,6 +242,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;}
 <div id="auth-screen">
   <div class="auth-logo">SECTIO</div>
   <div class="auth-sub">Collectio Spiritus</div>
+  <div style="font-size:9px;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:32px;">v0.56</div>
   <div class="auth-card">
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="showAuthTab('login',this)">Inloggen</button>
@@ -267,7 +269,7 @@ main{flex:1;overflow-y:auto;padding-bottom:2rem;}
     <div class="header-top">
       <div class="wordmark">SECTIO</div>
       <div class="header-right">
-        <span class="version" id="slbl">v0.55</span>
+        <span class="version" id="slbl">v0.56</span>
         <span class="sync-dot spin" id="sdot"></span>
         <button class="user-btn" onclick="toggleUserMenu()">👤</button>
       </div>
@@ -591,12 +593,12 @@ function setSS(cls,txt){
 }
 
 async function loadWines(){
-  setSS('spin','v0.55');
+  setSS('spin','v0.56');
   var r=await sb.from('wines').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
   if(r.error){setSS('err','fout');return;}
   wines=r.data||[];
   renderAll();
-  setSS('ok','v0.55');
+  setSS('ok','v0.56');
 }
 
 // ── PHOTO UPLOAD TO SUPABASE STORAGE ──
@@ -627,7 +629,7 @@ async function saveToDB(w){
   var r=w.id?await sb.from('wines').update(row).eq('id',w.id).eq('user_id',currentUser.id)
            :await sb.from('wines').insert(row);
   if(r.error){setSS('err','fout');toast('Opslaan mislukt: '+r.error.message);return false;}
-  setSS('ok','v0.55');await loadWines();return true;
+  setSS('ok','v0.56');await loadWines();return true;
 }
 
 async function delFromDB(id){
@@ -778,6 +780,7 @@ function toggleCard(id){
   var expandHtml=''
     +'<div class="expand-inner">'
     +'<div class="expand-close"><button onclick="closeCard(\''+id+'\')">✕ Sluiten</button></div>'
+    +(w.ai_info?'<div class="exp-section"><div class="exp-label">Info</div><div class="exp-ai-text">'+w.ai_info+'</div></div>':'')
     +'<div class="exp-grid">'
     +'<div class="exp-item"><div class="exp-label">Score</div><div class="exp-val">'+(w.rating?w.rating+'/5':'—')+'</div></div>'
     +'<div class="exp-item"><div class="exp-label">Jaar</div><div class="exp-val">'+(w.year||'—')+'</div></div>'
@@ -1076,11 +1079,16 @@ async function saveWine(){
   }
   if(scannedPhotoFile){
     var fname=Date.now()+'.jpg';
-    compressImage(URL.createObjectURL(scannedPhotoFile),400,0.8,async function(compressed){
-      photoUrl=await uploadPhoto(compressed,fname);
-      await doSave(name,photoUrl);
-      btn.textContent='Opslaan';btn.disabled=false;
-    });
+    // Use FileReader to get dataUrl directly — ObjectURL can expire
+    var fr=new FileReader();
+    fr.onload=async function(e){
+      compressImage(e.target.result,400,0.8,async function(compressed){
+        photoUrl=await uploadPhoto(compressed,fname);
+        await doSave(name,photoUrl);
+        btn.textContent='Opslaan';btn.disabled=false;
+      });
+    };
+    fr.readAsDataURL(scannedPhotoFile);
     return;
   }
   await doSave(name,photoUrl);
@@ -1205,6 +1213,11 @@ async function doWinkelScan(){
     if(w.advies) info+='<div class="sc-block" style="background:rgba(196,146,42,.06)"><div class="sc-label">Advies</div><div class="sc-val">'+w.advies+'</div></div>';
     document.getElementById('sc-info').innerHTML=info||'<div class="sc-block"><div class="sc-val" style="opacity:.4">Geen info beschikbaar.</div></div>';
     document.getElementById('sc-result').style.display='block';
+
+    // Always save to shared scans DB — even if user doesn't add to collection
+    // This ensures tokens are not wasted and database grows with every scan
+    saveToScansDB(w, null);
+
   }catch(e){
     document.getElementById('analyzing-indicator').style.display='none';
     document.getElementById('scan-analyze-btn').style.display='block';
